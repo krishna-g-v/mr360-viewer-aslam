@@ -135,7 +135,7 @@ public class LineGraphic extends AbstractDragGraphic {
 
   @Override
   public int getKeyCode() {
-    return KeyEvent.VK_D;
+    return KeyEvent.VK_M;
   }
 
   @Override

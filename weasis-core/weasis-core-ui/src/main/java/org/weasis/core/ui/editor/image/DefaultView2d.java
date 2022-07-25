@@ -54,6 +54,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
@@ -77,6 +78,7 @@ import org.weasis.core.api.gui.util.ToggleButtonListener;
 import org.weasis.core.api.gui.util.WinUtil;
 import org.weasis.core.api.image.AffineTransformOp;
 import org.weasis.core.api.image.FilterOp;
+import org.weasis.core.api.image.GridBagLayoutModel;
 import org.weasis.core.api.image.ImageOpEvent;
 import org.weasis.core.api.image.ImageOpNode;
 import org.weasis.core.api.image.OpManager;
@@ -166,7 +168,9 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   public static final Cursor CROSS_CURSOR = DefaultView2d.getNewCursor(Cursor.CROSSHAIR_CURSOR);
   public static final Cursor MOVE_CURSOR = DefaultView2d.getNewCursor(Cursor.MOVE_CURSOR);
   public static final Cursor DEFAULT_CURSOR = DefaultView2d.getNewCursor(Cursor.DEFAULT_CURSOR);
-
+  public static boolean linkMode = true;
+  public static JToggleButton linkModeButtonRef;
+  
   protected final FocusHandler focusHandler = new FocusHandler();
   protected GraphicMouseHandler<E> graphicMouseHandler;
 
@@ -201,6 +205,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
 
   public DefaultView2d(ImageViewerEventManager<E> eventManager, ViewModel viewModel) {
     super(viewModel);
+    if(!linkMode) linkModeButtonRef.doClick(); // may not be required, usually to reset the feature completely
     this.eventManager = Objects.requireNonNull(eventManager);
     this.viewButtons = new ArrayList<>();
     this.tileOffset = 0;
@@ -234,6 +239,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   }
 
   protected void initActionWState() {
+    if(!linkMode) linkModeButtonRef.doClick();
     E img = getImage();
     actionsInView.put(
         ActionW.SPATIAL_UNIT.cmd(), img == null ? Unit.PIXEL : img.getPixelSpacingUnit());
@@ -418,6 +424,13 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   @SuppressWarnings({"rawtypes", "unchecked"})
   public Panner getPanner() {
     return panner;
+  }
+  
+  public boolean isLensActive() {
+	  if(lens != null)
+		  return true;
+	  else
+		  return false;
   }
 
   @Override
@@ -801,6 +814,8 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   @Override
   public final void moveOrigin(PanPoint point) {
     if (point != null) {
+//    	If Pan feature also should be unlinked then uncomment the below line
+//      if(!linkMode && eventManager.getSelectedViewPane() != this) return;
       if (PanPoint.State.CENTER.equals(point.getState())) {
         highlightedPosition.setHighlightedPosition(point.isHighlightedPosition());
         highlightedPosition.setLocation(point);
@@ -937,6 +952,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
 
   @Override
   public void zoom(Double viewScale) {
+	if(!linkMode && eventManager.getSelectedViewPane() != this) return;
     boolean defSize = MathUtil.isEqualToZero(viewScale);
     ZoomType type = (ZoomType) actionsInView.get(ZOOM_TYPE_CMD);
     double ratio = viewScale;
@@ -1161,12 +1177,31 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
             lens = new ZoomWin<>(this);
           }
           // resize if to big
-          int maxWidth = getWidth() / 3;
-          int maxHeight = getHeight() / 3;
-          lens.setSize(Math.min(lens.getWidth(), maxWidth), Math.min(lens.getHeight(), maxHeight));
+//          int maxWidth = getWidth() / 3;
+//          int maxHeight = getHeight() / 3;
+//          lens.setSize(Math.min(lens.getWidth(), maxWidth), Math.min(lens.getHeight(), maxHeight));
+          
+    	  Optional<ComboItemListener> layoutAction = eventManager.getAction(ActionW.LAYOUT, ComboItemListener.class);
+          String layoutId = ((GridBagLayoutModel) layoutAction.get().getSelectedItem()).getId();
+
+          int maxWidth, maxHeight;
+          if(layoutId.equals("1x1")) {
+              maxWidth = 500;
+              maxHeight = 500;
+          } else {
+              maxWidth = getWidth();
+              maxHeight = getHeight();
+              
+              if(maxWidth < maxHeight)
+            	  maxHeight = maxWidth;
+              else
+            	  maxWidth = maxHeight;
+          }
+
+          lens.setSize(maxWidth, maxHeight);
+          
           this.add(lens);
           lens.showLens(true);
-
         } else {
           closeLens();
         }
@@ -1422,8 +1457,63 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
         }
       }
 
-      if (evt.getClickCount() == 2 && selectedButton == null) {
-        pane.maximizedSelectedImagePane(DefaultView2d.this, evt);
+      if (evt.getClickCount() == 2 && selectedButton == null) {    	  
+    	Optional<ComboItemListener> synchAction = eventManager.getAction(ActionW.SYNCH, ComboItemListener.class);
+    	SynchView synchView =
+    			synchAction.isPresent() ? (SynchView) synchAction.get().getSelectedItem() : null;
+    	boolean tileMode =
+    			synchView != null && SynchData.Mode.TILE.equals(synchView.getSynchData().getMode());
+    	
+        if(!pane.isViewerInFullscreen()) {
+          if(tileMode) {
+        	// work around as only with the first name the full screen scroll works
+        	ViewCanvas<E> firstPaneWithOffset = pane.getFirstImagePaneInGrid();
+        	
+        	SliderChangeListener curSliderPos = firstPaneWithOffset.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class).get();
+        	if(curSliderPos.getSliderValue() >= curSliderPos.getSliderMax()) {
+            	firstPaneWithOffset.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class)
+    						.ifPresent(a -> a.setSliderValue(a.getSliderValue() - 1));
+    			firstPaneWithOffset.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class)
+    						.ifPresent(a -> a.setSliderValue(a.getSliderValue() + 1));
+        	} else {
+            	firstPaneWithOffset.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class)
+    						.ifPresent(a -> a.setSliderValue(a.getSliderValue() + 1));
+    			firstPaneWithOffset.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class)
+    						.ifPresent(a -> a.setSliderValue(a.getSliderValue() - 1));
+        	}        	
+        	// WA - END
+
+            pane.maximizedSelectedImagePane(firstPaneWithOffset, evt);
+          } else
+            pane.maximizedSelectedImagePane(DefaultView2d.this, evt);
+        }
+        else {
+          if(tileMode) {
+        	  ViewCanvas<E> firstPaneWithOffset = pane.getFirstImagePaneInGrid();
+        	  SliderChangeListener curSliderPos = firstPaneWithOffset.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class).get();
+        	  
+        	  Optional<ComboItemListener> layoutAction = eventManager.getAction(ActionW.LAYOUT, ComboItemListener.class);
+              String layoutId = ((GridBagLayoutModel) layoutAction.get().getSelectedItem()).getId();
+              int totalCells = 1;
+              if(layoutId.startsWith("layout")) {
+                totalCells = 3;
+              } else {
+                String[] gridDimentions = layoutId.split("x");
+                totalCells = Integer.parseInt(gridDimentions[0]) * Integer.parseInt(gridDimentions[1]);
+              }
+
+              int movebackIterations = curSliderPos.getSliderValue() - 1;
+              if(curSliderPos.getSliderValue() > totalCells)
+            	  movebackIterations = (curSliderPos.getSliderValue() % totalCells) - 1;
+              
+        	  for(int i=1; i<=movebackIterations; i++) {
+              	firstPaneWithOffset.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class)
+      						.ifPresent(a -> a.setSliderValue(a.getSliderValue() - 1));
+        	  }
+        	  pane.maximizedSelectedImagePane(firstPaneWithOffset, evt);
+          } else
+        	  pane.maximizedSelectedImagePane(DefaultView2d.this, evt);
+        }
         return;
       }
 
@@ -1523,7 +1613,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
     imageLayer.setEnableDispOperations(false);
     ImageViewerPlugin<E> pane = eventManager.getSelectedView2dContainer();
     if (pane != null) {
-      pane.resetMaximizedSelectedImagePane(this);
+      // pane.resetMaximizedSelectedImagePane(this);
     }
     Object oldUnit = actionsInView.get(ActionW.SPATIAL_UNIT.cmd());
     initActionWState();

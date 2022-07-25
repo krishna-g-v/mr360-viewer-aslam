@@ -102,7 +102,10 @@ public class View2dContainer extends ImageViewerPlugin<ImageElement>
           VIEWS_2_f1x2,
           VIEWS_2x2,
           VIEWS_2x3,
-          VIEWS_2x4);
+          VIEWS_2x4,
+          VIEWS_3x1,
+          VIEWS_4x1);
+          // VIEWS_4x2);
 
   // Static tools shared by all the View2dContainer instances, tools are registered when a container
   // is selected

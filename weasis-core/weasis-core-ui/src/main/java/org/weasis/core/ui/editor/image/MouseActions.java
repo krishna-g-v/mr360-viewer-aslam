@@ -47,16 +47,31 @@ public class MouseActions {
                 | SCROLL_MASK);
     this.left =
         BundleTools.SYSTEM_PREFERENCES.getProperty(
-            "weasis.toolbar.mouse.left", ActionW.WINLEVEL.cmd());
+            "weasis.toolbar.mouse.left", ActionW.SCROLL_SERIES.cmd());
     this.middle =
         BundleTools.SYSTEM_PREFERENCES.getProperty(
             "weasis.toolbar.mouse.middle", ActionW.PAN.cmd());
     this.right =
         BundleTools.SYSTEM_PREFERENCES.getProperty(
-            "weasis.toolbar.mouse.right", ActionW.CONTEXTMENU.cmd());
+            "weasis.toolbar.mouse.right", ActionW.ZOOM.cmd());
     this.wheel =
         BundleTools.SYSTEM_PREFERENCES.getProperty(
             "weasis.toolbar.mouse.wheel", ActionW.SCROLL_SERIES.cmd());
+
+    // original
+    // this.left =
+    //     BundleTools.SYSTEM_PREFERENCES.getProperty(
+    //         "weasis.toolbar.mouse.left", ActionW.WINLEVEL.cmd());
+    // this.middle =
+    //     BundleTools.SYSTEM_PREFERENCES.getProperty(
+    //         "weasis.toolbar.mouse.middle", ActionW.PAN.cmd());
+    // this.right =
+    //     BundleTools.SYSTEM_PREFERENCES.getProperty(
+    //         "weasis.toolbar.mouse.right", ActionW.CONTEXTMENU.cmd());
+    // this.wheel =
+    //     BundleTools.SYSTEM_PREFERENCES.getProperty(
+    //         "weasis.toolbar.mouse.wheel", ActionW.SCROLL_SERIES.cmd());
+        
 
     applyPreferences(prefs);
 

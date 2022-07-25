@@ -418,6 +418,10 @@ public class WeasisLauncher {
   }
 
   private void showMessage(final WeasisMainFrame mainFrame, Map<String, String> serverProp) {
+    return;
+  }
+  
+  private void showMessage_Orig(final WeasisMainFrame mainFrame, Map<String, String> serverProp) {
     String versionOld = serverProp.get("prev." + P_WEASIS_VERSION); // NON-NLS
     String versionNew = serverProp.getOrDefault(P_WEASIS_VERSION, "0.0.0");
     // First time launch
@@ -913,7 +917,7 @@ public class WeasisLauncher {
             boolean substance = look.startsWith("org.pushingpixels");
             if (substance) {
               // Keep system window for the main frame
-              // JFrame.setDefaultLookAndFeelDecorated(true);
+              JFrame.setDefaultLookAndFeelDecorated(true);
               JDialog.setDefaultLookAndFeelDecorated(true);
             }
             look = setLookAndFeel(look);

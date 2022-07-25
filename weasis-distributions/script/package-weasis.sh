@@ -18,7 +18,7 @@ SUBSTANCE_PKG="4.0.1"
 # jdk.localedata => other locale (en_us) data are included in the jdk.localedata
 # jdk.jdwp.agent => package for debugging agent
 JDK_MODULES="java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.prefs,java.xml,jdk.localedata,jdk.charsets,jdk.crypto.ec,jdk.crypto.cryptoki,jdk.unsupported,jdk.jdwp.agent"
-NAME="Weasis"
+NAME="MedReport360-Viewer"
 IDENTIFIER="org.weasis.launcher"
 
 # Aux functions:
@@ -112,7 +112,7 @@ arc=$(echo "${ARC_OS}" | cut -d'-' -f2-3)
 if [ "$machine" = "windows" ] ; then
   INPUT_PATH_UNIX=$(cygpath -u "$INPUT_PATH")
   OUTPUT_PATH_UNIX=$(cygpath -u "$OUTPUT_PATH")
-  RES="${curPath}\resources\$machine"
+  RES="${curPath}\resources\\$machine"
 else
   INPUT_PATH_UNIX="$INPUT_PATH"
   OUTPUT_PATH_UNIX="$OUTPUT_PATH"
@@ -158,7 +158,7 @@ if (( INSTALLED_MAJOR_VERSION < REQUIRED_MAJOR_VERSION )) ; then
 fi
 
 if [ -z "$OUTPUT_PATH" ] ; then
-  OUTPUT_PATH="weasis-$ARC_OS-jdk$INSTALLED_MAJOR_VERSION-$WEASIS_VERSION"
+  OUTPUT_PATH="MedReport360-Viewer-$ARC_OS-jdk$INSTALLED_MAJOR_VERSION-$WEASIS_VERSION"
   OUTPUT_PATH_UNIX="$OUTPUT_PATH"
 fi
 
@@ -186,7 +186,7 @@ if [ "$arc" = "x86" ] ; then
 fi
 
 # Replace substance available for Java 11
-curl -L -o "${INPUT_DIR}/substance.jar" "https://raw.github.com/nroduit/mvn-repo/master/org/pushing-pixels/radiance-substance-all/$SUBSTANCE_PKG/radiance-substance-all-$SUBSTANCE_PKG.jar"
+# curl -L -o "${INPUT_DIR}/substance.jar" "https://raw.github.com/nroduit/mvn-repo/master/org/pushing-pixels/radiance-substance-all/$SUBSTANCE_PKG/radiance-substance-all-$SUBSTANCE_PKG.jar"
 
 # Remove previous package
 if [ -d "${OUTPUT_PATH}" ] ; then
@@ -229,18 +229,19 @@ declare -a commonOptions=("--java-options" "-Dgosh.port=17179" \
 "--java-options" "--add-opens=java.desktop/javax.imageio.stream=ALL-UNNAMED" "--java-options" "--add-opens=java.desktop/javax.imageio=ALL-UNNAMED" \
 "--java-options" "--add-opens=java.desktop/com.sun.awt=ALL-UNNAMED" )
 
-$JPKGCMD --type app-image --input "$INPUT_DIR" --dest "$OUTPUT_PATH" --name "$NAME" \
+"$JPKGCMD" --type app-image --input "$INPUT_DIR" --dest "$OUTPUT_PATH" --name "$NAME" \
 --main-jar weasis-launcher.jar --main-class org.weasis.launcher.AppLauncher --add-modules "$JDK_MODULES" \
---add-launcher "${DICOMIZER_CONFIG}" --resource-dir "$RES"  --app-version "$WEASIS_CLEAN_VERSION" \
+--resource-dir "$RES"  --app-version "$WEASIS_CLEAN_VERSION" \
 "${tmpArgs[@]}" --verbose "${signArgs[@]}" "${customOptions[@]}" "${commonOptions[@]}"
+# --add-launcher "${DICOMIZER_CONFIG}" --resource-dir "$RES"  --app-version "$WEASIS_CLEAN_VERSION" \
 
 if [ "$PACKAGE" = "YES" ] ; then
-  VENDOR="Weasis Team"
-  COPYRIGHT="© 2009-2020 Weasis Team"
+  VENDOR="MedReport360 Team"
+  COPYRIGHT="© 2018-2022 MedReport360 Team"
   if [ "$machine" = "windows" ] ; then
     [ "$ARC_NAME" = "x86" ]  && UPGRADE_UID="3aedc24e-48a8-4623-ab39-0c3c01c7383b" || UPGRADE_UID="3aedc24e-48a8-4623-ab39-0c3c01c7383a"
-    $JPKGCMD --type "msi" --app-image "$IMAGE_PATH" --dest "$OUTPUT_PATH" --name "$NAME" --resource-dir "$RES/msi/$ARC_NAME" \
-    --license-file "$INPUT_PATH\Licence.txt" --description "Weasis DICOM viewer" --win-upgrade-uuid "$UPGRADE_UID"  \
+    "$JPKGCMD" --type "msi" --app-image "$IMAGE_PATH" --dest "$OUTPUT_PATH" --name "$NAME" --resource-dir "$RES/msi/x86-64" \
+    --license-file "$INPUT_PATH\Licence.txt" --description "MedReport360 DICOM viewer" --win-upgrade-uuid "$UPGRADE_UID"  \
     --win-menu --win-menu-group "$NAME" --copyright "$COPYRIGHT" --app-version "$WEASIS_CLEAN_VERSION" \
     --vendor "$VENDOR" --file-associations "${curPath}\file-associations.properties" "${tmpArgs[@]}" --verbose
     mv "$OUTPUT_PATH_UNIX/$NAME-$WEASIS_CLEAN_VERSION.msi" "$OUTPUT_PATH_UNIX/$NAME-$WEASIS_CLEAN_VERSION-$ARC_NAME.msi"
@@ -248,7 +249,7 @@ if [ "$PACKAGE" = "YES" ] ; then
     declare -a installerTypes=("deb" "rpm")
     for installerType in "${installerTypes[@]}"; do
       $JPKGCMD --type "$installerType" --app-image "$IMAGE_PATH" --dest "$OUTPUT_PATH"  --name "$NAME" --resource-dir "$RES" \
-      --license-file "$INPUT_PATH/Licence.txt" --description "Weasis DICOM viewer" --vendor "$VENDOR" \
+      --license-file "$INPUT_PATH/Licence.txt" --description "MedReport360 DICOM viewer" --vendor "$VENDOR" \
       --copyright "$COPYRIGHT" --app-version "$WEASIS_CLEAN_VERSION" --file-associations "${curPath}/file-associations.properties" \
       --linux-app-release "$REVISON_INC" --linux-package-name "weasis" --linux-deb-maintainer "Nicolas Roduit" --linux-rpm-license-type "EPL-2.0" \
       --linux-menu-group "Viewer;MedicalSoftware;Graphics;" --linux-app-category "science" --linux-shortcut "${tmpArgs[@]}" --verbose

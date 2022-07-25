@@ -458,7 +458,11 @@ public final class KOManager {
           || (view2D.getImage() == null && !tiledMode)) {
         if (newSelectedKO != null) {
           if (updateImage) {
-            updateImage(view2D, null, view2D.getFrameIndex());
+        	if(tiledMode && view2D.getFrameIndex() < 0) {
+        		// swallow in case of TILE mode and when trying to fill blank tiles at the end
+          	}
+        	else
+        	  updateImage(view2D, null, view2D.getFrameIndex());
           }
           // Update the None KO selection
           ((View2d) view2D).updateKOButtonVisibleState();

@@ -153,7 +153,7 @@ public class InfoLayer extends AbstractInfoLayer<DicomImageElement> {
       }
     }
 
-    if (image.isReadable() && getDisplayPreferences(SCALE)) {
+    if (image.isReadable() && getDisplayPreferences(SCALE) && hideMin) {
       drawScale(g2, bound, fontHeight);
     }
     if (image.isReadable() && getDisplayPreferences(LUT) && hideMin) {
@@ -286,7 +286,8 @@ public class InfoLayer extends AbstractInfoLayer<DicomImageElement> {
       drawY -= fontHeight;
     }
 
-    if (getDisplayPreferences(FRAME) && hideMin) {
+    // if (getDisplayPreferences(FRAME) && hideMin) {
+    if (getDisplayPreferences(FRAME)) {
       StringBuilder buf = new StringBuilder(Messages.getString("InfoLayer.frame"));
       buf.append(StringUtil.COLON_AND_SPACE);
       if (image != null) {
@@ -305,7 +306,10 @@ public class InfoLayer extends AbstractInfoLayer<DicomImageElement> {
               .size(
                   (Filter<DicomImageElement>)
                       view2DPane.getActionValue(ActionW.FILTERED_SERIES.cmd())));
-      AbstractGraphicLabel.paintFontOutline(g2, buf.toString(), border, drawY);
+      if(!hideMin)
+          AbstractGraphicLabel.paintFontOutline(g2, buf.toString(), (float) bound.width - border - g2.getFontMetrics().stringWidth(buf.toString()), bound.height - border - 1.5f);
+      else
+    	  AbstractGraphicLabel.paintFontOutline(g2, buf.toString(), border, drawY);
       drawY -= fontHeight;
 
       Double imgProgression = (Double) view2DPane.getActionValue(ActionW.PROGRESSION.cmd());
@@ -320,7 +324,7 @@ public class InfoLayer extends AbstractInfoLayer<DicomImageElement> {
     Point2D.Float[] positions = new Point2D.Float[4];
     positions[3] = new Point2D.Float(border, drawY - 5);
 
-    if (getDisplayPreferences(ANNOTATIONS) && image != null) {
+    if (getDisplayPreferences(ANNOTATIONS) && image != null && hideMin) {
       Series series = (Series) view2DPane.getSeries();
       MediaSeriesGroup study = getParent(series, DicomModel.study);
       MediaSeriesGroup patient = getParent(series, DicomModel.patient);

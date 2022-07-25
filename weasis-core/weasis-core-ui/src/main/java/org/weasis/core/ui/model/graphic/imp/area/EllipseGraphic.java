@@ -11,6 +11,7 @@ package org.weasis.core.ui.model.graphic.imp.area;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -86,6 +87,11 @@ public class EllipseGraphic extends ObliqueRectangleGraphic {
   public String getUIName() {
     return Messages.getString("MeasureToolBar.ellipse");
   }
+
+//  @Override
+//  public int getKeyCode() {
+//    return KeyEvent.VK_D;
+//  }
 
   @Override
   public void buildShape(MouseEventDouble mouseEvent) {

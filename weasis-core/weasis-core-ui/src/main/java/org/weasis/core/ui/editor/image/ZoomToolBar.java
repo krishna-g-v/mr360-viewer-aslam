@@ -11,8 +11,12 @@ package org.weasis.core.ui.editor.image;
 
 import java.awt.GraphicsConfiguration;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -68,6 +72,30 @@ public class ZoomToolBar extends WtoolBar {
         ((ToggleButtonListener) lens).registerActionState(jButtonLens);
       }
       add(jButtonLens);
+      
+      final JToggleButton jLinkModeButton = new JToggleButton(new ImageIcon(MouseActions.class.getResource("/icon/32x32/link.png")));
+      jLinkModeButton.setToolTipText("Link / Unlink");
+      ActionListener actionListener = new ActionListener() {
+          public void actionPerformed(ActionEvent actionEvent) {
+            AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
+            boolean selected = abstractButton.getModel().isSelected();
+//            System.out.println("Action - selected=" + selected + "\n");
+            if(selected) {
+            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/32x32/unlink.png")));
+            	DefaultView2d.linkMode = false;
+            }
+            else {
+            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/32x32/link.png")));
+            	DefaultView2d.linkMode = true;
+            }
+          }
+        };
+      // Attach Listeners
+      jLinkModeButton.addActionListener(actionListener);
+      DefaultView2d.linkModeButtonRef = jLinkModeButton;
+      
+      add(jLinkModeButton);
+
     }
   }
 

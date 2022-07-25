@@ -55,7 +55,7 @@ public class ActionW implements KeyActionValue {
       new ActionW(Messages.getString("ActionW.speed"), "cinespeed", 0, 0, null); // NON-NLS
   public static final ActionW CINESTART =
       new ActionW(
-          Messages.getString("ActionW.start"), "cinestart", KeyEvent.VK_C, 0, null); // NON-NLS
+          Messages.getString("ActionW.start"), "cinestart", 0, 0, null); // NON-NLS // Default was VK_C and since cobbs angle is C so removing it
   public static final ActionW CINESTOP =
       new ActionW(Messages.getString("ActionW.stop"), "cinestop", 0, 0, null); // NON-NLS
   public static final ActionW WINDOW =
@@ -92,14 +92,14 @@ public class ActionW implements KeyActionValue {
       new ActionW(
           Messages.getString("ActionW.pan"),
           "pan", // NON-NLS
-          KeyEvent.VK_T,
+          KeyEvent.VK_U,
           0,
           getCustomCursor("pan.png", Messages.getString("ActionW.pan"), 16, 16));
   public static final ActionW DRAWINGS =
       new ActionW(Messages.getString("ActionW.draw"), "drawings", 0, 0, null); // NON-NLS
   public static final ActionW MEASURE =
       new ActionW(
-          Messages.getString("ActionW.measure"), "measure", KeyEvent.VK_M, 0, null) { // NON-NLS
+          Messages.getString("ActionW.measure"), "measure", KeyEvent.VK_O, 0, null) { // NON-NLS // Default was VK_M and since Line is M so changing it
         @Override
         public boolean isDrawingAction() {
           return true;

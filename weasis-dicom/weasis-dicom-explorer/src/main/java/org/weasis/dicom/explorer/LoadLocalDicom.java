@@ -20,6 +20,7 @@ import org.weasis.core.api.explorer.ObservableEvent;
 import org.weasis.core.api.explorer.model.DataExplorerModel;
 import org.weasis.core.api.gui.util.GuiExecutor;
 import org.weasis.core.api.media.MimeInspector;
+import org.weasis.core.api.media.data.ImageElement;
 import org.weasis.core.api.media.data.MediaElement;
 import org.weasis.core.api.media.data.MediaSeries;
 import org.weasis.core.api.media.data.MediaSeriesGroup;
@@ -31,6 +32,8 @@ import org.weasis.core.api.media.data.Thumbnail;
 import org.weasis.core.ui.docking.UIManager;
 import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
+import org.weasis.core.ui.editor.image.ImageViewerPlugin;
+import org.weasis.core.ui.editor.image.SynchData;
 import org.weasis.core.ui.model.GraphicModel;
 import org.weasis.core.ui.serialize.XmlSerializer;
 import org.weasis.core.util.FileUtil;
@@ -47,6 +50,7 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
   private final DicomModel dicomModel;
   private final boolean recursive;
   private boolean openPlugin;
+  private int lastOpenedSeriesNo = -1;
 
   public LoadLocalDicom(File[] files, boolean recursive, DataExplorerModel explorerModel) {
     super(Messages.getString("DicomExplorer.loading"), false);
@@ -115,8 +119,11 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
         }
       }
     }
+    lastOpenedSeriesNo = -1;
+    
     for (final SeriesThumbnail t : thumbs) {
       MediaSeries<MediaElement> series = t.getSeries();
+      
       // Avoid rebuilding most of CR series thumbnail
       if (series != null && series.size(null) > 2) {
         GuiExecutor.instance().execute(t::reBuildThumbnail);
@@ -202,6 +209,11 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
 
         // After the thumbnail is sent to interface, it will be return to be rebuilt later
         thumb = t;
+        int thisSeriesNo = (Integer)(t.getSeries().getTagValue(TagD.get(Tag.SeriesNumber)));
+        
+        if(lastOpenedSeriesNo != -1 &&  thisSeriesNo < lastOpenedSeriesNo) {
+        	open = true;
+        }
 
         Integer splitNb = (Integer) dicomSeries.getTagValue(TagW.SplitSeriesNumber);
         if (splitNb != null) {
@@ -214,6 +226,7 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
           SeriesViewerFactory plugin = UIManager.getViewerFactory(dicomSeries.getMimeType());
           if (plugin != null && !(plugin instanceof MimeSystemAppFactory)) {
             openPlugin = false;
+            lastOpenedSeriesNo = thisSeriesNo;
             ViewerPluginBuilder.openSequenceInPlugin(plugin, dicomSeries, dicomModel, true, true);
           } else if (plugin != null) {
             // Send event to select the related patient in Dicom Explorer.
@@ -265,9 +278,15 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
                 new ObservableEvent(
                     ObservableEvent.BasicAction.UPDATE, dicomModel, null, dicomSeries));
           }
+          if ( UIManager.VIEWER_PLUGINS.size() > 0 && ((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)) != null && 
+        		  SynchData.Mode.TILE.equals(((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getSynchView().getSynchData().getMode()) ) {
+	          SeriesViewerFactory plugin = UIManager.getViewerFactory(dicomSeries.getMimeType());
+	          ViewerPluginBuilder.openSequenceInPlugin(plugin, dicomSeries, dicomModel, true, true);
+          }
         }
       }
     } catch (Exception e) {
+    	e.printStackTrace();
       LOGGER.error("Build DicomModel", e);
     } finally {
       // dicomReader.reset();

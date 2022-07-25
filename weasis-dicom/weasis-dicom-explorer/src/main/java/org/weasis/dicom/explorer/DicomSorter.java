@@ -19,6 +19,7 @@ import org.dcm4che3.data.Tag;
 import org.weasis.core.api.media.data.MediaElement;
 import org.weasis.core.api.media.data.MediaSeries;
 import org.weasis.core.api.media.data.MediaSeriesGroup;
+import org.weasis.core.api.media.data.TagW;
 import org.weasis.dicom.codec.TagD;
 import org.weasis.dicom.explorer.DicomExplorer.SeriesPane;
 import org.weasis.dicom.explorer.DicomExplorer.StudyPane;
@@ -110,6 +111,14 @@ public class DicomSorter {
           }
           if (isDoseReport(st2)) {
             return -1;
+          }
+          
+          Integer splitVal1 = (Integer) st1.getTagValue(TagW.SplitSeriesNumber);
+          Integer splitVal2 = (Integer) st2.getTagValue(TagW.SplitSeriesNumber);
+          
+          if( (TagD.getTagValue(st1, Tag.SeriesInstanceUID, String.class).equals(TagD.getTagValue(st2, Tag.SeriesInstanceUID, String.class))) 
+        		  && (splitVal1 != null && splitVal2 != null) ) {
+        	  return splitVal1.compareTo(splitVal2);
           }
 
           Integer val1 = TagD.getTagValue(st1, Tag.SeriesNumber, Integer.class);

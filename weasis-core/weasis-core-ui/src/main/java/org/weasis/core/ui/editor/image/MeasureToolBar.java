@@ -55,6 +55,13 @@ import org.weasis.core.ui.model.graphic.imp.line.PolylineGraphic;
 import org.weasis.core.ui.model.layer.LayerType;
 import org.weasis.core.ui.pref.ViewSetting;
 import org.weasis.core.ui.util.WtoolBar;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
+import javax.swing.JMenu;
+import org.weasis.core.api.gui.util.RadioMenuItem;
+import org.weasis.core.api.gui.util.GroupRadioMenu;
+import java.awt.Insets;
 
 @SuppressWarnings("serial")
 public class MeasureToolBar extends WtoolBar {
@@ -134,10 +141,20 @@ public class MeasureToolBar extends WtoolBar {
       drawGraphicList.add(new ObliqueRectangleGraphic());
     }
     if (p.getBooleanProperty("weasis.draw.ellipse", true)) {
-      drawGraphicList.add(new EllipseGraphic());
+      drawGraphicList.add(new EllipseGraphic() {
+            @Override
+            public int getKeyCode() {
+              return 0;
+            }
+          });
     }
     if (p.getBooleanProperty("weasis.draw.threeptcircle", true)) {
-      drawGraphicList.add(new ThreePointsCircleGraphic());
+      drawGraphicList.add(new ThreePointsCircleGraphic() {
+          @Override
+          public int getKeyCode() {
+            return 0;
+          }
+        });
     }
     if (p.getBooleanProperty("weasis.draw.polygon", true)) {
       drawGraphicList.add(
@@ -185,7 +202,135 @@ public class MeasureToolBar extends WtoolBar {
     Optional<ComboItemListener> draw =
         eventManager.getAction(ActionW.DRAW_GRAPHICS, ComboItemListener.class);
     if (measure.isPresent()) {
-      add(buildButton(measure.get()));
+
+      DropDownButton measureDropDownBtn = buildButton(measure.get());
+      add(measureDropDownBtn);
+
+      final JButton measureLineBtn = new JButton();
+      measureLineBtn.setToolTipText("Measure (M)");
+      measureLineBtn.setText("M");
+      measureLineBtn.setIcon(((RadioMenuItem)measureDropDownBtn.getMenuModel().createJPopupMenu().getComponent(1)).getIcon());
+      measureLineBtn.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ImageViewerPlugin<?> view = eventManager.getSelectedView2dContainer();
+          if (view != null) {
+            @SuppressWarnings("rawtypes")
+            final ViewerToolBar toolBar = view.getViewerToolBar();
+            if (toolBar != null) {
+              String cmd = ActionW.MEASURE.cmd();
+              if (!toolBar.isCommandActive(cmd)) {
+                MouseActions mouseActions = eventManager.getMouseActions();
+                mouseActions.setAction(MouseActions.T_LEFT, cmd);
+                view.setMouseActions(mouseActions);
+                toolBar.changeButtonState(MouseActions.T_LEFT, cmd);
+              }
+            }
+          }
+          ((RadioMenuItem)measureDropDownBtn.getMenuModel().createJPopupMenu().getComponent(1)).doClick();
+        }
+      });
+      add(measureLineBtn);
+
+      final JButton measureEllipseBtn = new JButton();
+      measureEllipseBtn.setToolTipText("Density (D)");
+      measureEllipseBtn.setText("D");
+      measureEllipseBtn.setIcon(((RadioMenuItem)measureDropDownBtn.getMenuModel().createJPopupMenu().getComponent(5)).getIcon());
+      measureEllipseBtn.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ImageViewerPlugin<?> view = eventManager.getSelectedView2dContainer();
+          if (view != null) {
+            @SuppressWarnings("rawtypes")
+            final ViewerToolBar toolBar = view.getViewerToolBar();
+            if (toolBar != null) {
+              String cmd = ActionW.MEASURE.cmd();
+              if (!toolBar.isCommandActive(cmd)) {
+                MouseActions mouseActions = eventManager.getMouseActions();
+                mouseActions.setAction(MouseActions.T_LEFT, cmd);
+                view.setMouseActions(mouseActions);
+                toolBar.changeButtonState(MouseActions.T_LEFT, cmd);
+              }
+            }
+          }
+          ((RadioMenuItem)measureDropDownBtn.getMenuModel().createJPopupMenu().getComponent(5)).doClick();
+        }
+      });
+      add(measureEllipseBtn);
+
+      final JButton measurePerpendicularBtn = new JButton();
+      measurePerpendicularBtn.setToolTipText("Perpendicular (T)");
+      measurePerpendicularBtn.setText("T");
+      measurePerpendicularBtn.setIcon(((RadioMenuItem)measureDropDownBtn.getMenuModel().createJPopupMenu().getComponent(7)).getIcon());
+      measurePerpendicularBtn.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ImageViewerPlugin<?> view = eventManager.getSelectedView2dContainer();
+          if (view != null) {
+            @SuppressWarnings("rawtypes")
+            final ViewerToolBar toolBar = view.getViewerToolBar();
+            if (toolBar != null) {
+              String cmd = ActionW.MEASURE.cmd();
+              if (!toolBar.isCommandActive(cmd)) {
+                MouseActions mouseActions = eventManager.getMouseActions();
+                mouseActions.setAction(MouseActions.T_LEFT, cmd);
+                view.setMouseActions(mouseActions);
+                toolBar.changeButtonState(MouseActions.T_LEFT, cmd);
+              }
+            }
+          }
+          ((RadioMenuItem)measureDropDownBtn.getMenuModel().createJPopupMenu().getComponent(7)).doClick();
+        }
+      });
+      add(measurePerpendicularBtn);
+
+      final JButton measureAngleBtn = new JButton();
+      measureAngleBtn.setToolTipText("Angle (A)");
+      measureAngleBtn.setText("A");
+      measureAngleBtn.setIcon(((RadioMenuItem)measureDropDownBtn.getMenuModel().createJPopupMenu().getComponent(9)).getIcon());
+      measureAngleBtn.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ImageViewerPlugin<?> view = eventManager.getSelectedView2dContainer();
+          if (view != null) {
+            @SuppressWarnings("rawtypes")
+            final ViewerToolBar toolBar = view.getViewerToolBar();
+            if (toolBar != null) {
+              String cmd = ActionW.MEASURE.cmd();
+              if (!toolBar.isCommandActive(cmd)) {
+                MouseActions mouseActions = eventManager.getMouseActions();
+                mouseActions.setAction(MouseActions.T_LEFT, cmd);
+                view.setMouseActions(mouseActions);
+                toolBar.changeButtonState(MouseActions.T_LEFT, cmd);
+              }
+            }
+          }
+          ((RadioMenuItem)measureDropDownBtn.getMenuModel().createJPopupMenu().getComponent(9)).doClick();
+        }
+      });
+      add(measureAngleBtn);
+
+      final JButton measureCobbsAngleBtn = new JButton();
+      measureCobbsAngleBtn.setToolTipText("Cobbs (C)");
+      measureCobbsAngleBtn.setText("C");
+      measureCobbsAngleBtn.setIcon(((RadioMenuItem)measureDropDownBtn.getMenuModel().createJPopupMenu().getComponent(12)).getIcon());
+      measureCobbsAngleBtn.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ImageViewerPlugin<?> view = eventManager.getSelectedView2dContainer();
+          if (view != null) {
+            @SuppressWarnings("rawtypes")
+            final ViewerToolBar toolBar = view.getViewerToolBar();
+            if (toolBar != null) {
+              String cmd = ActionW.MEASURE.cmd();
+              if (!toolBar.isCommandActive(cmd)) {
+                MouseActions mouseActions = eventManager.getMouseActions();
+                mouseActions.setAction(MouseActions.T_LEFT, cmd);
+                view.setMouseActions(mouseActions);
+                toolBar.changeButtonState(MouseActions.T_LEFT, cmd);
+              }
+            }
+          }
+          ((RadioMenuItem)measureDropDownBtn.getMenuModel().createJPopupMenu().getComponent(12)).doClick();
+        }
+      });
+      add(measureCobbsAngleBtn);
+
     }
     if (draw.isPresent()) {
       add(buildButton(draw.get()));

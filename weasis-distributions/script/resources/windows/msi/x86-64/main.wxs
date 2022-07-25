@@ -70,25 +70,25 @@
 
     <DirectoryRef Id="INSTALLDIR">
         <Component Id="URIHandlerRegistry" Guid="D99D1C53-7173-414B-81F8-AFC94641B3C0">
-            <!-- Register weasis protocol -->
-		        <RegistryKey Key="weasis" Root="HKCR">
-		          <RegistryValue Type="string" Value="Weasis URI handler"/>
+            <!-- Register MedReport360-Viewer protocol -->
+		        <RegistryKey Key="MedReport360-Viewer" Root="HKCR">
+		          <RegistryValue Type="string" Value="MedReport360-Viewer URI handler"/>
 		          <RegistryValue Name="URL Protocol" Type="string" Value=""/>
-		          <RegistryValue Name="DefaultIcon" Type="string" Value="&quot;[INSTALLDIR]Weasis.ico&quot;,1"/>
+		          <RegistryValue Name="DefaultIcon" Type="string" Value="&quot;[INSTALLDIR]MedReport360-Viewer.ico&quot;,1"/>
 		          <RegistryKey Key="shell\open\command">
-		            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]Weasis.exe&quot; &quot;%1&quot;"/>
+		            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]MedReport360-Viewer.exe&quot; &quot;%1&quot;"/>
 		          </RegistryKey>
 		        </RegistryKey>
-            <!-- Remove popup on Edge and IE for weasis protocol -->
-            <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Internet Explorer\ProtocolExecute\weasis">
+            <!-- Remove popup on Edge and IE for MedReport360-Viewer protocol -->
+            <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Internet Explorer\ProtocolExecute\MedReport360-Viewer">
               <RegistryValue Type="integer" Name="WarnOnOpen" Value="0" />
             </RegistryKey>
-            <!-- Remove popup on Chrome for weasis protocol -->
+            <!-- Remove popup on Chrome for MedReport360-Viewer protocol -->
             <RegistryKey Root="HKLM" Key="SOFTWARE\Policies\Google\Chrome\URLWhitelist">
-               <RegistryValue Name="787" Type="string" Value="weasis://*"/>
+               <RegistryValue Name="787" Type="string" Value="MedReport360-Viewer://*"/>
             </RegistryKey>
             <RegistryKey Root="HKLM" Key="SOFTWARE\Policies\Chromium\URLWhitelist">
-               <RegistryValue Name="787" Type="string" Value="weasis://*"/>
+               <RegistryValue Name="787" Type="string" Value="MedReport360-Viewer://*"/>
             </RegistryKey>
        </Component>
   </DirectoryRef>

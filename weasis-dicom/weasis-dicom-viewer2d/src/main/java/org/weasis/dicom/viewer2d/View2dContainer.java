@@ -125,7 +125,18 @@ public class View2dContainer extends ImageViewerPlugin<DicomImageElement>
           VIEWS_2x1_r1xc2_histo,
           VIEWS_2x2,
           VIEWS_2x3,
-          VIEWS_2x4);
+          VIEWS_2x4,
+          VIEWS_2x5,
+          VIEWS_3x1,
+          VIEWS_3x2,
+          VIEWS_3x3,
+          VIEWS_3x4,
+          VIEWS_3x5,
+          VIEWS_4x1,
+          VIEWS_4x2,
+          VIEWS_4x3,
+          VIEWS_4x4);
+          // VIEWS_4x2);
 
   // Static tools shared by all the View2dContainer instances, tools are registered when a container
   // is selected
@@ -140,10 +151,22 @@ public class View2dContainer extends ImageViewerPlugin<DicomImageElement>
     this(VIEWS_1x1, null, View2dFactory.NAME, MimeInspector.dicomIcon, null);
   }
 
+
   public View2dContainer(
       GridBagLayoutModel layoutModel, String uid, String pluginName, Icon icon, String tooltips) {
-    super(EventManager.getInstance(), layoutModel, uid, pluginName, icon, tooltips);
-    setSynchView(SynchView.DEFAULT_STACK);
+    this(layoutModel, uid, pluginName, icon, tooltips, "stack");
+  }
+
+
+  public View2dContainer(
+      GridBagLayoutModel layoutModel, String uid, String pluginName, Icon icon, String tooltips, String synchViewType) {
+    super(EventManager.getInstance(), layoutModel, uid, pluginName, icon, tooltips, synchViewType);
+
+//    if(synchViewType.equalsIgnoreCase("tile")) {
+//      setSynchView(SynchView.DEFAULT_TILE);
+//    } else {
+//      setSynchView(SynchView.DEFAULT_STACK);
+//    }
     addComponentListener(
         new ComponentAdapter() {
 
@@ -182,7 +205,7 @@ public class View2dContainer extends ImageViewerPlugin<DicomImageElement>
             UIManager.EXPLORER_PLUGIN_TOOLBARS.stream()
                 .filter(t -> t instanceof ImportToolBar)
                 .findFirst();
-        b.ifPresent(TOOLBARS::add);
+        // b.ifPresent(TOOLBARS::add);
       }
       if (InsertableUtil.getBooleanProperty(
           BundleTools.SYSTEM_PREFERENCES,
@@ -195,7 +218,7 @@ public class View2dContainer extends ImageViewerPlugin<DicomImageElement>
             UIManager.EXPLORER_PLUGIN_TOOLBARS.stream()
                 .filter(t -> t instanceof ExportToolBar)
                 .findFirst();
-        b.ifPresent(TOOLBARS::add);
+        // b.ifPresent(TOOLBARS::add);
       }
       if (InsertableUtil.getBooleanProperty(
           BundleTools.SYSTEM_PREFERENCES,
@@ -215,10 +238,19 @@ public class View2dContainer extends ImageViewerPlugin<DicomImageElement>
           BundleTools.SYSTEM_PREFERENCES,
           bundleName,
           componentName,
+          InsertableUtil.getCName(CineToolBar.class),
+          key,
+          true)) {
+        TOOLBARS.add(new CineToolBar<DicomImageElement>(11));
+      }
+      if (InsertableUtil.getBooleanProperty(
+          BundleTools.SYSTEM_PREFERENCES,
+          bundleName,
+          componentName,
           InsertableUtil.getCName(MeasureToolBar.class),
           key,
           true)) {
-        TOOLBARS.add(new MeasureToolBar(evtMg, 11));
+        TOOLBARS.add(new MeasureToolBar(evtMg, 12));
       }
       if (InsertableUtil.getBooleanProperty(
           BundleTools.SYSTEM_PREFERENCES,
@@ -264,15 +296,6 @@ public class View2dContainer extends ImageViewerPlugin<DicomImageElement>
           key,
           true)) {
         TOOLBARS.add(new Basic3DToolBar<DicomImageElement>(50));
-      }
-      if (InsertableUtil.getBooleanProperty(
-          BundleTools.SYSTEM_PREFERENCES,
-          bundleName,
-          componentName,
-          InsertableUtil.getCName(CineToolBar.class),
-          key,
-          true)) {
-        TOOLBARS.add(new CineToolBar<DicomImageElement>(80));
       }
       if (InsertableUtil.getBooleanProperty(
           BundleTools.SYSTEM_PREFERENCES,

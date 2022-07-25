@@ -372,11 +372,11 @@ public class ZoomWin<E extends ImageElement> extends GraphicsPane
         popup.enableMenuItem();
         popup.show(mouseevent.getComponent(), mouseevent.getX(), mouseevent.getY());
       } else if (mouseevent.getClickCount() == 2) {
-        ImageViewerEventManager<E> manager = view2d.getEventManager();
-        ActionState zoomAction = manager.getAction(ActionW.LENSZOOM);
-        if (zoomAction instanceof SliderChangeListener) {
-          ((SliderChangeListener) zoomAction).setRealValue(view2d.getViewModel().getViewScale());
-        }
+//        ImageViewerEventManager<E> manager = view2d.getEventManager();
+//        ActionState zoomAction = manager.getAction(ActionW.LENSZOOM);
+//        if (zoomAction instanceof SliderChangeListener) {
+//          ((SliderChangeListener) zoomAction).setRealValue(view2d.getViewModel().getViewScale());
+//        }
       }
     }
 

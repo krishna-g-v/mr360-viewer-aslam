@@ -31,7 +31,7 @@ public class ExportToolBar extends WtoolBar {
       btnExport.setToolTipText(Messages.getString("ExportToolBar.export_dcm"));
       btnExport.addActionListener(
           e -> ImportToolBar.showAction(ExportToolBar.this, model, null, true));
-      add(btnExport);
+      // add(btnExport);
     }
   }
 

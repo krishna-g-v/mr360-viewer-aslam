@@ -56,6 +56,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
@@ -69,6 +71,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.function.Consumer;
 import javax.management.InstanceNotFoundException;
 import javax.management.JMException;
@@ -381,6 +384,34 @@ public class WeasisWin {
     Rectangle screenBound = (Rectangle) props.get(ViewerPluginBuilder.SCREEN_BOUND);
     boolean setInSelection =
         LangUtil.getNULLtoFalse((Boolean) props.get(ViewerPluginBuilder.OPEN_IN_SELECTION));
+
+    Properties viewerProps = new Properties();
+    try {
+		viewerProps.load(new FileInputStream(ResourceUtil.getResource("viewer-settings.txt")));
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+    
+    // if(seriesList.get(0).getToolTips().toUpperCase().contains("Modality: CT".toUpperCase())) {
+    //   props.put("mr360.modality", "CT");
+    //   props.put("mr360.layout", "2x4");
+    //   props.put("mr360.synch.view", "SERIES");      
+    // } else 
+//System.out.println(seriesList.get(0).getToolTips());
+    if(seriesList.get(0).getToolTips().toUpperCase().contains("Modality: US".toUpperCase())) {
+    	props.put("mr360.modality", "US");
+		props.put("mr360.layout", viewerProps.containsKey("us.layout") ? viewerProps.get("us.layout") : "1x1");
+		props.put("mr360.synch.view", viewerProps.containsKey("us.view.mode") ? viewerProps.get("us.view.mode") : "STACK");      
+    } else if(seriesList.get(0).getToolTips().toUpperCase().contains("Modality: CR".toUpperCase())) {
+		props.put("mr360.modality", "CR");
+		props.put("mr360.layout", viewerProps.containsKey("cr.layout") ? viewerProps.get("cr.layout") : "1x1");
+		props.put("mr360.synch.view", viewerProps.containsKey("cr.view.mode") ? viewerProps.get("cr.view.mode") : "STACK");      
+    } else if(seriesList.get(0).getToolTips().toUpperCase().contains("Modality: CT".toUpperCase())) {
+		props.put("mr360.modality", "CR");
+		props.put("mr360.layout", viewerProps.containsKey("ct.layout") ? viewerProps.get("ct.layout") : "1x1");
+		props.put("mr360.synch.view", viewerProps.containsKey("ct.view.mode") ? viewerProps.get("ct.view.mode") : "STACK");      
+    }
+
 
     if (screenBound == null && group != null) {
       boolean bestDefaultLayout =

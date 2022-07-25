@@ -12,6 +12,7 @@ package org.weasis.core.ui.model.graphic.imp.area;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -89,6 +90,11 @@ public class ThreePointsCircleGraphic extends AbstractDragGraphicArea {
   @Override
   public String getUIName() {
     return Messages.getString("measure.three_pt_angle");
+  }
+
+  @Override
+  public int getKeyCode() {
+    return KeyEvent.VK_D;
   }
 
   @Override

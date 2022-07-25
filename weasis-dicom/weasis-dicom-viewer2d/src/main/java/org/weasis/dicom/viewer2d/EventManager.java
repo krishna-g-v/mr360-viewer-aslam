@@ -523,7 +523,56 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
       @Override
       public void mouseWheelMoved(MouseWheelEvent e) {
         if (isActionEnabled()) {
-          setSliderValue(getSliderValue() + e.getWheelRotation());
+          Optional<ComboItemListener> synchAction = getAction(ActionW.SYNCH, ComboItemListener.class);
+
+          SynchView synchView =
+              synchAction.isPresent() ? (SynchView) synchAction.get().getSelectedItem() : null;
+          boolean tileMode =
+              synchView != null && SynchData.Mode.TILE.equals(synchView.getSynchData().getMode());
+
+// System.out.println("==============================" + layoutAction);
+// System.out.println("==============================" + layoutAction.get());
+// System.out.println("==============================" + ((GridBagLayoutModel) layoutAction.get().getSelectedItem()).getId());
+
+
+
+// System.out.println("==============================" + synchView.getSynchData().getMode());
+
+          if(tileMode) {
+            Optional<ComboItemListener> layoutAction = getAction(ActionW.LAYOUT, ComboItemListener.class);
+            String layoutId = ((GridBagLayoutModel) layoutAction.get().getSelectedItem()).getId();
+            int totalCells = 1;
+            if(layoutId.startsWith("layout")) {
+              totalCells = 3;
+            } else {
+              String[] gridDimentions = layoutId.split("x");
+              totalCells = Integer.parseInt(gridDimentions[0]) * Integer.parseInt(gridDimentions[1]);
+            }
+
+            if(selectedView2dContainer!=null && !selectedView2dContainer.isViewerInFullscreen()) {
+              if(getSliderValue() % totalCells != 1) {
+                  int movebackIterations = getSliderValue() - 1;
+                  if(getSliderValue() > totalCells)
+                	  movebackIterations = (getSliderValue() % totalCells) - 1;
+                  
+            	  for(int i=1; i<=movebackIterations; i++) {
+                  	getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class)
+          						.ifPresent(a -> a.setSliderValue(a.getSliderValue() - 1));
+            	  }
+
+              }
+            	
+              if( (getSliderValue() + (e.getWheelRotation() * totalCells)) > getSliderMax() )
+                return;
+              else
+                setSliderValue(getSliderValue() + (e.getWheelRotation() * totalCells));
+            }
+            else {
+              setSliderValue(getSliderValue() + e.getWheelRotation());
+            }
+          } else {
+            setSliderValue(getSliderValue() + e.getWheelRotation());
+          }
         }
       }
 
@@ -807,7 +856,10 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
     int modifiers = e.getModifiers();
 
     if (keyEvent == KeyEvent.VK_ESCAPE) {
-      resetDisplay();
+      if(((DefaultView2d)selectedView2dContainer.getSelectedImagePane()).isLensActive())
+    	  ((DefaultView2d)selectedView2dContainer.getSelectedImagePane()).closeLens();
+      else
+    	  resetDisplay();
     } else if (keyEvent == ActionW.CINESTART.getKeyCode()
         && ActionW.CINESTART.getModifier() == modifiers) {
       Optional<SliderCineListener> cineAction =
@@ -831,6 +883,10 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
                 this);
         ColorLayerUI.showCenterScreen(dialog, layer);
       }
+    } else if (keyEvent == KeyEvent.VK_X) {
+      ((RadioMenuItem)(ViewerToolBar.synchButton).getMenuModel().createJPopupMenu().getComponent(1)).doClick();
+    } else if (keyEvent == KeyEvent.VK_E) {
+      ((RadioMenuItem)(ViewerToolBar.synchButton).getMenuModel().createJPopupMenu().getComponent(2)).doClick();
     } else {
       Optional<ComboItemListener> presetAction = getAction(ActionW.PRESET, ComboItemListener.class);
       if (modifiers == 0 && presetAction.isPresent() && presetAction.get().isActionEnabled()) {
@@ -1351,8 +1407,8 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
             final int maxShift =
                 series.size(
                         (Filter<DicomImageElement>)
-                            viewPane.getActionValue(ActionW.FILTERED_SERIES.cmd()))
-                    - panes.size();
+                            viewPane.getActionValue(ActionW.FILTERED_SERIES.cmd()));
+                    // - panes.size();
             cineAction.ifPresent(
                 a ->
                     a.setSliderMinMaxValue(

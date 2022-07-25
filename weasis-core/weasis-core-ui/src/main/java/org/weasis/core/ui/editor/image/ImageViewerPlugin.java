@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
+
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -43,6 +45,7 @@ import org.weasis.core.api.gui.util.ActionW;
 import org.weasis.core.api.gui.util.ComboItemListener;
 import org.weasis.core.api.gui.util.Filter;
 import org.weasis.core.api.gui.util.GuiExecutor;
+import org.weasis.core.api.gui.util.SliderChangeListener;
 import org.weasis.core.api.gui.util.WinUtil;
 import org.weasis.core.api.image.GridBagLayoutModel;
 import org.weasis.core.api.image.LayoutConstraints;
@@ -133,6 +136,78 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
           2,
           4,
           view2dClass.getName());
+  public static final GridBagLayoutModel VIEWS_2x5 =
+      new GridBagLayoutModel(
+          "2x5", // NON-NLS
+          String.format(F_VIEWS, "2x5"), // NON-NLS
+          2,
+          5,
+          view2dClass.getName());
+
+  public static final GridBagLayoutModel VIEWS_3x1 =
+      new GridBagLayoutModel(
+          "3x1", // NON-NLS
+          String.format(F_VIEWS, "3x1"), // NON-NLS
+          3,
+          1,
+          view2dClass.getName());
+  public static final GridBagLayoutModel VIEWS_3x2 =
+      new GridBagLayoutModel(
+          "3x2", // NON-NLS
+          String.format(F_VIEWS, "3x2"), // NON-NLS
+          3,
+          2,
+          view2dClass.getName());
+  public static final GridBagLayoutModel VIEWS_3x3 =
+      new GridBagLayoutModel(
+          "3x3", // NON-NLS
+          String.format(F_VIEWS, "3x3"), // NON-NLS
+          3,
+          3,
+          view2dClass.getName());
+  public static final GridBagLayoutModel VIEWS_3x4 =
+      new GridBagLayoutModel(
+          "3x4", // NON-NLS
+          String.format(F_VIEWS, "3x4"), // NON-NLS
+          3,
+          4,
+          view2dClass.getName());
+  public static final GridBagLayoutModel VIEWS_3x5 =
+      new GridBagLayoutModel(
+          "3x5", // NON-NLS
+          String.format(F_VIEWS, "3x5"), // NON-NLS
+          3,
+          5,
+          view2dClass.getName());
+
+  public static final GridBagLayoutModel VIEWS_4x1 =
+      new GridBagLayoutModel(
+          "4x1", // NON-NLS
+          String.format(F_VIEWS, "4x1"), // NON-NLS
+          4,
+          1,
+          view2dClass.getName());
+  public static final GridBagLayoutModel VIEWS_4x2 =
+      new GridBagLayoutModel(
+          "4x2", // NON-NLS
+          String.format(F_VIEWS, "4x2"), // NON-NLS
+          4,
+          2,
+          view2dClass.getName());
+  public static final GridBagLayoutModel VIEWS_4x3 =
+      new GridBagLayoutModel(
+          "4x3", // NON-NLS
+          String.format(F_VIEWS, "4x3"), // NON-NLS
+          4,
+          3,
+          view2dClass.getName());
+  public static final GridBagLayoutModel VIEWS_4x4 =
+      new GridBagLayoutModel(
+          "4x4", // NON-NLS
+          String.format(F_VIEWS, "4x4"), // NON-NLS
+          4,
+          4,
+          view2dClass.getName());
 
   /** The current focused <code>ImagePane</code>. The default is 0. */
   protected ViewCanvas<E> selectedImagePane = null;
@@ -179,6 +254,40 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
     grid.addMouseMotionListener(mouseHandler);
   }
 
+  public ImageViewerPlugin(
+	      ImageViewerEventManager<E> eventManager,
+	      GridBagLayoutModel layoutModel,
+	      String uid,
+	      String pluginName,
+	      Icon icon,
+	      String tooltips,
+	      String synchViewType) {
+	    super(uid, pluginName, icon, tooltips);
+	    if (eventManager == null) {
+	      throw new IllegalArgumentException("EventManager cannot be null");
+	    }
+	    this.eventManager = eventManager;
+	    view2ds = new ArrayList<>();
+	    components = new ArrayList<>();
+	    grid = new JPanel();
+	    // For having a black background with any Look and Feel
+	    grid.setUI(new PanelUI() {});
+	    grid.setBackground(Color.BLACK);
+	    grid.setFocusCycleRoot(true);
+	    grid.setLayout(new GridBagLayout());
+	    add(grid, BorderLayout.CENTER);
+
+	    if(synchViewType.equalsIgnoreCase("tile")) {
+	    	setSynchView(SynchView.DEFAULT_TILE);
+	    } else {
+	    	setSynchView(SynchView.DEFAULT_STACK);
+	    }
+
+	    setLayoutModel(layoutModel);
+	    MouseHandler mouseHandler = new MouseHandler();
+	    grid.addMouseListener(mouseHandler);
+	    grid.addMouseMotionListener(mouseHandler);	  
+  }
   /**
    * Returns true if type is instance of defaultClass. This operation is delegated in each bundle to
    * be sure all classes are visible.
@@ -197,6 +306,10 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
 
   public ViewCanvas<E> getSelectedImagePane() {
     return selectedImagePane;
+  }
+
+  public ViewCanvas<E> getFirstImagePaneInGrid() {
+    return view2ds.get(0);
   }
 
   @Override
@@ -511,6 +624,17 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
     }
   }
 
+  public boolean isViewerInFullscreen() {
+      Dialog fullscreenDialog = WinUtil.getParentDialog(grid);
+      if (fullscreenDialog != null
+          && fullscreenDialog
+              .getTitle()
+              .equals(Messages.getString("ImageViewerPlugin.fullscreen"))) {
+        return true;
+      }
+      return false;
+  }
+
   public void maximizedSelectedImagePane(final ViewCanvas<E> defaultView2d, MouseEvent evt) {
     final Map<LayoutConstraints, Component> elements = layoutModel.getConstraints();
     // Prevent conflict with double click for stopping to draw a graphic (like polyline)
@@ -567,7 +691,31 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
 
             @Override
             public void windowClosing(WindowEvent e) {
-              maximizedSelectedImagePane(defaultView2d, null);
+              if(SynchData.Mode.TILE.equals(synchView.getSynchData().getMode())) {
+            	  ViewCanvas<E> firstPaneWithOffset = getFirstImagePaneInGrid();
+            	  SliderChangeListener curSliderPos = firstPaneWithOffset.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class).get();
+            	  
+            	  Optional<ComboItemListener> layoutAction = eventManager.getAction(ActionW.LAYOUT, ComboItemListener.class);
+                  String layoutId = ((GridBagLayoutModel) layoutAction.get().getSelectedItem()).getId();
+                  int totalCells = 1;
+                  if(layoutId.startsWith("layout")) {
+                    totalCells = 3;
+                  } else {
+                    String[] gridDimentions = layoutId.split("x");
+                    totalCells = Integer.parseInt(gridDimentions[0]) * Integer.parseInt(gridDimentions[1]);
+                  }
+
+                  int movebackIterations = curSliderPos.getSliderValue() - 1;
+                  if(curSliderPos.getSliderValue() > totalCells)
+                	  movebackIterations = (curSliderPos.getSliderValue() % totalCells) - 1;
+                  
+            	  for(int i=1; i<=movebackIterations; i++) {
+                  	firstPaneWithOffset.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class)
+          						.ifPresent(a -> a.setSliderValue(a.getSliderValue() - 1));
+            	  }
+            	  maximizedSelectedImagePane(firstPaneWithOffset, evt);
+              } else
+            	  maximizedSelectedImagePane(defaultView2d, null);
             }
           });
 
@@ -1035,6 +1183,9 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
     int pos = view2ds.size() - nbSeriesToAdd;
     if (pos < 0) {
       pos = 0;
+    }
+    if(SynchData.Mode.TILE.equals(synchView.getSynchData().getMode())) {
+    	pos = 0;
     }
     setSelectedImagePane(view2ds.get(pos));
   }

@@ -83,7 +83,32 @@ public class View2dFactory implements SeriesViewerFactory {
 
   @Override
   public SeriesViewer<?> createSeriesViewer(Map<String, Object> properties) {
-    GridBagLayoutModel model = ImageViewerPlugin.VIEWS_1x1;
+    GridBagLayoutModel model;
+    String synchViewType = "stack";
+
+    // if(properties.containsKey("mr360.modality") && properties.get("mr360.modality").toString().equals("CT")) {
+    //   model = ImageViewerPlugin.VIEWS_2x4;
+    // } else 
+
+//	if(properties.containsKey("mr360.modality") && properties.get("mr360.modality").toString().equals("US")) {
+//		model = ImageViewerPlugin.VIEWS_4x2;
+//		synchViewType = "tile";
+//	} else if(properties.containsKey("mr360.modality") && properties.get("mr360.modality").toString().equals("CR")) {
+//		model = ImageViewerPlugin.VIEWS_1x1;
+//		synchViewType = "tile";
+//	} else {
+//		model = ImageViewerPlugin.VIEWS_1x1;
+//	}
+	
+	try {
+		model = (GridBagLayoutModel) ImageViewerPlugin.class.getDeclaredField("VIEWS_"+properties.get("mr360.layout").toString()).get(GridBagLayoutModel.class);
+	} catch (Exception e) {
+		model = ImageViewerPlugin.VIEWS_1x1;
+		e.printStackTrace();
+	}
+	synchViewType = properties.containsKey("mr360.synch.view") ? properties.get("mr360.synch.view").toString().toLowerCase() : "stack";
+
+    
     String uid = null;
     if (properties != null) {
       Object obj = properties.get(org.weasis.core.api.image.GridBagLayoutModel.class.getName());
@@ -113,7 +138,7 @@ public class View2dFactory implements SeriesViewerFactory {
         uid = (String) val;
       }
     }
-    View2dContainer instance = new View2dContainer(model, uid, getUIName(), getIcon(), null);
+    View2dContainer instance = new View2dContainer(model, uid, getUIName(), getIcon(), null, synchViewType);
     if (properties != null) {
       Object obj = properties.get(DataExplorerModel.class.getName());
       if (obj instanceof DicomModel) {

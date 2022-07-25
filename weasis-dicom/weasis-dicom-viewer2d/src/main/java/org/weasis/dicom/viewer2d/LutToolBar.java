@@ -25,8 +25,17 @@ import org.weasis.core.api.gui.util.DropDownButton;
 import org.weasis.core.api.gui.util.GroupPopup;
 import org.weasis.core.api.gui.util.ToggleButtonListener;
 import org.weasis.core.ui.editor.image.ImageViewerEventManager;
+import org.weasis.core.ui.editor.image.MouseActions;
+import org.weasis.core.ui.editor.image.ViewerToolBar;
 import org.weasis.core.ui.util.WtoolBar;
 import org.weasis.dicom.codec.DicomImageElement;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
+import javax.swing.JMenu;
+import org.weasis.core.api.gui.util.RadioMenuItem;
+import org.weasis.core.api.gui.util.GroupRadioMenu;
+import java.awt.Insets;
 
 public class LutToolBar extends WtoolBar {
 
@@ -41,6 +50,18 @@ public class LutToolBar extends WtoolBar {
     if (presetAction instanceof ComboItemListener) {
       menu = ((ComboItemListener) presetAction).createGroupRadioMenu();
     }
+
+    final JButton winLevelBtn = new JButton();
+    winLevelBtn.setToolTipText("Window Level (W)");
+    winLevelBtn.setText("W");
+    winLevelBtn.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/32x32/winLevel.png")));
+    winLevelBtn.addActionListener(new ActionListener () {
+      public void actionPerformed(ActionEvent e) {
+//    	  eventManager.getSelectedView2dContainer().getViewerToolBar().changeButtonState(MouseActions.T_LEFT, ActionW.WINLEVEL.cmd());
+    	  eventManager.changeLeftMouseAction(ActionW.WINLEVEL.cmd());
+      }
+    });
+    add(winLevelBtn);
 
     final DropDownButton presetButton =
         new DropDownButton(ActionW.WINLEVEL.cmd(), buildWLIcon(), menu) {
@@ -58,6 +79,95 @@ public class LutToolBar extends WtoolBar {
     if (presetAction != null) {
       presetAction.registerActionState(presetButton);
     }
+
+    // Preset buttons on main menu bar
+//    final JButton presetBtn0 = new JButton();
+//    presetBtn0.setToolTipText("Auto");
+//    presetBtn0.setText("Auto");
+//    presetBtn0.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/0.png")));
+//    presetBtn0.addActionListener(new ActionListener () {
+//      public void actionPerformed(ActionEvent e) {
+//        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(1)).doClick(); // index 1 is Auto
+//      }
+//    });
+//    add(presetBtn0);
+
+    final JButton presetBtn1 = new JButton();
+    presetBtn1.setToolTipText("Default");
+    presetBtn1.setText("Default");
+    presetBtn1.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/1.png")));
+    presetBtn1.addActionListener(new ActionListener () {
+      public void actionPerformed(ActionEvent e) {
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(0)).doClick(); // index 0 is Default
+      }
+    });
+    add(presetBtn1);
+
+    final JButton presetBtn2 = new JButton();
+    presetBtn2.setToolTipText("Brain");
+    presetBtn2.setText("Brain");
+    presetBtn2.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/2.png")));
+    presetBtn2.addActionListener(new ActionListener () {
+      public void actionPerformed(ActionEvent e) {
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(2)).doClick();
+      }
+    });
+    add(presetBtn2);
+
+    final JButton presetBtn3 = new JButton();
+    presetBtn3.setToolTipText("Lung");
+    presetBtn3.setText("Lung");
+    presetBtn3.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/3.png")));
+    presetBtn3.addActionListener(new ActionListener () {
+      public void actionPerformed(ActionEvent e) {
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(3)).doClick();
+      }
+    });
+    add(presetBtn3);
+
+    final JButton presetBtn4 = new JButton();
+    presetBtn4.setToolTipText("Mediastinum");
+    presetBtn4.setText("Mediastinum");
+    presetBtn4.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/4.png")));
+    presetBtn4.addActionListener(new ActionListener () {
+      public void actionPerformed(ActionEvent e) {
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(4)).doClick();
+      }
+    });
+    add(presetBtn4);
+
+    final JButton presetBtn5 = new JButton();
+    presetBtn5.setToolTipText("Abdomen");
+    presetBtn5.setText("Abdomen");
+    presetBtn5.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/5.png")));
+    presetBtn5.addActionListener(new ActionListener () {
+      public void actionPerformed(ActionEvent e) {
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(5)).doClick();
+      }
+    });
+    add(presetBtn5);
+
+    final JButton presetBtn6 = new JButton();
+    presetBtn6.setToolTipText("Bone");
+    presetBtn6.setText("Bone");
+    presetBtn6.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/6.png")));
+    presetBtn6.addActionListener(new ActionListener () {
+      public void actionPerformed(ActionEvent e) {
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(6)).doClick();
+      }
+    });
+    add(presetBtn6);
+
+    final JButton presetBtn7 = new JButton();
+    presetBtn7.setToolTipText("MIP");
+    presetBtn7.setText("MIP");
+    presetBtn7.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/7.png")));
+    presetBtn7.addActionListener(new ActionListener () {
+      public void actionPerformed(ActionEvent e) {
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(7)).doClick();
+      }
+    });
+    add(presetBtn7);
 
     GroupPopup menuLut = null;
     ActionState lutAction = eventManager.getAction(ActionW.LUT);
@@ -126,7 +236,7 @@ public class LutToolBar extends WtoolBar {
   }
 
   private Icon buildWLIcon() {
-    final Icon mouseIcon = new ImageIcon(WtoolBar.class.getResource("/icon/32x32/winLevel.png"));
+    final Icon mouseIcon = new ImageIcon(WtoolBar.class.getResource("/icon/32x32/preset.png"));
 
     return new DropButtonIcon(
         new Icon() {

@@ -38,6 +38,7 @@ import org.weasis.core.api.gui.util.DropButtonIcon;
 import org.weasis.core.api.gui.util.DropDownButton;
 import org.weasis.core.api.gui.util.GroupPopup;
 import org.weasis.core.api.gui.util.GroupRadioMenu;
+import org.weasis.core.api.gui.util.RadioMenuItem;
 import org.weasis.core.api.media.data.ImageElement;
 import org.weasis.core.api.service.WProperties;
 import org.weasis.core.ui.Messages;
@@ -79,7 +80,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
   private final DropDownButton mouseMiddle;
   private final DropDownButton mouseRight;
   private final DropDownButton mouseWheel;
-  private final DropDownButton synchButton;
+  public static DropDownButton synchButton;
 
   public ViewerToolBar(
       final ImageViewerEventManager<E> eventManager,
@@ -140,6 +141,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
       addSeparator(WtoolBar.SEPARATOR_2x24);
     }
 
+    // DropDownButton testLayoutBtn = null;
     if (props.getBooleanProperty("weasis.toolbar.layoutbouton", true)) {
       final DropDownButton layout =
           new DropDownButton(
@@ -154,6 +156,161 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
           };
       layout.setToolTipText(Messages.getString("ViewerToolBar.layout"));
       add(layout);
+      // testLayoutBtn = layout;
+
+      // Direct button for layout changes
+      JMenu layoutOpts = ((ComboItemListener) eventManager.getAction(ActionW.LAYOUT)).createUnregisteredRadioMenu("layout");
+
+      final JButton btn_1x1 = new JButton();
+      btn_1x1.setToolTipText("1x1 View");
+      btn_1x1.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[0]).getIcon());
+      btn_1x1.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)layoutOpts.getMenuComponents()[0]).doClick(); 
+        }
+      });
+      add(btn_1x1);
+
+      final JButton btn_1x2 = new JButton();
+      btn_1x2.setToolTipText("1x2 View");
+      btn_1x2.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[1]).getIcon());
+      btn_1x2.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)layoutOpts.getMenuComponents()[1]).doClick();          
+        }
+      });
+      add(btn_1x2);
+
+      final JButton btn_1x3 = new JButton();
+      btn_1x3.setToolTipText("1x3 View");
+      btn_1x3.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[2]).getIcon());
+      btn_1x3.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)layoutOpts.getMenuComponents()[2]).doClick();          
+        }
+      });
+      add(btn_1x3);
+
+      final JButton btn_1x4 = new JButton();
+      btn_1x4.setToolTipText("1x4 View");
+      btn_1x4.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[3]).getIcon());
+      btn_1x4.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)layoutOpts.getMenuComponents()[3]).doClick();          
+        }
+      });
+      add(btn_1x4);
+
+      // final JButton btn_2x2_f2 = new JButton();
+      // btn_2x2_f2.setToolTipText("3 Views (col 2,1)");
+      // btn_2x2_f2.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[6]).getIcon());
+      // btn_2x2_f2.addActionListener(new ActionListener () {
+      //   public void actionPerformed(ActionEvent e) {
+      //     ((RadioMenuItem)layoutOpts.getMenuComponents()[6]).doClick();          
+      //   }
+      // });
+      // add(btn_2x2_f2);
+
+      // final JButton btn_2_f1x2 = new JButton();
+      // btn_2_f1x2.setToolTipText("3 Views (row 1,2)");
+      // btn_2_f1x2.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[5]).getIcon());
+      // btn_2_f1x2.addActionListener(new ActionListener () {
+      //   public void actionPerformed(ActionEvent e) {
+      //     ((RadioMenuItem)layoutOpts.getMenuComponents()[5]).doClick();          
+      //   }
+      // });
+      // add(btn_2_f1x2);
+
+      final JButton btn_2x1 = new JButton();
+      btn_2x1.setToolTipText("2x1 View");
+      btn_2x1.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[4]).getIcon());
+      btn_2x1.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)layoutOpts.getMenuComponents()[4]).doClick();          
+        }
+      });
+      add(btn_2x1);
+
+      final JButton btn_2x2 = new JButton();
+      btn_2x2.setToolTipText("2x2 View");
+      btn_2x2.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[9]).getIcon());
+      btn_2x2.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)layoutOpts.getMenuComponents()[9]).doClick();          
+        }
+      });
+      add(btn_2x2);
+
+      final JButton btn_2x4 = new JButton();
+      btn_2x4.setToolTipText("2x4 View");
+      btn_2x4.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[11]).getIcon());
+      btn_2x4.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)layoutOpts.getMenuComponents()[11]).doClick();          
+        }
+      });
+      add(btn_2x4);
+
+      final JButton btn_2x5 = new JButton();
+      btn_2x5.setToolTipText("2x5 View");
+      btn_2x5.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[12]).getIcon());
+      btn_2x5.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)layoutOpts.getMenuComponents()[12]).doClick();          
+        }
+      });
+      add(btn_2x5);
+
+      final JButton btn_3x1 = new JButton();
+      btn_3x1.setToolTipText("3x1 View");
+      btn_3x1.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[13]).getIcon());
+      btn_3x1.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)layoutOpts.getMenuComponents()[13]).doClick();          
+        }
+      });
+      add(btn_3x1);
+
+      final JButton btn_3x4 = new JButton();
+      btn_3x4.setToolTipText("3x4 View");
+      btn_3x4.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[16]).getIcon());
+      btn_3x4.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)layoutOpts.getMenuComponents()[16]).doClick();          
+        }
+      });
+      add(btn_3x4);
+
+      final JButton btn_3x5 = new JButton();
+      btn_3x5.setToolTipText("3x5 View");
+      btn_3x5.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[17]).getIcon());
+      btn_3x5.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)layoutOpts.getMenuComponents()[17]).doClick();          
+        }
+      });
+      add(btn_3x5);
+
+      final JButton btn_4x2 = new JButton();
+      btn_4x2.setToolTipText("4x2 View");
+      btn_4x2.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[19]).getIcon());
+      btn_4x2.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)layoutOpts.getMenuComponents()[19]).doClick();          
+        }
+      });
+      add(btn_4x2);
+
+      // final JButton btn_4x1 = new JButton();
+      // btn_4x1.setToolTipText("4x1 View");
+      // btn_4x1.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[13]).getIcon());
+      // btn_4x1.addActionListener(new ActionListener () {
+      //   public void actionPerformed(ActionEvent e) {
+      //     ((RadioMenuItem)layoutOpts.getMenuComponents()[13]).doClick();          
+      //   }
+      // });
+      // add(btn_4x1);
+
     }
 
     if (props.getBooleanProperty("weasis.toolbar.synchbouton", true)) {
@@ -161,6 +318,28 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
 
       synchButton = buildSynchButton();
       add(synchButton);
+
+      final JButton defaultStackBtn = new JButton();
+      defaultStackBtn.setToolTipText("Stack");
+      defaultStackBtn.setText("Stack");
+      defaultStackBtn.setIcon(((RadioMenuItem)synchButton.getMenuModel().createJPopupMenu().getComponent(1)).getIcon());
+      defaultStackBtn.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)synchButton.getMenuModel().createJPopupMenu().getComponent(1)).doClick();
+        }
+      });
+      add(defaultStackBtn);
+
+      final JButton defaultTileBtn = new JButton();
+      defaultTileBtn.setToolTipText("Tile");
+      defaultTileBtn.setText("Tile");
+      defaultTileBtn.setIcon(((RadioMenuItem)synchButton.getMenuModel().createJPopupMenu().getComponent(2)).getIcon());
+      defaultTileBtn.addActionListener(new ActionListener () {
+        public void actionPerformed(ActionEvent e) {
+          ((RadioMenuItem)synchButton.getMenuModel().createJPopupMenu().getComponent(2)).doClick();
+        }
+      });
+      add(defaultTileBtn);
     } else {
       synchButton = null;
     }
@@ -176,6 +355,34 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
       }
       add(resetButton);
     }
+
+    /* trial on how to click the button
+    {
+      final JButton testButton = new JButton();
+      testButton.setToolTipText("Test Button");
+      // testButton.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/32x32/flip.png")));
+      testButton.setIcon(((RadioMenuItem)((ComboItemListener) eventManager.getAction(ActionW.LAYOUT)).createUnregisteredRadioMenu("layout").getMenuComponents()[1]).getIcon());
+      // testButton.addActionListener(e -> eventManager.resetDisplay());
+      // ActionState layout = eventManager.getAction(ActionW.RESET);
+      // if (layout != null) {
+      //   layout.registerActionState(testButton);
+      // }
+
+
+      // newLayoutAction(View2dContainer.DEFAULT_LAYOUT_LIST.toArray(new GridBagLayoutModel[1]));
+
+      final DropDownButton testLayoutBtn1 = testLayoutBtn;
+      testButton.addActionListener(new ActionListener () {
+      public void actionPerformed(ActionEvent e)
+      {
+        // testLayoutBtn1.doClick();
+        ActionState layout = eventManager.getAction(ActionW.LAYOUT);
+        ((RadioMenuItem)((ComboItemListener) layout).createUnregisteredRadioMenu("layout").getMenuComponents()[1]).doClick();
+      }
+    });
+      add(testButton);
+    }
+    trial on how to click the button */
   }
 
   private DropDownButton buildMouseButton(MouseActions actions, String actionLabel) {

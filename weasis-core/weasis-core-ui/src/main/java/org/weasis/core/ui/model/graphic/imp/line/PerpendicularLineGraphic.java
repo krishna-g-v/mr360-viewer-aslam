@@ -12,6 +12,7 @@ package org.weasis.core.ui.model.graphic.imp.line;
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 import java.awt.Shape;
+import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
@@ -91,6 +92,11 @@ public class PerpendicularLineGraphic extends AbstractDragGraphic {
   @Override
   public String getUIName() {
     return Messages.getString("measure.perpendicular");
+  }
+
+  @Override
+  public int getKeyCode() {
+    return KeyEvent.VK_T;
   }
 
   @Override

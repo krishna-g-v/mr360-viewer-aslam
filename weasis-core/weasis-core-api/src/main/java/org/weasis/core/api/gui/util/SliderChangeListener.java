@@ -376,6 +376,13 @@ public abstract class SliderChangeListener extends MouseActionAdapter
         } else {
           setSliderValue((int) Math.floor(dragAccumulator));
         }
+
+        // if (val < 0.0) {
+        //   setSliderValue((int) Math.ceil(dragAccumulator) * 2); // this is for mouse drag for series scroll in tile mode
+        // } else {
+        //   setSliderValue((int) Math.floor(dragAccumulator) * 2);
+        // }
+
       }
     }
   }

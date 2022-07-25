@@ -561,6 +561,7 @@ public abstract class AbstractGraphicModel extends DefaultUUID implements Graphi
 
   @Override
   public void deleteSelectedGraphics(Canvas canvas, Boolean warningMessage) {
+    warningMessage = false; // removing the delete confirmation box in all places
     List<Graphic> list = getSelectedGraphics();
     if (!list.isEmpty()) {
       int response = 0;

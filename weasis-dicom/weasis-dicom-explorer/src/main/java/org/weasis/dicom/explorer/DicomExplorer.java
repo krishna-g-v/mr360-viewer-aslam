@@ -18,6 +18,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -154,7 +156,7 @@ public class DicomExplorer extends PluginTool implements DataExplorerView, Serie
   private JPanel panelMain = null;
   private final JToggleButton btnMoreOptions =
       new JToggleButton(Messages.getString("DicomExplorer.more_opt"));
-  private final boolean verticalLayout = true;
+  private final boolean verticalLayout = false;
 
   private final JButton koOpen = new JButton(Messages.getString("DicomExplorer.open_ko"), KO_ICON);
 
@@ -163,10 +165,20 @@ public class DicomExplorer extends PluginTool implements DataExplorerView, Serie
   }
 
   public DicomExplorer(DicomModel model) {
-    super(BUTTON_NAME, NAME, POSITION.WEST, ExtendedMode.NORMALIZED, PluginTool.Type.EXPLORER, 20);
+    super(BUTTON_NAME, NAME, POSITION.NORTH, ExtendedMode.NORMALIZED, PluginTool.Type.EXPLORER, 20);
     setLayout(new BorderLayout());
-    setDockableWidth(180);
-    dockable.setMaximizable(true);
+    
+    GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    int windowWidth = gd.getDisplayMode().getWidth();
+    int windowHeight = gd.getDisplayMode().getHeight();
+    String windowOrientation = (windowWidth > windowHeight) ? "landscape" : "portrait";
+
+    int dicomExplorerPanelHeightAdjust = 180; // for landscape
+    if(windowOrientation.equals("portrait"))
+    	dicomExplorerPanelHeightAdjust = 20;
+    
+    setDockableWidth(Thumbnail.DEFAULT_SIZE + dicomExplorerPanelHeightAdjust + 10);
+    dockable.setMaximizable(false);
     this.model = model == null ? new DicomModel() : model;
     this.selectionList = new SeriesSelectionModel(patientContainer);
     thumnailView.getVerticalScrollBar().setUnitIncrement(16);
@@ -868,24 +880,24 @@ public class DicomExplorer extends PluginTool implements DataExplorerView, Serie
       panelMain.add(panel, BorderLayout.NORTH);
       JPanel panel2 = new JPanel();
 
-      if (BundleTools.SYSTEM_PREFERENCES.getBooleanProperty("weasis.explorer.moreoptions", true)) {
-        GridBagConstraints gbcbtnMoreOptions = new GridBagConstraints();
-        gbcbtnMoreOptions.anchor = GridBagConstraints.EAST;
-        gbcbtnMoreOptions.gridx = 1;
-        gbcbtnMoreOptions.gridy = 3;
-        btnMoreOptions.setFont(FontTools.getFont10());
-        btnMoreOptions.addActionListener(
-            e -> {
-              if (btnMoreOptions.isSelected()) {
-                panelMain.add(panel2);
-              } else {
-                panelMain.remove(panel2);
-              }
-              panelMain.revalidate();
-              panelMain.repaint();
-            });
-        panel.add(btnMoreOptions, gbcbtnMoreOptions);
-      }
+      // if (BundleTools.SYSTEM_PREFERENCES.getBooleanProperty("weasis.explorer.moreoptions", true)) {
+      //   GridBagConstraints gbcbtnMoreOptions = new GridBagConstraints();
+      //   gbcbtnMoreOptions.anchor = GridBagConstraints.EAST;
+      //   gbcbtnMoreOptions.gridx = 1;
+      //   gbcbtnMoreOptions.gridy = 3;
+      //   btnMoreOptions.setFont(FontTools.getFont10());
+      //   btnMoreOptions.addActionListener(
+      //       e -> {
+      //         if (btnMoreOptions.isSelected()) {
+      //           panelMain.add(panel2);
+      //         } else {
+      //           panelMain.remove(panel2);
+      //         }
+      //         panelMain.revalidate();
+      //         panelMain.repaint();
+      //       });
+      //   panel.add(btnMoreOptions, gbcbtnMoreOptions);
+      // }
 
       GridBagLayout gblpanel2 = new GridBagLayout();
       panel2.setLayout(gblpanel2);

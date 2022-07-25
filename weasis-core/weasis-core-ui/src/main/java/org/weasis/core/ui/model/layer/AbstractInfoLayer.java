@@ -57,7 +57,7 @@ public abstract class AbstractInfoLayer<E extends ImageElement> extends DefaultU
 
   static {
     defaultDisplayPreferences.put(ANNOTATIONS, true);
-    defaultDisplayPreferences.put(MIN_ANNOTATIONS, false);
+    defaultDisplayPreferences.put(MIN_ANNOTATIONS, true);
     defaultDisplayPreferences.put(ANONYM_ANNOTATIONS, false);
     defaultDisplayPreferences.put(SCALE, true);
     defaultDisplayPreferences.put(LUT, false);
@@ -84,7 +84,7 @@ public abstract class AbstractInfoLayer<E extends ImageElement> extends DefaultU
   protected static final int P_BORDER = 10;
 
   protected final HashMap<String, Boolean> displayPreferences = new HashMap<>();
-  protected boolean visible = true;
+  protected boolean visible = true; // make this false if you want to hide everything during load time
   protected static final Color color = Color.yellow;
   protected final ViewCanvas<E> view2DPane;
   protected PixelInfo pixelInfo = null;

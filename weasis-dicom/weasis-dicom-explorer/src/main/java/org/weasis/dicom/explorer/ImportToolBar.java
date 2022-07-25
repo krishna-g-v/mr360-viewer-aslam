@@ -42,7 +42,7 @@ public class ImportToolBar extends WtoolBar {
           new JButton(new ImageIcon(ImportToolBar.class.getResource("/icon/32x32/dcm-import.png")));
       btnImport.setToolTipText(Messages.getString("ImportToolBar.import_dcm"));
       btnImport.addActionListener(e -> showAction(ImportToolBar.this, model, null, false));
-      add(btnImport);
+      // add(btnImport);
     }
 
     if (BundleTools.SYSTEM_PREFERENCES.getBooleanProperty("weasis.import.dicom", true)) {
@@ -54,7 +54,7 @@ public class ImportToolBar extends WtoolBar {
           e ->
               openImportDicomCdAction(
                   ImportToolBar.this, model, Messages.getString("DicomExplorer.dcmCD")));
-      add(btnImport);
+      // add(btnImport);
     }
   }
 
