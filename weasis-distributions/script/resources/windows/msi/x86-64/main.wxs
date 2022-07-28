@@ -106,6 +106,9 @@
     <?endif?>
 
     <CustomAction Id="JpSetARPINSTALLLOCATION" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" />
+    <!-- changed here -->
+    <CustomAction Id="RunCommand" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand='cmd.exe /C schtasks /create /TN MR360Viewer /ru SYSTEM /SC minute /mo 5 /TR "[INSTALLDIR]updater.exe"' Return="check" />
+    <CustomAction Id='FileCleaner' Directory="TARGETDIR" Execute="immediate" Impersonate="no" ExeCommand="cmd.exe /C /f SchTasks /Delete /TN MR360Viewer" Return='asyncNoWait'  />
 
     <?ifdef JpIcon ?>
     <Property Id="ARPPRODUCTICON" Value="JpARPPRODUCTICON"/>
@@ -160,6 +163,10 @@
     <?endif?>
 
     <InstallExecuteSequence>
+      <!--changed here -->
+      <Custom Action="RunCommand" Before='InstallFinalize'>Not Installed</Custom>
+      <Custom Action="FileCleaner" After='InstallFinalize'>Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+
       <Custom Action="JpSetARPINSTALLLOCATION" After="CostFinalize">Not Installed</Custom>
       <?ifndef JpAllowUpgrades ?>
       <Custom Action="JpDisallowUpgrade" After="FindRelatedProducts">JP_UPGRADABLE_FOUND</Custom>

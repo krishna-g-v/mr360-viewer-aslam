@@ -188,6 +188,9 @@ fi
 # Replace substance available for Java 11
 # curl -L -o "${INPUT_DIR}/substance.jar" "https://raw.github.com/nroduit/mvn-repo/master/org/pushing-pixels/radiance-substance-all/$SUBSTANCE_PKG/radiance-substance-all-$SUBSTANCE_PKG.jar"
 
+# copy substance jar and other resources required
+# TODO
+
 # Remove previous package
 if [ -d "${OUTPUT_PATH}" ] ; then
   rm -rf "${OUTPUT_PATH}"

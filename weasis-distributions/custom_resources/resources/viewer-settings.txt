@@ -1,0 +1,6 @@
+us.layout=4x2
+us.view.mode=TILE
+ct.layout=1x1
+ct.view.mode=STACK
+cr.layout=1x1
+cr.view.mode=TILE
