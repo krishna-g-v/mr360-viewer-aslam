@@ -24,8 +24,8 @@ var (
 )
 
 var INSTALLDIR = "C:/Program Files/MedReport360-Viewer"
-var LOGFILE = "C:/Program Files/MedReport360-Viewer"
-var VERSIONFILE = "C:/Program Files/MedReport360-Viewer"
+var LOGFILE = "C:/Program Files/MedReport360-Viewer/app"
+var VERSIONFILE = "C:/Program Files/MedReport360-Viewer/app"
 var Temp = os.Getenv("temp")
 var URL = "http://viewer-updater.medreport360.com/"                        // patch_files_url
 var URLVERSION = "http://viewer-updater.medreport360.com/version_info.php" // version_info_url
