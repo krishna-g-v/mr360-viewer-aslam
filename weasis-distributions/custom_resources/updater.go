@@ -27,8 +27,12 @@ var INSTALLDIR = "C:/Program Files/MedReport360-Viewer"
 var LOGFILE = "C:/Program Files/MedReport360-Viewer/app"
 var VERSIONFILE = "C:/Program Files/MedReport360-Viewer/app"
 var Temp = os.Getenv("temp")
+
 var URL = "http://viewer-updater.medreport360.com/"                        // patch_files_url
 var URLVERSION = "http://viewer-updater.medreport360.com/version_info.php" // version_info_url
+
+// var URL = "http://localhost/demo/patch" // patch_files_url
+// var URLVERSION = "http://localhost/demo/version_info.php"
 
 // var presentversion int64 = 31
 // var max int64 = 51
@@ -51,8 +55,8 @@ func init() {
 	if os.IsNotExist(err) {
 		os.Create(LOGFILE + "/" + "logs.txt")
 		file.WriteString(fmt.Sprintf("\n\n\n"))
-		file.WriteString(fmt.Sprintf("===================The log file was not not found in the DIR: %d===================\n", LOGFILE))
-		file.WriteString(fmt.Sprintf("================================Creating a new file===================\n"))
+		// file.WriteString(fmt.Sprintf("===================The log file was not not found in the DIR: %d===================\n", LOGFILE))
+		file.WriteString(fmt.Sprintf("================================Creating a new log file===================\n"))
 		// ------------------------------if possible try to append the text to the existingg file
 	} else {
 		file.WriteString(fmt.Sprintf("\n\n\n"))
@@ -179,16 +183,16 @@ func main() {
 		revert_back(latest_patch_version, med_latest_patch_version, localversion)
 		InfoLogger.Println("Revert_back successfull, terminating the script")
 		updateversion(latest_patch_version)
-		conf_rename(med_latest_patch_version, latest_patch_version, localversion)
+		// conf_rename(med_latest_patch_version, latest_patch_version, localversion)
 		InfoLogger.Println("updated the version.txt and conf.properties file")
 		os.Exit(0)
 	} else if latest_patch_version > localversion {
-		InfoLogger.Println(fmt.Sprintf("found New patch (%s) for MedReport360-Viewer v%s", latest_patch_version, med_latest_patch_version))
+		// InfoLogger.Println(fmt.Sprintf("found New patch (%s) for MedReport360-Viewer v%s", latest_patch_version, med_latest_patch_version))
 		patcher(latest_patch_version, localversion)
 		SuccessLogger.Println(fmt.Sprintf("successfully patched to the latest version %s for MedReport360-Viewer v%s", latest_patch_version, med_latest_patch_version))
 		InfoLogger.Println("terminating the script")
 		updateversion(latest_patch_version)
-		conf_rename(med_latest_patch_version, latest_patch_version, localversion)
+		// conf_rename(med_latest_patch_version, latest_patch_version, localversion)
 		InfoLogger.Println("updated the version.txt and conf.properties file")
 		os.Exit(0)
 	} else {
@@ -263,47 +267,47 @@ func revert_back(latest_patch_version string, med_latest_patch_version string, l
 	// 2. should run the script from the patch as admin
 	// 3. modify the script file
 
-	file, _ := os.OpenFile(LOGFILE+"/"+"logs.txt", os.O_APPEND|os.O_WRONLY, 0666)
-	file.WriteString(fmt.Sprintf("\n========================================Reverting to the Previous Version============================="))
-	file.WriteString(fmt.Sprintf("\n==========================================Base Version %s================================", localversion))
-	file.WriteString(fmt.Sprintf("\n==================================The Revert_back version is %s================================", latest_patch_version))
-	file.WriteString(fmt.Sprintf("\n==========================The INSTALLDIR is: %s=======================", INSTALLDIR))
-	file.WriteString(fmt.Sprintf("\n====================The URL is: %s=====================\n", URL))
+	// file, _ := os.OpenFile(LOGFILE+"/"+"logs.txt", os.O_APPEND|os.O_WRONLY, 0666)
+	// file.WriteString(fmt.Sprintf("\n========================================Reverting to the Previous Version============================="))
+	// file.WriteString(fmt.Sprintf("\n==========================================Base Version %s================================", localversion))
+	// file.WriteString(fmt.Sprintf("\n==================================The Revert_back version is %s================================", latest_patch_version))
+	// file.WriteString(fmt.Sprintf("\n==========================The INSTALLDIR is: %s=======================", INSTALLDIR))
+	// file.WriteString(fmt.Sprintf("\n====================The URL is: %s=====================\n", URL))
 
-	WarningLogger.Println("Deleting all the files in ", INSTALLDIR)
-	prevversion_filepath := (INSTALLDIR)
-	os.RemoveAll(prevversion_filepath + "/" + "app")
+	// WarningLogger.Println("Deleting all the files in ", INSTALLDIR)
+	// prevversion_filepath := (INSTALLDIR)
+	// os.RemoveAll(prevversion_filepath + "/" + "app")
 	// add a random code to check if deleted or not || osremoveall doesnt accept a value
 	// if err != nil {
 	// 	ErrorLogger.Println("error in deleting all the files in : ", prevversion_filepath)
 	// 	log.Fatalln(err)
 	// }
-	SuccessLogger.Println("successfully deleted all the files in : ", prevversion_filepath+"/"+"app")
+	// SuccessLogger.Println("successfully deleted all the files in : ", prevversion_filepath+"/"+"app")
 	InfoLogger.Println("starting the patching func")
 	patch_url := (URL + "_" + latest_patch_version + ".zip")
 	// fmt.Println(patch_url)
 	patching(patch_url)
 	localfilepath := (Temp + "/patch_" + latest_patch_version)
 	os.RemoveAll(localfilepath)
-	SuccessLogger.Println("successfully removed the patchfile: ", localfilepath)
-	SuccessLogger.Println("patching func was success")
+	// SuccessLogger.Println("successfully removed the patchfile: ", localfilepath)
+	// SuccessLogger.Println("patching func was success")
 
 }
 
 func patcher(latest_patch_version string, localversion string) {
-	file, _ := os.OpenFile(LOGFILE+"/"+"logs.txt", os.O_APPEND|os.O_WRONLY, 0666)
-	file.WriteString(fmt.Sprintf("\n========================================patching the installer============================="))
-	file.WriteString(fmt.Sprintf("\n==========================================Base Version %s================================", localversion))
-	file.WriteString(fmt.Sprintf("\n==========================The INSTALLDIR is: %s=======================", INSTALLDIR))
-	file.WriteString(fmt.Sprintf("\n====================The URL is: %s=====================\n", URL))
+	// file, _ := os.OpenFile(LOGFILE+"/"+"logs.txt", os.O_APPEND|os.O_WRONLY, 0666)
+	// file.WriteString(fmt.Sprintf("\n========================================patching the installer============================="))
+	// file.WriteString(fmt.Sprintf("\n==========================================Base Version %s================================", localversion))
+	// file.WriteString(fmt.Sprintf("\n==========================The INSTALLDIR is: %s=======================", INSTALLDIR))
+	// file.WriteString(fmt.Sprintf("\n====================The URL is: %s=====================\n", URL))
 
 	InfoLogger.Println("starting the patching func")
 	patch_url := (URL + "_" + latest_patch_version + ".zip")
 	patching(patch_url)
 	localfilepath := (Temp + "/patch_" + latest_patch_version)
 	os.RemoveAll(localfilepath)
-	SuccessLogger.Println("successfully removed the patchfile: ", localfilepath)
-	SuccessLogger.Println("patching func was success")
+	// SuccessLogger.Println("successfully removed the patchfile: ", localfilepath)
+	// SuccessLogger.Println("patching func was success")
 
 }
 
@@ -320,7 +324,7 @@ func patching(patch_url string) {
 		log.Fatalln(err)
 	}
 	defer out.Close()
-	InfoLogger.Println("Successfully created a local file to write in :", out)
+	// InfoLogger.Println("Successfully created a local file to write in :", out)
 
 	// checking the URL for access or active
 	resp, err := http.Get(patch_url)
@@ -330,7 +334,7 @@ func patching(patch_url string) {
 	}
 	// -------------------------------the file on wrong url is downloading some random corrupt file, and not showing the error
 	defer resp.Body.Close()
-	InfoLogger.Println("URl is accessible, URL:", patch_url)
+	// InfoLogger.Println("URl is accessible, URL:", patch_url)
 
 	// writing/downloading to the file
 	out1, err := io.Copy(out, resp.Body)
@@ -338,7 +342,8 @@ func patching(patch_url string) {
 		ErrorLogger.Println("error in downloading the patch.zip")
 		log.Fatalln(err)
 	}
-	InfoLogger.Println("successfull in writing/downloading the patch to the local windows Temp folder", out1)
+	// InfoLogger.Println("successfull in writing/downloading the patch to the local windows Temp folder", out1)
+	InfoLogger.Println(out1)
 
 	// unzipping in the directory
 	_, err = Unzip(Temp+"/"+fileName, Temp)
@@ -346,7 +351,7 @@ func patching(patch_url string) {
 		ErrorLogger.Println("error in unzipping the file")
 		log.Fatalln(err)
 	}
-	InfoLogger.Println("successfull in patching the file to the local windows Temp folder")
+	// InfoLogger.Println("successfull in unzipping the file to the local windows Temp folder")
 
 	//running the patch.bat file inside the script
 	cmd := exec.Command("cmd", "/C", Temp+"/viewer_64_patch_v31/patch.bat")
@@ -364,7 +369,7 @@ func patching(patch_url string) {
 	localfilepath := (Temp + "/" + "viewer_64_patch")
 
 	os.RemoveAll(localfilepath)
-	SuccessLogger.Println("successfully removed the patchfolder: ", localfilepath)
+	// SuccessLogger.Println("successfully removed the patchfolder: ", localfilepath)
 
 	// ErrorLogger.Println("could not remove the patch file: ", localfilepath)
 	// log.Fatalln(err)
@@ -376,30 +381,30 @@ func updateversion(latest_patch_version string) {
 		ErrorLogger.Println("failed to read&change the version.txt in DIR", VERSIONFILE+"/version.txt")
 	}
 	file.WriteString(latest_patch_version)
-	SuccessLogger.Println("updated version.txt to: ", latest_patch_version)
+	// SuccessLogger.Println("updated version.txt to: ", latest_patch_version)
 }
 
-func conf_rename(med_latest_patch_version string, latest_patch_version string, localversion string) {
-	conf_file := INSTALLDIR + "/app/conf/config.properties"
-	input, err := ioutil.ReadFile(conf_file)
-	if err != nil {
-		log.Fatalln(err)
-	}
+// func conf_rename(med_latest_patch_version string, latest_patch_version string, localversion string) {
+// 	conf_file := INSTALLDIR + "/app/conf/config.properties"
+// 	input, err := ioutil.ReadFile(conf_file)
+// 	if err != nil {
+// 		log.Fatalln(err)
+// 	}
 
-	lines := strings.Split(string(input), "\n")
+// 	lines := strings.Split(string(input), "\n")
 
-	for i, line := range lines {
-		// the version.txt and the conf.properties, must bear the same version, only then the version shld be changed or else error shld be logged
-		// conf_version := strings.Contains(line, "weasis.version="+med_latest_patch_version+"-"+localversion)
-		// if localversion == conf_version {
-		if strings.Contains(line, "weasis.version="+med_latest_patch_version+"-"+localversion) {
-			lines[i] = ("weasis.version=" + med_latest_patch_version + "-" + latest_patch_version)
-		}
-		// }
-	}
-	output := strings.Join(lines, "\n")
-	err = ioutil.WriteFile(conf_file, []byte(output), 0644)
-	if err != nil {
-		log.Fatalln(err)
-	}
-}
+// 	for i, line := range lines {
+// 		// the version.txt and the conf.properties, must bear the same version, only then the version shld be changed or else error shld be logged
+// 		// conf_version := strings.Contains(line, "weasis.version="+med_latest_patch_version+"-"+localversion)
+// 		// if localversion == conf_version {
+// 		if strings.Contains(line, "weasis.version="+med_latest_patch_version+"-"+localversion) {
+// 			lines[i] = ("weasis.version=" + med_latest_patch_version + "-" + latest_patch_version)
+// 		}
+// 		// }
+// 	}
+// 	output := strings.Join(lines, "\n")
+// 	err = ioutil.WriteFile(conf_file, []byte(output), 0644)
+// 	if err != nil {
+// 		log.Fatalln(err)
+// 	}
+// }
