@@ -106,9 +106,26 @@
     <?endif?>
 
     <CustomAction Id="JpSetARPINSTALLLOCATION" Property="ARPINSTALLLOCATION" Value="[INSTALLDIR]" />
-    <!-- changed here -->
-    <CustomAction Id="RunCommand" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand='cmd.exe /C schtasks /create /TN MR360Viewer /ru SYSTEM /SC minute /mo 5 /TR "[INSTALLDIR]app\updater.exe"' Return="check" />
-    <CustomAction Id='FileCleaner' Directory="TARGETDIR" Execute="immediate" Impersonate="no" ExeCommand="cmd.exe /C SchTasks /f /Delete /TN MR360Viewer" Return='asyncNoWait'  />
+    <!-- changed here - for to add the tasks in task scheduler 
+        <CustomAction is the task creator (run the cmd or any exe post or pre install and this must be called by  <InstallExecuteSequence> <Custom Action> -->
+    <!--  Execute="immediate or deferred" 
+                  immediate will execute with no admin rights
+                  deferred will execute with admin rights
+          Impersonate="no"
+                  no will allow the admin rights to be retained from the previous UAC
+                  yes will not allow the admin rights and has to be again asked with UAC
+          wesbite of wix documentation
+                  https://wixtoolset.org/documentation/manual/v3/xsd/wix/installexecutesequence.html
+    -->
+    <!-- MR360patcher -->
+    <CustomAction Id="RunViewer" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand='cmd.exe /C schtasks /create /TN MR360Viewer /ru SYSTEM /SC minute /mo 5 /TR "[INSTALLDIR]app\updater.exe"' Return="check" />
+    <CustomAction Id='CleanViewer' Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="cmd.exe /C SchTasks /F /Delete /TN MR360Viewer" Return='asyncNoWait'  />
+    <!-- MR360patcher-->
+    <CustomAction Id="RunUpdater" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand='cmd.exe /C schtasks /create /TN MR360Updater /ru SYSTEM /SC minute /mo 5 /TR "[INSTALLDIR]app\updater.bat"' Return="check" />
+    <!-- to run it every day at specific time 
+    <CustomAction Id="RunUpdater" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand='cmd.exe /C schtasks /create /TN MR360Updater /ru SYSTEM /SC DAILY /ST 10:00 /TR "[INSTALLDIR]app\updater.bat"' Return="check" />
+    -->
+    <CustomAction Id='CleanUpdater' Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="cmd.exe /C SchTasks /F /Delete /TN MR360Updater" Return='asyncNoWait'  />
 
     <?ifdef JpIcon ?>
     <Property Id="ARPPRODUCTICON" Value="JpARPPRODUCTICON"/>
@@ -164,8 +181,10 @@
 
     <InstallExecuteSequence>
       <!--changed here -->
-      <Custom Action="RunCommand" Before='InstallFinalize'>Not Installed</Custom>
-      <Custom Action="FileCleaner" After='InstallFinalize'>Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="RunViewer" Before='InstallFinalize'>Not Installed</Custom>
+      <Custom Action="RunUpdater" Before='InstallFinalize'>Not Installed</Custom>
+      <Custom Action="CleanViewer" Before='InstallFinalize'>Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
+      <Custom Action="CleanUpdater" Before='InstallFinalize'>Installed AND NOT UPGRADINGPRODUCTCODE</Custom>
 
       <Custom Action="JpSetARPINSTALLLOCATION" After="CostFinalize">Not Installed</Custom>
       <?ifndef JpAllowUpgrades ?>
