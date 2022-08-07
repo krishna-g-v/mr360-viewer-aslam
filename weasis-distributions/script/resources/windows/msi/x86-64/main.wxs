@@ -117,15 +117,21 @@
           wesbite of wix documentation
                   https://wixtoolset.org/documentation/manual/v3/xsd/wix/installexecutesequence.html
     -->
-    <!-- MR360patcher -->
-    <CustomAction Id="RunViewer" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand='cmd.exe /C schtasks /create /TN MR360Viewer /ru SYSTEM /SC minute /mo 5 /TR "[INSTALLDIR]app\updater.exe"' Return="check" />
-    <CustomAction Id='CleanViewer' Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="cmd.exe /C SchTasks /F /Delete /TN MR360Viewer" Return='asyncNoWait'  />
-    <!-- MR360patcher-->
-    <CustomAction Id="RunUpdater" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand='cmd.exe /C schtasks /create /TN MR360Updater /ru SYSTEM /SC minute /mo 5 /TR "[INSTALLDIR]app\updater.bat"' Return="check" />
+    <!-- MR360 task scheduler -->
+    <!-- sample ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;MR360Viewer&quot; /RU SYSTEM /SC minute /MO 5 /TR &quot;\&quot;[INSTALLDIR]app\updater.exe\&quot;&quot;" cmd.exe /C SchTasks /F /Delete /TN MR360Viewer/> -->
+
+    <!-- MR360Viewer -->
+    <CustomAction Id="RunViewer" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;MR360Viewer&quot; /RU SYSTEM /SC minute /MO 5 /TR &quot;\&quot;[INSTALLDIR]app\updater.exe\&quot;&quot;" Return="check" />
+    <CustomAction Id='CleanViewer' Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /F /Delete /TN &quot;MR360Viewer&quot;" Return='asyncNoWait'  />
+
+    <!-- MR360Updater-->
+    <CustomAction Id="RunUpdater" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;MR360Updater&quot; /RU SYSTEM /SC minute /MO 5 /TR &quot;\&quot;[INSTALLDIR]app\updater.bat\&quot;&quot;" Return="check" />
+
     <!-- to run it every day at specific time 
     <CustomAction Id="RunUpdater" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand='cmd.exe /C schtasks /create /TN MR360Updater /ru SYSTEM /SC DAILY /ST 10:00 /TR "[INSTALLDIR]app\updater.bat"' Return="check" />
     -->
-    <CustomAction Id='CleanUpdater' Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="cmd.exe /C SchTasks /F /Delete /TN MR360Updater" Return='asyncNoWait'  />
+    
+    <CustomAction Id='CleanUpdater' Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /F /Delete /TN &quot;MR360Updater&quot;" Return='asyncNoWait'  />
 
     <?ifdef JpIcon ?>
     <Property Id="ARPPRODUCTICON" Value="JpARPPRODUCTICON"/>
