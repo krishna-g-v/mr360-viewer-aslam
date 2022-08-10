@@ -39,7 +39,7 @@ public interface ViewCanvas<E extends ImageElement>
         KeyListener {
 
   String ZOOM_TYPE_CMD = "zoom.type";
-  ImageIcon SYNCH_ICON = new ImageIcon(DefaultView2d.class.getResource("/icon/22x22/synch.png"));
+  ImageIcon SYNCH_ICON = new ImageIcon(DefaultView2d.class.getResource("/icon/10x10/synch.png"));
   int CENTER_POINTER = 1 << 1;
   int HIGHLIGHTED_POINTER = 1 << 2;
 

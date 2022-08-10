@@ -49,7 +49,7 @@ public class MipView extends View2d {
   private static final Logger LOGGER = LoggerFactory.getLogger(MipView.class);
 
   public static final ImageIcon MIP_ICON_SETTING =
-      new ImageIcon(MipView.class.getResource("/icon/22x22/mip-setting.png"));
+      new ImageIcon(MipView.class.getResource("/icon/10x10/mip-setting.png"));
   public static final ActionW MIP =
       new ActionW(Messages.getString("MipView.mip"), "mip", 0, 0, null); // NON-NLS
   public static final ActionW MIP_THICKNESS =

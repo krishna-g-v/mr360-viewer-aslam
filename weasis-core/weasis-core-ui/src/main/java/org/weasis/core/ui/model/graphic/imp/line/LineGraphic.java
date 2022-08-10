@@ -42,7 +42,7 @@ public class LineGraphic extends AbstractDragGraphic {
   public static final Integer POINTS_NUMBER = 2;
 
   public static final Icon ICON =
-      new ImageIcon(LineGraphic.class.getResource("/icon/22x22/draw-line.png"));
+      new ImageIcon(LineGraphic.class.getResource("/icon/10x10/draw-line.png"));
 
   public static final Measurement FIRST_POINT_X =
       new Measurement(Messages.getString("measure.firstx"), 1, true, true, false);

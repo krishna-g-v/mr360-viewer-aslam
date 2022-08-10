@@ -179,6 +179,7 @@ public class DicomExplorer extends PluginTool implements DataExplorerView, Serie
     
     setDockableWidth(Thumbnail.DEFAULT_SIZE + dicomExplorerPanelHeightAdjust + 10);
     dockable.setMaximizable(false);
+    dockable.setMinimizable(false);
     this.model = model == null ? new DicomModel() : model;
     this.selectionList = new SeriesSelectionModel(patientContainer);
     thumnailView.getVerticalScrollBar().setUnitIncrement(16);

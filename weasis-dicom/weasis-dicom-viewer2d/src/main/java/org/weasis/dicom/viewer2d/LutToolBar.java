@@ -54,7 +54,7 @@ public class LutToolBar extends WtoolBar {
     final JButton winLevelBtn = new JButton();
     winLevelBtn.setToolTipText("Window Level (W)");
     winLevelBtn.setText("W");
-    winLevelBtn.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/32x32/winLevel.png")));
+    winLevelBtn.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/winLevel.png")));
     winLevelBtn.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
 //    	  eventManager.getSelectedView2dContainer().getViewerToolBar().changeButtonState(MouseActions.T_LEFT, ActionW.WINLEVEL.cmd());
@@ -84,7 +84,7 @@ public class LutToolBar extends WtoolBar {
 //    final JButton presetBtn0 = new JButton();
 //    presetBtn0.setToolTipText("Auto");
 //    presetBtn0.setText("Auto");
-//    presetBtn0.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/0.png")));
+//    presetBtn0.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/0.png")));
 //    presetBtn0.addActionListener(new ActionListener () {
 //      public void actionPerformed(ActionEvent e) {
 //        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(1)).doClick(); // index 1 is Auto
@@ -95,7 +95,7 @@ public class LutToolBar extends WtoolBar {
     final JButton presetBtn1 = new JButton();
     presetBtn1.setToolTipText("Default");
     presetBtn1.setText("Default");
-    presetBtn1.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/1.png")));
+    presetBtn1.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/1.png")));
     presetBtn1.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
         ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(0)).doClick(); // index 0 is Default
@@ -106,10 +106,10 @@ public class LutToolBar extends WtoolBar {
     final JButton presetBtn2 = new JButton();
     presetBtn2.setToolTipText("Brain");
     presetBtn2.setText("Brain");
-    presetBtn2.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/2.png")));
+    presetBtn2.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/2.png")));
     presetBtn2.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
-        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(2)).doClick();
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(1)).doClick();
       }
     });
     add(presetBtn2);
@@ -117,10 +117,10 @@ public class LutToolBar extends WtoolBar {
     final JButton presetBtn3 = new JButton();
     presetBtn3.setToolTipText("Lung");
     presetBtn3.setText("Lung");
-    presetBtn3.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/3.png")));
+    presetBtn3.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/3.png")));
     presetBtn3.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
-        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(3)).doClick();
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(2)).doClick();
       }
     });
     add(presetBtn3);
@@ -128,10 +128,10 @@ public class LutToolBar extends WtoolBar {
     final JButton presetBtn4 = new JButton();
     presetBtn4.setToolTipText("Mediastinum");
     presetBtn4.setText("Mediastinum");
-    presetBtn4.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/4.png")));
+    presetBtn4.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/4.png")));
     presetBtn4.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
-        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(4)).doClick();
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(3)).doClick();
       }
     });
     add(presetBtn4);
@@ -139,10 +139,10 @@ public class LutToolBar extends WtoolBar {
     final JButton presetBtn5 = new JButton();
     presetBtn5.setToolTipText("Abdomen");
     presetBtn5.setText("Abdomen");
-    presetBtn5.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/5.png")));
+    presetBtn5.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/5.png")));
     presetBtn5.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
-        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(5)).doClick();
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(4)).doClick();
       }
     });
     add(presetBtn5);
@@ -150,10 +150,10 @@ public class LutToolBar extends WtoolBar {
     final JButton presetBtn6 = new JButton();
     presetBtn6.setToolTipText("Bone");
     presetBtn6.setText("Bone");
-    presetBtn6.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/6.png")));
+    presetBtn6.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/6.png")));
     presetBtn6.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
-        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(6)).doClick();
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(5)).doClick();
       }
     });
     add(presetBtn6);
@@ -161,10 +161,10 @@ public class LutToolBar extends WtoolBar {
     final JButton presetBtn7 = new JButton();
     presetBtn7.setToolTipText("MIP");
     presetBtn7.setText("MIP");
-    presetBtn7.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x32/7.png")));
+    presetBtn7.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/7.png")));
     presetBtn7.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
-        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(7)).doClick();
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(6)).doClick();
       }
     });
     add(presetBtn7);
@@ -194,7 +194,7 @@ public class LutToolBar extends WtoolBar {
 
     final JToggleButton invertButton = new JToggleButton();
     invertButton.setToolTipText(ActionW.INVERT_LUT.getTitle());
-    invertButton.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/32x32/invert.png")));
+    invertButton.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/invert.png")));
     ActionState invlutAction = eventManager.getAction(ActionW.INVERT_LUT);
     if (invlutAction instanceof ToggleButtonListener) {
       ((ToggleButtonListener) invlutAction).registerActionState(invertButton);
@@ -203,7 +203,7 @@ public class LutToolBar extends WtoolBar {
   }
 
   private Icon buildLutIcon() {
-    final Icon mouseIcon = new ImageIcon(WtoolBar.class.getResource("/icon/32x32/lut.png"));
+    final Icon mouseIcon = new ImageIcon(WtoolBar.class.getResource("/icon/16x16/lut.png"));
 
     return new DropButtonIcon(
         new Icon() {
@@ -236,7 +236,7 @@ public class LutToolBar extends WtoolBar {
   }
 
   private Icon buildWLIcon() {
-    final Icon mouseIcon = new ImageIcon(WtoolBar.class.getResource("/icon/32x32/preset.png"));
+    final Icon mouseIcon = new ImageIcon(WtoolBar.class.getResource("/icon/16x16/preset.png"));
 
     return new DropButtonIcon(
         new Icon() {

@@ -32,7 +32,7 @@ public class CineToolBar<DicomImageElement> extends WtoolBar {
         final JButton rwdButton = new JButton();
         rwdButton.setToolTipText(Messages.getString("CineToolBar.start"));
         rwdButton.setIcon(
-            new ImageIcon(CineToolBar.class.getResource("/icon/24x24/player-rwd.png")));
+            new ImageIcon(CineToolBar.class.getResource("/icon/16x16/player-rwd.png")));
         rwdButton.addActionListener(e -> cineAction.setSliderValue(0));
         add(rwdButton);
         sequence.registerActionState(rwdButton);
@@ -42,7 +42,7 @@ public class CineToolBar<DicomImageElement> extends WtoolBar {
         final JButton prevButton = new JButton();
         prevButton.setToolTipText(Messages.getString("CineToolBar.prev"));
         prevButton.setIcon(
-            new ImageIcon(CineToolBar.class.getResource("/icon/24x24/player-prev.png")));
+            new ImageIcon(CineToolBar.class.getResource("/icon/16x16/player-prev.png")));
         prevButton.addActionListener(
             e -> {
               cineAction.stop();
@@ -57,7 +57,7 @@ public class CineToolBar<DicomImageElement> extends WtoolBar {
         pauseButton.setActionCommand(ActionW.CINESTOP.cmd());
         pauseButton.setToolTipText(Messages.getString("CineToolBar.pause"));
         pauseButton.setIcon(
-            new ImageIcon(CineToolBar.class.getResource("/icon/24x24/player-pause.png")));
+            new ImageIcon(CineToolBar.class.getResource("/icon/16x16/player-pause.png")));
         pauseButton.addActionListener(EventManager.getInstance());
         add(pauseButton);
         sequence.registerActionState(pauseButton);
@@ -68,7 +68,7 @@ public class CineToolBar<DicomImageElement> extends WtoolBar {
         startButton.setActionCommand(ActionW.CINESTART.cmd());
         startButton.setToolTipText(Messages.getString("CineToolBar.play"));
         startButton.setIcon(
-            new ImageIcon(CineToolBar.class.getResource("/icon/24x24/player-play.png")));
+            new ImageIcon(CineToolBar.class.getResource("/icon/16x16/player-play.png")));
         startButton.addActionListener(EventManager.getInstance());
         add(startButton);
         sequence.registerActionState(startButton);
@@ -78,7 +78,7 @@ public class CineToolBar<DicomImageElement> extends WtoolBar {
         final JButton stopButton = new JButton();
         stopButton.setToolTipText(Messages.getString("CineToolBar.stop"));
         stopButton.setIcon(
-            new ImageIcon(CineToolBar.class.getResource("/icon/24x24/player-stop.png")));
+            new ImageIcon(CineToolBar.class.getResource("/icon/16x16/player-stop.png")));
         stopButton.addActionListener(
             e -> {
               cineAction.stop();
@@ -92,7 +92,7 @@ public class CineToolBar<DicomImageElement> extends WtoolBar {
         final JButton nextButton = new JButton();
         nextButton.setToolTipText(Messages.getString("CineToolBar.next"));
         nextButton.setIcon(
-            new ImageIcon(CineToolBar.class.getResource("/icon/24x24/player-next.png")));
+            new ImageIcon(CineToolBar.class.getResource("/icon/16x16/player-next.png")));
         nextButton.addActionListener(
             e -> {
               cineAction.stop();
@@ -106,7 +106,7 @@ public class CineToolBar<DicomImageElement> extends WtoolBar {
         final JButton fwdButton = new JButton();
         fwdButton.setToolTipText(Messages.getString("CineToolBar.end"));
         fwdButton.setIcon(
-            new ImageIcon(CineToolBar.class.getResource("/icon/24x24/player-fwd.png")));
+            new ImageIcon(CineToolBar.class.getResource("/icon/16x16/player-fwd.png")));
         fwdButton.addActionListener(e -> cineAction.setSliderValue(Integer.MAX_VALUE));
         add(fwdButton);
         sequence.registerActionState(fwdButton);

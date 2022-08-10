@@ -402,7 +402,7 @@ public class DicomFieldsView extends JTabbedPane implements SeriesViewerListener
       frame.getContentPane().add(panel);
       frame.setAlwaysOnTop(true);
       frame.setIconImage(
-          new ImageIcon(ImageViewerPlugin.class.getResource("/icon/32x32/dcm-header.png"))
+          new ImageIcon(ImageViewerPlugin.class.getResource("/icon/16x16/dcm-header.png"))
               .getImage());
       Component c =
           container instanceof Component

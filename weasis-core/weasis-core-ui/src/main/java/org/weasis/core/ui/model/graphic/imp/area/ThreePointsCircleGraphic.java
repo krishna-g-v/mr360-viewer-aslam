@@ -40,7 +40,7 @@ public class ThreePointsCircleGraphic extends AbstractDragGraphicArea {
   public static final Integer POINTS_NUMBER = 3;
 
   public static final Icon ICON =
-      new ImageIcon(ThreePointsCircleGraphic.class.getResource("/icon/22x22/draw-circle.png"));
+      new ImageIcon(ThreePointsCircleGraphic.class.getResource("/icon/10x10/draw-circle.png"));
 
   public static final Measurement AREA =
       new Measurement(Messages.getString("measure.area"), 1, true, true, true);

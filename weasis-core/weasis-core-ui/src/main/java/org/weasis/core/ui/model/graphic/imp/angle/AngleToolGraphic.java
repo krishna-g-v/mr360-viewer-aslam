@@ -43,7 +43,7 @@ public class AngleToolGraphic extends AbstractDragGraphic {
   public static final Integer POINTS_NUMBER = 3;
 
   public static final Icon ICON =
-      new ImageIcon(AngleToolGraphic.class.getResource("/icon/22x22/draw-angle.png"));
+      new ImageIcon(AngleToolGraphic.class.getResource("/icon/10x10/draw-angle.png"));
 
   public static final Measurement ANGLE =
       new Measurement(Messages.getString("measure.angle"), 1, true);

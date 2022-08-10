@@ -51,7 +51,7 @@ public class PolygonGraphic extends AbstractDragGraphicArea {
   public static final Integer POINTS_NUMBER = UNDEFINED;
 
   public static final Icon ICON =
-      new ImageIcon(PolygonGraphic.class.getResource("/icon/22x22/draw-polygon.png"));
+      new ImageIcon(PolygonGraphic.class.getResource("/icon/10x10/draw-polygon.png"));
 
   public static final Measurement AREA =
       new Measurement(Messages.getString("measure.area"), 1, true, true, true);

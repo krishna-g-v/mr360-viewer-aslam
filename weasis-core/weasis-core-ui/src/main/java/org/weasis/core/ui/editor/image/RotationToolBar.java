@@ -29,7 +29,7 @@ public class RotationToolBar extends WtoolBar {
     }
 
     final JButton jButtonRotate90 =
-        new JButton(new ImageIcon(MouseActions.class.getResource("/icon/32x32/rotate.png")));
+        new JButton(new ImageIcon(MouseActions.class.getResource("/icon/16x16/rotate.png")));
     jButtonRotate90.setToolTipText(Messages.getString("RotationToolBar.90"));
     jButtonRotate90.addActionListener(
         e -> {
@@ -46,7 +46,7 @@ public class RotationToolBar extends WtoolBar {
     add(jButtonRotate90);
 
     final JToggleButton jButtonFlip =
-        new JToggleButton(new ImageIcon(MouseActions.class.getResource("/icon/32x32/flip.png")));
+        new JToggleButton(new ImageIcon(MouseActions.class.getResource("/icon/16x16/flip.png")));
     jButtonFlip.setToolTipText(Messages.getString("RotationToolBar.flip"));
     ActionState flipAction = eventManager.getAction(ActionW.FLIP);
     if (flipAction instanceof ToggleButtonListener) {

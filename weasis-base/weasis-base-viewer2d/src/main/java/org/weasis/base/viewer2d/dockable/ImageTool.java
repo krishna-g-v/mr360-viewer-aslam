@@ -154,7 +154,7 @@ public class ImageTool extends PluginTool {
       startButton.setPreferredSize(JMVUtils.getBigIconButtonSize());
       startButton.setToolTipText(Messages.getString("ImageTool.cine_start"));
       startButton.setIcon(
-          new ImageIcon(MouseActions.class.getResource("/icon/22x22/media-playback-start.png")));
+          new ImageIcon(MouseActions.class.getResource("/icon/10x10/media-playback-start.png")));
       startButton.addActionListener(EventManager.getInstance());
       panel3.add(startButton);
       cineAction.registerActionState(startButton);
@@ -164,7 +164,7 @@ public class ImageTool extends PluginTool {
       stopButton.setPreferredSize(JMVUtils.getBigIconButtonSize());
       stopButton.setToolTipText(Messages.getString("ImageTool.cine_stop"));
       stopButton.setIcon(
-          new ImageIcon(MouseActions.class.getResource("/icon/22x22/media-playback-stop.png")));
+          new ImageIcon(MouseActions.class.getResource("/icon/10x10/media-playback-stop.png")));
       stopButton.addActionListener(EventManager.getInstance());
       panel3.add(stopButton);
       cineAction.registerActionState(stopButton);

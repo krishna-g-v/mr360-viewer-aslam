@@ -70,9 +70,9 @@ public class MeasureToolBar extends WtoolBar {
   public static final SelectGraphic selectionGraphic = new SelectGraphic();
 
   public static final Icon MeasureIcon =
-      new ImageIcon(MouseActions.class.getResource("/icon/32x32/measure.png"));
+      new ImageIcon(MouseActions.class.getResource("/icon/16x16/measure.png"));
   public static final Icon drawIcon =
-      new ImageIcon(MouseActions.class.getResource("/icon/32x32/draw.png"));
+      new ImageIcon(MouseActions.class.getResource("/icon/16x16/draw.png"));
   public static final List<Graphic> measureGraphicList = new ArrayList<>();
   public static final List<Graphic> drawGraphicList = new ArrayList<>();
 
@@ -339,7 +339,7 @@ public class MeasureToolBar extends WtoolBar {
     if (measure.isPresent() || draw.isPresent()) {
       jButtondelete.setToolTipText(Messages.getString("MeasureToolBar.del"));
       jButtondelete.setIcon(
-          new ImageIcon(MouseActions.class.getResource("/icon/32x32/draw-delete.png")));
+          new ImageIcon(MouseActions.class.getResource("/icon/16x16/draw-delete.png")));
       jButtondelete.addActionListener(
           e -> {
             GraphicModel gm = eventManager.getSelectedViewPane().getGraphicManager();

@@ -44,7 +44,7 @@ public class PerpendicularLineGraphic extends AbstractDragGraphic {
 
   public static final Icon ICON =
       new ImageIcon(
-          PerpendicularLineGraphic.class.getResource("/icon/22x22/draw-perpendicular.png"));
+          PerpendicularLineGraphic.class.getResource("/icon/10x10/draw-perpendicular.png"));
 
   public static final Measurement LINE_LENGTH =
       new Measurement(Messages.getString("measure.length"), 1, true, true, true);

@@ -34,13 +34,13 @@ public class Basic3DToolBar<DicomImageElement> extends WtoolBar {
     super(Messages.getString("Basic3DToolBar.title"), index);
 
     final JButton mprButton =
-        new JButton(new ImageIcon(Basic3DToolBar.class.getResource("/icon/32x32/mpr.png")));
+        new JButton(new ImageIcon(Basic3DToolBar.class.getResource("/icon/16x16/mpr.png")));
     mprButton.setToolTipText(Messages.getString("Basic3DToolBar.mpr"));
     mprButton.addActionListener(getMprAction());
     add(mprButton);
 
     final JButton mipButton =
-        new JButton(new ImageIcon(Basic3DToolBar.class.getResource("/icon/32x32/mip.png")));
+        new JButton(new ImageIcon(Basic3DToolBar.class.getResource("/icon/16x16/mip.png")));
     mipButton.setToolTipText(Messages.getString("Basic3DToolBar.mip"));
     mipButton.addActionListener(getMipAction());
     add(mipButton);

@@ -23,7 +23,7 @@ public class SrToolBar extends WtoolBar {
     super(Messages.getString("SrToolBar.title"), index);
 
     final JButton printButton =
-        new JButton(new ImageIcon(ImageViewerPlugin.class.getResource("/icon/32x32/printer.png")));
+        new JButton(new ImageIcon(ImageViewerPlugin.class.getResource("/icon/16x16/printer.png")));
     printButton.setToolTipText(Messages.getString("SRContainer.print_layout"));
     printButton.addActionListener(
         e -> {
@@ -37,7 +37,7 @@ public class SrToolBar extends WtoolBar {
 
     final JButton metaButton =
         new JButton(
-            new ImageIcon(ImageViewerPlugin.class.getResource("/icon/32x32/dcm-header.png")));
+            new ImageIcon(ImageViewerPlugin.class.getResource("/icon/16x16/dcm-header.png")));
     metaButton.setToolTipText(ActionW.SHOW_HEADER.getTitle());
     metaButton.addActionListener(
         e -> {

@@ -43,7 +43,7 @@ public class FourPointsAngleToolGraphic extends AbstractDragGraphic {
   public static final Integer POINTS_NUMBER = 8;
 
   public static final Icon ICON =
-      new ImageIcon(FourPointsAngleToolGraphic.class.getResource("/icon/22x22/draw-4p-angle.png"));
+      new ImageIcon(FourPointsAngleToolGraphic.class.getResource("/icon/10x10/draw-4p-angle.png"));
 
   public static final Measurement ANGLE =
       new Measurement(Messages.getString("measure.angle"), 1, true);

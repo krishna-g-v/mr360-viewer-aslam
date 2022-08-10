@@ -47,7 +47,7 @@ public class ZoomToolBar extends WtoolBar {
         new DropDownButton(
             "zoom", // NON-NLS
             new DropButtonIcon(
-                new ImageIcon(MouseActions.class.getResource("/icon/32x32/zoom.png")))) {
+                new ImageIcon(MouseActions.class.getResource("/icon/16x16/zoom.png")))) {
 
           @Override
           protected JPopupMenu getPopupMenu() {
@@ -65,7 +65,7 @@ public class ZoomToolBar extends WtoolBar {
     if (showLens) {
       final JToggleButton jButtonLens =
           new JToggleButton(
-              new ImageIcon(MouseActions.class.getResource("/icon/32x32/zoom-lens.png")));
+              new ImageIcon(MouseActions.class.getResource("/icon/16x16/zoom-lens.png")));
       jButtonLens.setToolTipText(Messages.getString("ViewerToolBar.show_lens"));
       ActionState lens = eventManager.getAction(ActionW.LENS);
       if (lens instanceof ToggleButtonListener) {
@@ -73,7 +73,7 @@ public class ZoomToolBar extends WtoolBar {
       }
       add(jButtonLens);
       
-      final JToggleButton jLinkModeButton = new JToggleButton(new ImageIcon(MouseActions.class.getResource("/icon/32x32/link.png")));
+      final JToggleButton jLinkModeButton = new JToggleButton(new ImageIcon(MouseActions.class.getResource("/icon/16x16/link.png")));
       jLinkModeButton.setToolTipText("Link / Unlink");
       ActionListener actionListener = new ActionListener() {
           public void actionPerformed(ActionEvent actionEvent) {
@@ -81,11 +81,11 @@ public class ZoomToolBar extends WtoolBar {
             boolean selected = abstractButton.getModel().isSelected();
 //            System.out.println("Action - selected=" + selected + "\n");
             if(selected) {
-            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/32x32/unlink.png")));
+            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/16x16/unlink.png")));
             	DefaultView2d.linkMode = false;
             }
             else {
-            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/32x32/link.png")));
+            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/16x16/link.png")));
             	DefaultView2d.linkMode = true;
             }
           }
@@ -115,7 +115,7 @@ public class ZoomToolBar extends WtoolBar {
     final JMenuItem actualZoomMenu =
         new JMenuItem(
             Messages.getString("ViewerToolBar.zoom_1"),
-            new ImageIcon(MouseActions.class.getResource("/icon/22x22/zoom-original.png")));
+            new ImageIcon(MouseActions.class.getResource("/icon/10x10/zoom-original.png")));
     actualZoomMenu.addActionListener(
         e -> {
           ActionState zoom = eventManager.getAction(ActionW.ZOOM);
@@ -136,7 +136,7 @@ public class ZoomToolBar extends WtoolBar {
           final JMenuItem realSizeMenu =
               new JMenuItem(
                   Messages.getString("ZoomToolBar.real_zoom"),
-                  new ImageIcon(MouseActions.class.getResource("/icon/22x22/zoom-real.png")));
+                  new ImageIcon(MouseActions.class.getResource("/icon/10x10/zoom-real.png")));
           realSizeMenu.addActionListener(
               e -> {
                 /*
@@ -155,7 +155,7 @@ public class ZoomToolBar extends WtoolBar {
     final JMenuItem bestFitMenu =
         new JMenuItem(
             Messages.getString("ViewerToolBar.zoom_b"),
-            new ImageIcon(MouseActions.class.getResource("/icon/22x22/zoom-bestfit.png")));
+            new ImageIcon(MouseActions.class.getResource("/icon/10x10/zoom-bestfit.png")));
     bestFitMenu.addActionListener(
         e -> {
           // Pass the value -200.0 (convention: -200.0 = > best fit zoom value) directly to the
@@ -169,7 +169,7 @@ public class ZoomToolBar extends WtoolBar {
 
     // final JMenuItem areaZoomMenu =
     // new JMenuItem("Area selection", new ImageIcon(
-    // MouseActions.class.getResource("/icon/22x22/zoom-select.png")));
+    // MouseActions.class.getResource("/icon/10x10/zoom-select.png")));
     // areaZoomMenu.addActionListener(new ActionListener() {
     //
     // @Override

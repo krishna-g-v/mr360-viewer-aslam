@@ -43,7 +43,7 @@ public class OpenAngleToolGraphic extends AbstractDragGraphic {
   public static final Integer POINTS_NUMBER = 4;
 
   public static final Icon ICON =
-      new ImageIcon(OpenAngleToolGraphic.class.getResource("/icon/22x22/draw-open-angle.png"));
+      new ImageIcon(OpenAngleToolGraphic.class.getResource("/icon/10x10/draw-open-angle.png"));
 
   public static final Measurement ANGLE =
       new Measurement(Messages.getString("measure.angle"), 1, true);

@@ -55,17 +55,17 @@ public class KeyObjectToolBar extends WtoolBar {
   private static final Logger LOGGER = LoggerFactory.getLogger(KeyObjectToolBar.class);
 
   public static final ImageIcon KO_STAR_ICON =
-      new ImageIcon(View2d.class.getResource("/icon/32x32/star_bw.png"));
+      new ImageIcon(View2d.class.getResource("/icon/16x16/star_bw.png"));
   public static final ImageIcon KO_STAR_ICON_SELECTED;
   public static final ImageIcon KO_FILTER_ICON =
-      new ImageIcon(View2d.class.getResource("/icon/32x32/synch-KO.png"));
+      new ImageIcon(View2d.class.getResource("/icon/16x16/synch-KO.png"));
   public static final ImageIcon KO_FILTER_ICON_SELECTED;
 
   public static final ImageIcon KO_ALL_STAR_ICON =
-      new ImageIcon(View2d.class.getResource("/icon/32x32/star_bw_all.png"));
+      new ImageIcon(View2d.class.getResource("/icon/16x16/star_bw_all.png"));
 
   public static final ImageIcon KO_EDIT_SELECTION_ICON =
-      new ImageIcon(View2d.class.getResource("/icon/32x32/edit-KO.png"));
+      new ImageIcon(View2d.class.getResource("/icon/16x16/edit-KO.png"));
 
   static {
     ImageFilter imageFilter = new SelectedImageFilter(new float[] {1.0f, 0.78f, 0.0f}); // ORANGE
@@ -286,7 +286,7 @@ public class KeyObjectToolBar extends WtoolBar {
   }
 
   private Icon buildKoSelectionIcon() {
-    final Icon mouseIcon = new ImageIcon(View2d.class.getResource("/icon/32x32/dcm-KO.png"));
+    final Icon mouseIcon = new ImageIcon(View2d.class.getResource("/icon/16x16/dcm-KO.png"));
 
     return new DropButtonIcon(
         new Icon() {

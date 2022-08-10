@@ -188,7 +188,7 @@ public class ActionW implements KeyActionValue {
     this.keyCode = keyEvent;
     this.modifier = modifier;
     this.cursor = cursor;
-    URL url = getClass().getResource("/icon/22x22/" + command + ".png"); // NON-NLS
+    URL url = getClass().getResource("/icon/10x10/" + command + ".png"); // NON-NLS
     icon = url == null ? null : new ImageIcon(url);
     url = getClass().getResource("/icon/16x16/" + command + ".png"); // NON-NLS
     smallIcon = url == null ? null : new ImageIcon(url);

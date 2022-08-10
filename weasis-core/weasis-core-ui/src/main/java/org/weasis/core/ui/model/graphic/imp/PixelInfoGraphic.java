@@ -41,7 +41,7 @@ public class PixelInfoGraphic extends AnnotationGraphic {
   private static final long serialVersionUID = -6489917524461404874L;
 
   public static final Icon ICON =
-      new ImageIcon(PixelInfoGraphic.class.getResource("/icon/22x22/draw-pixelinfo.png"));
+      new ImageIcon(PixelInfoGraphic.class.getResource("/icon/10x10/draw-pixelinfo.png"));
 
   public static final Measurement ANCHOR_POINT_X =
       new Measurement(Messages.getString("PixelInfoGraphic.x"), 1, true, true, false);

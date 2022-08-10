@@ -23,7 +23,7 @@ public class WaveformToolBar extends WtoolBar {
     super("Main Bar", index); // NON-NLS
 
     final JButton printButton =
-        new JButton(new ImageIcon(ImageViewerPlugin.class.getResource("/icon/32x32/printer.png")));
+        new JButton(new ImageIcon(ImageViewerPlugin.class.getResource("/icon/16x16/printer.png")));
     printButton.addActionListener(
         e -> {
           ImageViewerPlugin<?> container =
@@ -36,7 +36,7 @@ public class WaveformToolBar extends WtoolBar {
 
     final JButton metaButton =
         new JButton(
-            new ImageIcon(ImageViewerPlugin.class.getResource("/icon/32x32/dcm-header.png")));
+            new ImageIcon(ImageViewerPlugin.class.getResource("/icon/16x16/dcm-header.png")));
     metaButton.setToolTipText(ActionW.SHOW_HEADER.getTitle());
     metaButton.addActionListener(
         e -> {
@@ -50,7 +50,7 @@ public class WaveformToolBar extends WtoolBar {
 
     jButtondelete.setToolTipText(Messages.getString("WaveformToolBar.delete"));
     jButtondelete.setIcon(
-        new ImageIcon(MouseActions.class.getResource("/icon/32x32/draw-delete.png")));
+        new ImageIcon(MouseActions.class.getResource("/icon/16x16/draw-delete.png")));
     jButtondelete.addActionListener(
         e -> {
           ImageViewerPlugin<?> container =

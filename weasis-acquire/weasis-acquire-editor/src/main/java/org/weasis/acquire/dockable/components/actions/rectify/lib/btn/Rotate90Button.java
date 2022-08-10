@@ -22,7 +22,7 @@ public class Rotate90Button extends AbstractRectifyButton {
 
   private static final int ANGLE = 90;
   private static final Icon ICON =
-      new ImageIcon(MouseActions.class.getResource("/icon/32x32/rotate.png"));
+      new ImageIcon(MouseActions.class.getResource("/icon/16x16/rotate.png"));
   private static final String TOOL_TIP = Messages.getString("EditionTool.rotate.90");
 
   public Rotate90Button(RectifyAction rectifyAction) {

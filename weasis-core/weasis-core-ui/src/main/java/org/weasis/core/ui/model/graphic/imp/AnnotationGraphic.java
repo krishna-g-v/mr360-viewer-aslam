@@ -58,7 +58,7 @@ public class AnnotationGraphic extends AbstractDragGraphic {
 
   public static final Integer POINTS_NUMBER = 2;
   public static final Icon ICON =
-      new ImageIcon(AnnotationGraphic.class.getResource("/icon/22x22/draw-text.png"));
+      new ImageIcon(AnnotationGraphic.class.getResource("/icon/10x10/draw-text.png"));
 
   protected Point2D ptBox;
   protected Point2D ptAnchor; // Let AB be a simple a line segment

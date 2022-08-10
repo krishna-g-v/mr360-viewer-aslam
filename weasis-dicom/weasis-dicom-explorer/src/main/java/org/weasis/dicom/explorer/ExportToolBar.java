@@ -27,7 +27,7 @@ public class ExportToolBar extends WtoolBar {
 
     if (BundleTools.SYSTEM_PREFERENCES.getBooleanProperty("weasis.export.dicom", true)) {
       final JButton btnExport =
-          new JButton(new ImageIcon(ExportToolBar.class.getResource("/icon/32x32/dcm-export.png")));
+          new JButton(new ImageIcon(ExportToolBar.class.getResource("/icon/16x16/dcm-export.png")));
       btnExport.setToolTipText(Messages.getString("ExportToolBar.export_dcm"));
       btnExport.addActionListener(
           e -> ImportToolBar.showAction(ExportToolBar.this, model, null, true));

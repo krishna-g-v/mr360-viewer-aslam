@@ -8,7 +8,9 @@
  * SPDX-License-Identifier: EPL-2.0 OR Apache-2.0
  */
 package org.weasis.core.ui.editor.image;
-
+import javax.swing.border.LineBorder;
+import java.awt.Color;
+import java.awt.Insets;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -44,6 +46,7 @@ import org.weasis.core.api.service.WProperties;
 import org.weasis.core.ui.Messages;
 import org.weasis.core.ui.util.WtoolBar;
 
+
 public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements ActionListener {
 
   public static final List<ActionW> actionsButtons =
@@ -67,13 +70,13 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
     ActionW.SCROLL_SERIES, ActionW.ZOOM, ActionW.ROTATION, ActionW.NO_ACTION
   };
   public static final Icon MouseLeftIcon =
-      new ImageIcon(MouseActions.class.getResource("/icon/32x32/mouse-left.png"));
+      new ImageIcon(MouseActions.class.getResource("/icon/16x16/mouse-left.png"));
   public static final Icon MouseRightIcon =
-      new ImageIcon(MouseActions.class.getResource("/icon/32x32/mouse-right.png"));
+      new ImageIcon(MouseActions.class.getResource("/icon/16x16/mouse-right.png"));
   public static final Icon MouseMiddleIcon =
-      new ImageIcon(MouseActions.class.getResource("/icon/32x32/mouse-middle.png"));
+      new ImageIcon(MouseActions.class.getResource("/icon/16x16/mouse-middle.png"));
   public static final Icon MouseWheelIcon =
-      new ImageIcon(MouseActions.class.getResource("/icon/32x32/mouse-wheel.png"));
+      new ImageIcon(MouseActions.class.getResource("/icon/16x16/mouse-wheel.png"));
 
   protected final ImageViewerEventManager<E> eventManager;
   private final DropDownButton mouseLeft;
@@ -147,7 +150,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
           new DropDownButton(
               "layout", // NON-NLS
               new DropButtonIcon(
-                  new ImageIcon(MouseActions.class.getResource("/icon/32x32/layout.png")))) {
+                  new ImageIcon(MouseActions.class.getResource("/icon/16x16/layout.png")))) {
 
             @Override
             protected JPopupMenu getPopupMenu() {
@@ -169,6 +172,15 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
           ((RadioMenuItem)layoutOpts.getMenuComponents()[0]).doClick(); 
         }
       });
+      
+      Dimension testDim = btn_1x1.getPreferredSize();
+      testDim.width = 16;
+      testDim.height = 16;
+      
+      btn_1x1.setPreferredSize(testDim);
+      btn_1x1.setBorderPainted(true);
+      btn_1x1.setBorder(new LineBorder(Color.WHITE));
+      btn_1x1.setMargin(new Insets(4, 4, 4, 4));
       add(btn_1x1);
 
       final JButton btn_1x2 = new JButton();
@@ -179,6 +191,11 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
           ((RadioMenuItem)layoutOpts.getMenuComponents()[1]).doClick();          
         }
       });
+      btn_1x2.setPreferredSize(testDim);
+      btn_1x2.setBorderPainted(true);
+      btn_1x2.setMargin(new Insets(4, 4, 4, 4));
+      btn_1x2.setBorder(new LineBorder(Color.WHITE));
+
       add(btn_1x2);
 
       final JButton btn_1x3 = new JButton();
@@ -189,6 +206,10 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
           ((RadioMenuItem)layoutOpts.getMenuComponents()[2]).doClick();          
         }
       });
+      btn_1x3.setPreferredSize(testDim);
+      btn_1x3.setBorderPainted(true);
+      btn_1x3.setMargin(new Insets(4, 4, 4, 4));
+      btn_1x3.setBorder(new LineBorder(Color.WHITE));
       add(btn_1x3);
 
       final JButton btn_1x4 = new JButton();
@@ -199,6 +220,11 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
           ((RadioMenuItem)layoutOpts.getMenuComponents()[3]).doClick();          
         }
       });
+      btn_1x4.setPreferredSize(testDim);
+      btn_1x4.setBorderPainted(true);
+      btn_1x4.setMargin(new Insets(4, 4, 4, 4));
+      btn_1x4.setBorder(new LineBorder(Color.WHITE));
+
       add(btn_1x4);
 
       // final JButton btn_2x2_f2 = new JButton();
@@ -299,6 +325,14 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
           ((RadioMenuItem)layoutOpts.getMenuComponents()[19]).doClick();          
         }
       });
+
+      Dimension testDim1 = btn_4x2.getPreferredSize();
+      testDim1.width = 16;
+      testDim1.height = 16;
+      btn_4x2.setPreferredSize(testDim1);
+      btn_4x2.setBorderPainted(true);
+      btn_4x2.setBorder(new LineBorder(Color.WHITE));
+
       add(btn_4x2);
 
       // final JButton btn_4x1 = new JButton();
@@ -347,7 +381,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
     if (props.getBooleanProperty("weasis.toolbar.reset", true)) {
       final JButton resetButton = new JButton();
       resetButton.setToolTipText(Messages.getString("ViewerToolBar.disReset"));
-      resetButton.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/32x32/reset.png")));
+      resetButton.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/reset.png")));
       resetButton.addActionListener(e -> eventManager.resetDisplay());
       ActionState layout = eventManager.getAction(ActionW.RESET);
       if (layout != null) {
@@ -360,7 +394,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
     {
       final JButton testButton = new JButton();
       testButton.setToolTipText("Test Button");
-      // testButton.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/32x32/flip.png")));
+      // testButton.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/flip.png")));
       testButton.setIcon(((RadioMenuItem)((ComboItemListener) eventManager.getAction(ActionW.LAYOUT)).createUnregisteredRadioMenu("layout").getMenuComponents()[1]).getIcon());
       // testButton.addActionListener(e -> eventManager.resetDisplay());
       // ActionState layout = eventManager.getAction(ActionW.RESET);
@@ -595,7 +629,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
   }
 
   private static Icon buildSynchIcon(SynchView synch) {
-    final Icon mouseIcon = new ImageIcon(MouseActions.class.getResource("/icon/32x32/synch.png"));
+    final Icon mouseIcon = new ImageIcon(MouseActions.class.getResource("/icon/16x16/synch.png"));
     final Icon smallIcon = synch.getIcon();
     return new DropButtonIcon(
         new Icon() {

@@ -36,7 +36,7 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
   public static final Integer POINTS_NUMBER = 8;
 
   public static final Icon ICON =
-      new ImageIcon(RectangleGraphic.class.getResource("/icon/22x22/draw-rectangle.png"));
+      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/draw-rectangle.png"));
 
   public static final Measurement AREA =
       new Measurement(Messages.getString("measure.area"), 1, true, true, true);

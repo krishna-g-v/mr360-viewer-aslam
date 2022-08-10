@@ -34,7 +34,7 @@ public class ImportToolBar extends WtoolBar {
           };
       action.putValue(
           Action.LARGE_ICON_KEY,
-          new ImageIcon(SeriesViewerFactory.class.getResource("/icon/32x32/img-import.png")));
+          new ImageIcon(SeriesViewerFactory.class.getResource("/icon/16x16/img-import.png")));
       final JButton btnImport = new JButton(action);
       btnImport.setToolTipText(Messages.getString("ImportToolBar.open_img"));
       add(btnImport);

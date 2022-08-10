@@ -30,7 +30,7 @@ public class DcmHeaderToolBar extends WtoolBar {
 
     final JButton metaButton =
         new JButton(
-            new ImageIcon(ImageViewerPlugin.class.getResource("/icon/32x32/dcm-header.png")));
+            new ImageIcon(ImageViewerPlugin.class.getResource("/icon/16x16/dcm-header.png")));
     metaButton.setToolTipText(ActionW.SHOW_HEADER.getTitle());
     metaButton.addActionListener(
         e -> DicomFieldsView.displayHeader(eventManager.getSelectedView2dContainer()));

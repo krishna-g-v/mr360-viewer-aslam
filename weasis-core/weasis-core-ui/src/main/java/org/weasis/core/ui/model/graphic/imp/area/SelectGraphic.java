@@ -37,7 +37,7 @@ public class SelectGraphic extends RectangleGraphic {
   private static final long serialVersionUID = -7680605225823046153L;
 
   public static final Icon ICON =
-      new ImageIcon(SelectGraphic.class.getResource("/icon/22x22/draw-selection.png"));
+      new ImageIcon(SelectGraphic.class.getResource("/icon/10x10/draw-selection.png"));
 
   public SelectGraphic() {
     super();

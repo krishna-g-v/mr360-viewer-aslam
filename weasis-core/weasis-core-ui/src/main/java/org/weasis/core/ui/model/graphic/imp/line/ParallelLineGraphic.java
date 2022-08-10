@@ -42,7 +42,7 @@ public class ParallelLineGraphic extends AbstractDragGraphic {
   public static final Integer POINTS_NUMBER = 6;
 
   public static final Icon ICON =
-      new ImageIcon(ParallelLineGraphic.class.getResource("/icon/22x22/draw-parallel.png"));
+      new ImageIcon(ParallelLineGraphic.class.getResource("/icon/10x10/draw-parallel.png"));
 
   public static final Measurement DISTANCE =
       new Measurement(Messages.getString("measure.distance"), 1, true, true, true);

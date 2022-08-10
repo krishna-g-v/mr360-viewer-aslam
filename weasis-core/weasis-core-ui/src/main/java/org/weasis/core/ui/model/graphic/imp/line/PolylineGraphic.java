@@ -39,7 +39,7 @@ public class PolylineGraphic extends AbstractDragGraphic {
   public static final Integer POINTS_NUMBER = UNDEFINED;
 
   public static final Icon ICON =
-      new ImageIcon(PolylineGraphic.class.getResource("/icon/22x22/draw-polyline.png"));
+      new ImageIcon(PolylineGraphic.class.getResource("/icon/10x10/draw-polyline.png"));
 
   public static final Measurement LINE_LENGTH =
       new Measurement(Messages.getString("measure.length"), 5, true, true, true);
