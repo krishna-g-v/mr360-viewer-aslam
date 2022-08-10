@@ -9,6 +9,8 @@
  */
 package org.weasis.dicom.explorer;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -120,6 +122,38 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
       }
     }
     lastOpenedSeriesNo = -1;
+    
+    if ( UIManager.VIEWER_PLUGINS.size() > 0 && ((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)) != null && 
+        SynchData.Mode.STACK.equals(((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getSynchView().getSynchData().getMode()) &&
+    		((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getImagePaneGridSize() > 1 ) {
+    	
+    	// sort the thumbnails
+    	ArrayList<SeriesThumbnail> sortedThumbs = new ArrayList<SeriesThumbnail>(thumbs.size());
+    	for(int i=0; i<thumbs.size(); i++) {
+    		if(i == 0) {
+    			sortedThumbs.add(0, thumbs.get(0));
+    			continue;
+    		}
+    		
+    		int thisInstanceNo = TagD.getTagValue(thumbs.get(i).getSeries(), Tag.SeriesNumber, Integer.class);
+    		boolean isThumbInserted = false;
+    		for(int j=0; j<sortedThumbs.size(); j++) {
+    			if(thisInstanceNo > TagD.getTagValue(sortedThumbs.get(j).getSeries(), Tag.SeriesNumber, Integer.class)) continue;
+    			else {
+    				sortedThumbs.add(j, thumbs.get(i));
+    				isThumbInserted = true;
+    				break;
+    			}
+    		}
+    		if(!isThumbInserted) sortedThumbs.add(thumbs.get(i));
+    	}
+    	
+    	int gridSize = ((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getImagePaneGridSize();
+    	for(int i=1; i<gridSize; i++) {
+    		((ThumbnailMouseAndKeyAdapter)sortedThumbs.get(i).getMouseListeners()[3]).mouseClicked(new MouseEvent(getBar(), 0, 0, 0, 0, 0, 1, false));
+    	}
+          
+    }
     
     for (final SeriesThumbnail t : thumbs) {
       MediaSeries<MediaElement> series = t.getSeries();

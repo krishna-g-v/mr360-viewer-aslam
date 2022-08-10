@@ -135,7 +135,8 @@ public class View2dContainer extends ImageViewerPlugin<DicomImageElement>
           VIEWS_4x1,
           VIEWS_4x2,
           VIEWS_4x3,
-          VIEWS_4x4);
+          VIEWS_4x4,
+          VIEWS_2x6);
           // VIEWS_4x2);
 
   // Static tools shared by all the View2dContainer instances, tools are registered when a container

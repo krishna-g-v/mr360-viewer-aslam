@@ -208,6 +208,13 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
           4,
           4,
           view2dClass.getName());
+  public static final GridBagLayoutModel VIEWS_2x6 =
+	      new GridBagLayoutModel(
+	          "2x6", // NON-NLS
+	          String.format(F_VIEWS, "2x6"), // NON-NLS
+	          2,
+	          6,
+	          view2dClass.getName());
 
   /** The current focused <code>ImagePane</code>. The default is 0. */
   protected ViewCanvas<E> selectedImagePane = null;
@@ -311,7 +318,11 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
   public ViewCanvas<E> getFirstImagePaneInGrid() {
     return view2ds.get(0);
   }
-
+  
+  public int getImagePaneGridSize() {
+    return view2ds.size();
+  }
+  
   @Override
   public void close() {
     super.close();
@@ -903,7 +914,10 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
       }
       setSelectedAndGetFocus();
       if (bestDefaultLayout) {
-        changeLayoutModel(getBestDefaultViewLayout(seriesList.size()));
+    	if(layoutModel.getId().equalsIgnoreCase("1x1"))
+    		changeLayoutModel(getBestDefaultViewLayout(seriesList.size()));
+    	else
+    		changeLayoutModel(getBestDefaultViewLayout(view2ds.size()));
 
         // If the layout is larger than the list of series, clean other views.
         if (view2ds.size() > seriesList.size()) {
@@ -1184,7 +1198,8 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
     if (pos < 0) {
       pos = 0;
     }
-    if(SynchData.Mode.TILE.equals(synchView.getSynchData().getMode())) {
+    if(SynchData.Mode.TILE.equals(synchView.getSynchData().getMode()) || 
+    		SynchData.Mode.STACK.equals(synchView.getSynchData().getMode())) {
     	pos = 0;
     }
     setSelectedImagePane(view2ds.get(pos));
