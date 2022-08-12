@@ -166,64 +166,65 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
 
       final JButton btn_1x1 = new JButton();
       btn_1x1.setToolTipText("1x1 View");
-      btn_1x1.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[0]).getIcon());
+      btn_1x1.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/11.png")));
       btn_1x1.addActionListener(new ActionListener () {
         public void actionPerformed(ActionEvent e) {
           ((RadioMenuItem)layoutOpts.getMenuComponents()[0]).doClick(); 
         }
       });
+
       
-      Dimension testDim = btn_1x1.getPreferredSize();
-      testDim.width = 16;
-      testDim.height = 16;
+      // Dimension testDim = btn_1x1.getPreferredSize();
+      // testDim.width = 16;
+      // testDim.height = 16;
       
-      btn_1x1.setPreferredSize(testDim);
-      btn_1x1.setBorderPainted(true);
-      btn_1x1.setBorder(new LineBorder(Color.WHITE));
-      btn_1x1.setMargin(new Insets(4, 4, 4, 4));
+      // btn_1x1.setPreferredSize(testDim);
+      // btn_1x1.setBorderPainted(true);
+      // btn_1x1.setBorder(new LineBorder(Color.WHITE));
+      // btn_1x1.setMargin(new Insets(4, 4, 4, 4));
       add(btn_1x1);
 
       final JButton btn_1x2 = new JButton();
       btn_1x2.setToolTipText("1x2 View");
-      btn_1x2.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[1]).getIcon());
+      btn_1x2.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/12.png")));
       btn_1x2.addActionListener(new ActionListener () {
         public void actionPerformed(ActionEvent e) {
           ((RadioMenuItem)layoutOpts.getMenuComponents()[1]).doClick();          
         }
       });
-      btn_1x2.setPreferredSize(testDim);
-      btn_1x2.setBorderPainted(true);
-      btn_1x2.setMargin(new Insets(4, 4, 4, 4));
-      btn_1x2.setBorder(new LineBorder(Color.WHITE));
+      // btn_1x2.setPreferredSize(testDim);
+      // btn_1x2.setBorderPainted(true);
+      // btn_1x2.setMargin(new Insets(4, 4, 4, 4));
+      // btn_1x2.setBorder(new LineBorder(Color.WHITE));
 
       add(btn_1x2);
 
       final JButton btn_1x3 = new JButton();
       btn_1x3.setToolTipText("1x3 View");
-      btn_1x3.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[2]).getIcon());
+      btn_1x3.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/13.png")));
       btn_1x3.addActionListener(new ActionListener () {
         public void actionPerformed(ActionEvent e) {
           ((RadioMenuItem)layoutOpts.getMenuComponents()[2]).doClick();          
         }
       });
-      btn_1x3.setPreferredSize(testDim);
-      btn_1x3.setBorderPainted(true);
-      btn_1x3.setMargin(new Insets(4, 4, 4, 4));
-      btn_1x3.setBorder(new LineBorder(Color.WHITE));
+      // btn_1x3.setPreferredSize(testDim);
+      // btn_1x3.setBorderPainted(true);
+      // btn_1x3.setMargin(new Insets(4, 4, 4, 4));
+      // btn_1x3.setBorder(new LineBorder(Color.WHITE));
       add(btn_1x3);
 
       final JButton btn_1x4 = new JButton();
       btn_1x4.setToolTipText("1x4 View");
-      btn_1x4.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[3]).getIcon());
+      btn_1x4.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/14.png")));
       btn_1x4.addActionListener(new ActionListener () {
         public void actionPerformed(ActionEvent e) {
           ((RadioMenuItem)layoutOpts.getMenuComponents()[3]).doClick();          
         }
       });
-      btn_1x4.setPreferredSize(testDim);
-      btn_1x4.setBorderPainted(true);
-      btn_1x4.setMargin(new Insets(4, 4, 4, 4));
-      btn_1x4.setBorder(new LineBorder(Color.WHITE));
+      // btn_1x4.setPreferredSize(testDim);
+      // btn_1x4.setBorderPainted(true);
+      // btn_1x4.setMargin(new Insets(4, 4, 4, 4));
+      // btn_1x4.setBorder(new LineBorder(Color.WHITE));
 
       add(btn_1x4);
 
@@ -249,7 +250,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
 
       final JButton btn_2x1 = new JButton();
       btn_2x1.setToolTipText("2x1 View");
-      btn_2x1.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[4]).getIcon());
+      btn_2x1.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/21.png")));
       btn_2x1.addActionListener(new ActionListener () {
         public void actionPerformed(ActionEvent e) {
           ((RadioMenuItem)layoutOpts.getMenuComponents()[4]).doClick();          
@@ -259,7 +260,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
 
       final JButton btn_2x2 = new JButton();
       btn_2x2.setToolTipText("2x2 View");
-      btn_2x2.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[9]).getIcon());
+      btn_2x2.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/22.png")));
       btn_2x2.addActionListener(new ActionListener () {
         public void actionPerformed(ActionEvent e) {
           ((RadioMenuItem)layoutOpts.getMenuComponents()[9]).doClick();          
@@ -269,7 +270,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
 
       final JButton btn_2x4 = new JButton();
       btn_2x4.setToolTipText("2x4 View");
-      btn_2x4.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[11]).getIcon());
+      btn_2x4.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/24.png")));
       btn_2x4.addActionListener(new ActionListener () {
         public void actionPerformed(ActionEvent e) {
           ((RadioMenuItem)layoutOpts.getMenuComponents()[11]).doClick();          
@@ -279,7 +280,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
 
       final JButton btn_2x5 = new JButton();
       btn_2x5.setToolTipText("2x5 View");
-      btn_2x5.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[12]).getIcon());
+      btn_2x5.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/25.png")));
       btn_2x5.addActionListener(new ActionListener () {
         public void actionPerformed(ActionEvent e) {
           ((RadioMenuItem)layoutOpts.getMenuComponents()[12]).doClick();          
@@ -289,7 +290,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
 
       final JButton btn_3x1 = new JButton();
       btn_3x1.setToolTipText("3x1 View");
-      btn_3x1.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[13]).getIcon());
+      btn_3x1.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/31.png")));
       btn_3x1.addActionListener(new ActionListener () {
         public void actionPerformed(ActionEvent e) {
           ((RadioMenuItem)layoutOpts.getMenuComponents()[13]).doClick();          
@@ -299,7 +300,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
 
       final JButton btn_3x4 = new JButton();
       btn_3x4.setToolTipText("3x4 View");
-      btn_3x4.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[16]).getIcon());
+      btn_3x4.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/34.png")));
       btn_3x4.addActionListener(new ActionListener () {
         public void actionPerformed(ActionEvent e) {
           ((RadioMenuItem)layoutOpts.getMenuComponents()[16]).doClick();          
@@ -309,7 +310,7 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
 
       final JButton btn_3x5 = new JButton();
       btn_3x5.setToolTipText("3x5 View");
-      btn_3x5.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[17]).getIcon());
+      btn_3x5.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/35.png")));
       btn_3x5.addActionListener(new ActionListener () {
         public void actionPerformed(ActionEvent e) {
           ((RadioMenuItem)layoutOpts.getMenuComponents()[17]).doClick();          
@@ -319,19 +320,19 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
 
       final JButton btn_4x2 = new JButton();
       btn_4x2.setToolTipText("4x2 View");
-      btn_4x2.setIcon(((RadioMenuItem)layoutOpts.getMenuComponents()[19]).getIcon());
+      btn_4x2.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/42.png")));
       btn_4x2.addActionListener(new ActionListener () {
         public void actionPerformed(ActionEvent e) {
           ((RadioMenuItem)layoutOpts.getMenuComponents()[19]).doClick();          
         }
       });
 
-      Dimension testDim1 = btn_4x2.getPreferredSize();
-      testDim1.width = 16;
-      testDim1.height = 16;
-      btn_4x2.setPreferredSize(testDim1);
-      btn_4x2.setBorderPainted(true);
-      btn_4x2.setBorder(new LineBorder(Color.WHITE));
+      // Dimension testDim1 = btn_4x2.getPreferredSize();
+      // testDim1.width = 16;
+      // testDim1.height = 16;
+      // btn_4x2.setPreferredSize(testDim1);
+      // btn_4x2.setBorderPainted(true);
+      // btn_4x2.setBorder(new LineBorder(Color.WHITE));
 
       add(btn_4x2);
 
