@@ -3357,3 +3357,20 @@ org.eclipse.core.runtime.CoreException: Could not resolve artifact xmlpull:xmlpu
 2022-08-12 11:29:09,294 [Worker-1: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
 2022-08-12 11:29:09,294 [Worker-1: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered properties files.
 2022-08-12 11:29:09,294 [Worker-1: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\raj\javawork\medreport360-viewer\weasis-opencv\weasis-opencv-core-windows-x86-64\src\test\resources
+2022-08-12 15:24:58,493 [Worker-25: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/weasis-core-api: org.weasis.core:weasis-core-api:3.8.1-SNAPSHOT with classifier  to /weasis-core-api/target/classes
+2022-08-12 15:24:58,537 [Worker-25: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/weasis-core-ui: org.weasis.core:weasis-core-ui:3.8.1-SNAPSHOT with classifier  to /weasis-core-ui/target/classes
+2022-08-12 15:24:58,539 [Worker-25: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/weasis-dicom-explorer: org.weasis.dicom:weasis-dicom-explorer:3.8.1-SNAPSHOT with classifier  to /weasis-dicom-explorer/target/classes
+2022-08-12 15:24:58,539 [Worker-25: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/weasis-dicom-codec: org.weasis.dicom:weasis-dicom-codec:3.8.1-SNAPSHOT with classifier  to /weasis-dicom-codec/target/classes
+2022-08-12 15:24:58,541 [Worker-25: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/weasis-imageio: org.weasis.imageio:weasis-imageio-codec:3.8.1-SNAPSHOT with classifier  to /weasis-imageio/target/classes
+2022-08-12 15:24:58,541 [Worker-25: Building] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/weasis-core-api: org.weasis.core:weasis-core-api:3.8.1-SNAPSHOT with classifier  to /weasis-core-api/target/classes
+2022-08-12 15:24:58,549 [Worker-25: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2022-08-12 15:24:58,549 [Worker-25: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered properties files.
+2022-08-12 15:24:58,590 [Worker-25: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 43 resources
+2022-08-12 15:24:58,817 [Worker-25: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2022-08-12 15:25:00,052 [Worker-25: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2022-08-12 15:25:00,052 [Worker-25: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered properties files.
+2022-08-12 15:25:00,052 [Worker-25: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\raj\javawork\medreport360-viewer\weasis-dicom\weasis-dicom-viewer2d\src\test\resources
+2022-08-12 15:32:21,724 [Worker-22: Launching weasis-core-ui] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/weasis-core-api: org.weasis.core:weasis-core-api:3.8.1-SNAPSHOT with classifier  to /weasis-core-api/target/classes
+2022-08-12 15:32:21,995 [Worker-22: Launching weasis-core-ui] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/weasis-core-api: org.weasis.core:weasis-core-api:3.8.1-SNAPSHOT with classifier null to /weasis-core-api/target/classes
+2022-08-12 15:32:22,329 [Worker-22: Launching weasis-core-ui] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/weasis-core-api: org.weasis.core:weasis-core-api:3.8.1-SNAPSHOT with classifier null to /weasis-core-api/target/classes
+2022-08-12 15:32:55,088 [main] INFO  o.e.m2e.actions.ExecutePomAction - Creating new launch configuration
