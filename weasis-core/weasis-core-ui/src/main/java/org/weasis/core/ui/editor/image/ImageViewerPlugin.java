@@ -916,8 +916,9 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
       if (bestDefaultLayout) {
     	if(layoutModel.getId().equalsIgnoreCase("1x1"))
     		changeLayoutModel(getBestDefaultViewLayout(seriesList.size()));
-    	else
-    		changeLayoutModel(getBestDefaultViewLayout(view2ds.size()));
+//    	Probably not needed the below
+//    	else
+//    		changeLayoutModel(getBestDefaultViewLayout(view2ds.size()));
 
         // If the layout is larger than the list of series, clean other views.
         if (view2ds.size() > seriesList.size()) {

@@ -124,8 +124,18 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
     lastOpenedSeriesNo = -1;
     
     if ( UIManager.VIEWER_PLUGINS.size() > 0 && ((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)) != null && 
-        SynchData.Mode.STACK.equals(((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getSynchView().getSynchData().getMode()) &&
-    		((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getImagePaneGridSize() > 1 ) {
+    		SynchData.Mode.STACK.equals(((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getSynchView().getSynchData().getMode()) &&
+    		((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getImagePaneGridSize() > 1 && thumbs.size() > 0 ) {
+//    	System.out.println((ThumbnailMouseAndKeyAdapter)thumbs.get(1).getMouseListeners()[0]);
+//    ((ThumbnailMouseAndKeyAdapter)thumbs.get(1).getMouseListeners()[0]).mouseClicked(null);
+    	
+    	
+    	// working
+//    	System.out.println(thumbs.get(1).getMouseListeners().length);
+//    	MouseListener[] l = thumbs.get(0).getMouseListeners();
+//    ThumbnailMouseAndKeyAdapter tt = (ThumbnailMouseAndKeyAdapter)(l[3]);
+//    System.out.println(tt);
+//    tt.mouseClicked(new MouseEvent(getBar(), 0, 0, 0, 0, 0, 1, false));
     	
     	// sort the thumbnails
     	ArrayList<SeriesThumbnail> sortedThumbs = new ArrayList<SeriesThumbnail>(thumbs.size());
@@ -152,7 +162,8 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
     	for(int i=1; i<gridSize; i++) {
     		((ThumbnailMouseAndKeyAdapter)sortedThumbs.get(i).getMouseListeners()[3]).mouseClicked(new MouseEvent(getBar(), 0, 0, 0, 0, 0, 1, false));
     	}
-          
+//	    ((ThumbnailMouseAndKeyAdapter)sortedThumbs.get(3).getMouseListeners()[3]).mouseClicked(new MouseEvent(getBar(), 0, 0, 0, 0, 0, 1, false));
+    
     }
     
     for (final SeriesThumbnail t : thumbs) {
