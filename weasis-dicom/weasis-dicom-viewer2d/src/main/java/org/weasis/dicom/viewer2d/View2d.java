@@ -156,6 +156,8 @@ public class View2d extends DefaultView2d<DicomImageElement> {
 
   protected final KOViewButton koStarButton;
 
+  public static Collection<KOSpecialElement> exportKOElements = null;
+
   public View2d(ImageViewerEventManager<DicomImageElement> eventManager) {
     super(eventManager);
 
@@ -604,6 +606,8 @@ public class View2d extends DefaultView2d<DicomImageElement> {
       }
     }
 
+    exportKOElements = DicomModel.getKoSpecialElements(getSeries());
+    
     koStarButton.setState(newSelectionState);
 
     Boolean selected = koStarButton.getState().equals(eState.SELECTED);

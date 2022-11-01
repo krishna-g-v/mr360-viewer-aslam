@@ -38,11 +38,13 @@ import org.weasis.dicom.codec.DicomImageElement;
 import org.weasis.dicom.codec.AbstractKOSpecialElement.Reference;
 import org.weasis.dicom.codec.TagD;
 import org.weasis.core.api.media.data.TagW;
+import org.weasis.dicom.viewer2d.View2d;
 
 public class ExportTree extends JScrollPane {
 
   private final CheckboxTree checkboxTree;
   private final CheckTreeModel checkTreeModel;
+  Set<TreePath> studyPathsSet = new HashSet<>();
 
   public ExportTree(DicomModel dicomModel) {
     this(new CheckTreeModel(dicomModel));
@@ -87,41 +89,24 @@ public class ExportTree extends JScrollPane {
     // -- checkingMode is alreadySet inDicomExport
 
     if (checkingPaths != null && checkingPaths.length > 0) {
-      Set<TreePath> studyPathsSet = new HashSet<>();
-
       DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) checkTreeModel.getRootNode();
-      Enumeration<?> enumTreeNode = ((DefaultMutableTreeNode) rootNode).breadthFirstEnumeration();
-      boolean dicomSpecialElem = false;
-      while (enumTreeNode.hasMoreElements()) { // iterating nodes under root node
-        Object child = enumTreeNode.nextElement();
-        if (child instanceof DefaultMutableTreeNode) {
-          DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) child;
-          if (treeNode.getLevel() != 3) { // 3 stands for Series Level
-            continue;
-          }
 
-          DefaultMutableTreeNode mediaElem = (DefaultMutableTreeNode) ((Enumeration) treeNode.children()).nextElement();
-          Object mediaElemObject = mediaElem.getUserObject();
-          if (mediaElemObject instanceof KOSpecialElement) { // if open key object
-            String referenceObjectStr = "";
-            Set<String> referenceObjectSet  = ((KOSpecialElement) mediaElemObject).getReferencedSOPInstanceUIDSet();
-            Iterator referenceObjects = referenceObjectSet.iterator();
-            if(referenceObjects.hasNext()) {
-              referenceObjectStr = (String) referenceObjects.next();
-            }
+      Collection<KOSpecialElement> keyObjectElements = View2d.exportKOElements;
+      if (keyObjectElements != null && keyObjectElements.size() > 0) {
+        for (KOSpecialElement koElement : keyObjectElements) {
+          Set<String> referenceObjectSet  = ((KOSpecialElement) koElement).getReferencedSOPInstanceUIDSet();
+          Iterator referenceObjects = referenceObjectSet.iterator();
+          while(referenceObjects.hasNext()) {
+            String referenceObjectStr = (String) referenceObjects.next();
             TreePath referenceTreePath = findTreePath(referenceObjectStr, rootNode);
             if(referenceTreePath != null) {
               studyPathsSet.add(referenceTreePath);
             }
-            
-            TreePath checkingPath = new TreePath(mediaElem.getPath());
-            studyPathsSet.add(checkingPath);
-            dicomSpecialElem = true;
           }
         }
       }
 
-      if (!dicomSpecialElem) {
+      if (keyObjectElements.size() == 0) {
         for (TreePath checkingPath : checkingPaths) {
           if (checkingPath.getPathCount() == 4) { // 4 stands for Series Level
             studyPathsSet.add(checkingPath.getParentPath());
@@ -185,6 +170,7 @@ public class ExportTree extends JScrollPane {
           DefaultMutableTreeNode refMediaElem = (DefaultMutableTreeNode) refTreeEnum.nextElement();
           Object refMediaObj = refMediaElem.getUserObject();
           if (refMediaObj instanceof KOSpecialElement) {
+            studyPathsSet.add(new TreePath(refMediaElem.getPath()));
             continue;
           }
           Attributes refDicomImgObject = ((DicomImageElement) refMediaObj).getMediaReader().getDicomObject();
