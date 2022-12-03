@@ -1346,10 +1346,10 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
 
               MediaSeries<DicomImageElement> s = pane.getSeries();
               boolean specialView = pane instanceof MipView;
-              if (s != null && fruid != null && val != null && !specialView) {
+              // if (s != null && fruid != null && val != null && !specialView) {
                 boolean synchByDefault = fruid.equals(TagD.getTagValue(s, Tag.FrameOfReferenceUID));
                 oldSynch = (SynchData) pane.getActionValue(ActionW.SYNCH_LINK.cmd());
-                if (synchByDefault) {
+                if (true) {
                   if (ImageOrientation.hasSameOrientation(series, s)) {
                     pane.setActionsInView(ActionW.SYNCH_CROSSLINE.cmd(), false);
                     // Only fully synch if no PR is applied (because can change pixel size)
@@ -1397,7 +1397,7 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
                 }
                 pane.setActionsInView(ActionW.SYNCH_LINK.cmd(), oldSynch);
                 // pane.updateSynchState();
-              }
+              // }
             }
             // Force drawing crosslines without changing the slice position
             cineAction.ifPresent(a -> a.stateChanged(a.getSliderModel()));
