@@ -168,8 +168,15 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   public static final Cursor CROSS_CURSOR = DefaultView2d.getNewCursor(Cursor.CROSSHAIR_CURSOR);
   public static final Cursor MOVE_CURSOR = DefaultView2d.getNewCursor(Cursor.MOVE_CURSOR);
   public static final Cursor DEFAULT_CURSOR = DefaultView2d.getNewCursor(Cursor.DEFAULT_CURSOR);
+  
+  /* MR360 variables */
   public static boolean linkMode = true;
   public static JToggleButton linkModeButtonRef;
+  public static String studyModality;
+  public static int totalNoOfImages = 0;
+  public static int totalLoadedImages = 0;
+  public static boolean studyLoaded = true;
+  
   
   protected final FocusHandler focusHandler = new FocusHandler();
   protected GraphicMouseHandler<E> graphicMouseHandler;
@@ -205,7 +212,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
 
   public DefaultView2d(ImageViewerEventManager<E> eventManager, ViewModel viewModel) {
     super(viewModel);
-    if(!linkMode) linkModeButtonRef.doClick(); // may not be required, usually to reset the feature completely
+//    if(!linkMode) linkModeButtonRef.doClick(); // may not be required, usually to reset the feature completely
     this.eventManager = Objects.requireNonNull(eventManager);
     this.viewButtons = new ArrayList<>();
     this.tileOffset = 0;
@@ -239,7 +246,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   }
 
   protected void initActionWState() {
-    if(!linkMode) linkModeButtonRef.doClick();
+//    if(!linkMode) linkModeButtonRef.doClick();
     E img = getImage();
     actionsInView.put(
         ActionW.SPATIAL_UNIT.cmd(), img == null ? Unit.PIXEL : img.getPixelSpacingUnit());
@@ -980,6 +987,17 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
     updateAffineTransform();
     if (panner != null) {
       panner.updateImageSize();
+    }
+    
+    // Need to use this logic only during xray
+    if(!studyLoaded && studyModality != null && studyModality.equals("CR")) {
+	    totalLoadedImages++;
+	    if(totalLoadedImages == totalNoOfImages) { // do cleanup of variable values
+    		linkMode = false;
+	    	totalLoadedImages = 0;
+	    	studyLoaded = false;
+	    	studyModality = null;
+	    }
     }
   }
 

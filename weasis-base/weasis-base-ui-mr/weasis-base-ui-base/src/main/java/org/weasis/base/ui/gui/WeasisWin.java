@@ -127,6 +127,7 @@ import org.weasis.core.ui.editor.MimeSystemAppViewer;
 import org.weasis.core.ui.editor.SeriesViewer;
 import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
+import org.weasis.core.ui.editor.image.DefaultView2d;
 import org.weasis.core.ui.editor.image.ImageViewerPlugin;
 import org.weasis.core.ui.editor.image.ViewCanvas;
 import org.weasis.core.ui.editor.image.ViewerPlugin;
@@ -398,18 +399,27 @@ public class WeasisWin {
     //   props.put("mr360.synch.view", "SERIES");      
     // } else 
 //System.out.println(seriesList.get(0).getToolTips());
+    
+    DefaultView2d.linkMode = true; // reset by default
     if(seriesList.get(0).getToolTips().toUpperCase().contains("Modality: US".toUpperCase())) {
     	props.put("mr360.modality", "US");
 		props.put("mr360.layout", viewerProps.containsKey("us.layout") ? viewerProps.get("us.layout") : "1x1");
-		props.put("mr360.synch.view", viewerProps.containsKey("us.view.mode") ? viewerProps.get("us.view.mode") : "STACK");      
-    } else if(seriesList.get(0).getToolTips().toUpperCase().contains("Modality: CR".toUpperCase())) {
+		props.put("mr360.synch.view", viewerProps.containsKey("us.view.mode") ? viewerProps.get("us.view.mode") : "STACK");
+		
+		DefaultView2d.studyModality = "US";
+    } else if(seriesList.get(0).getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || seriesList.get(0).getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) {
 		props.put("mr360.modality", "CR");
 		props.put("mr360.layout", viewerProps.containsKey("cr.layout") ? viewerProps.get("cr.layout") : "1x1");
-		props.put("mr360.synch.view", viewerProps.containsKey("cr.view.mode") ? viewerProps.get("cr.view.mode") : "STACK");      
+		props.put("mr360.synch.view", viewerProps.containsKey("cr.view.mode") ? viewerProps.get("cr.view.mode") : "STACK");    
+		
+		DefaultView2d.studyModality = "CR";
+//		DefaultView2d.linkMode = false;
     } else if(seriesList.get(0).getToolTips().toUpperCase().contains("Modality: CT".toUpperCase())) {
-		props.put("mr360.modality", "CR");
+		props.put("mr360.modality", "CT");
 		props.put("mr360.layout", viewerProps.containsKey("ct.layout") ? viewerProps.get("ct.layout") : "1x1");
-		props.put("mr360.synch.view", viewerProps.containsKey("ct.view.mode") ? viewerProps.get("ct.view.mode") : "STACK");      
+		props.put("mr360.synch.view", viewerProps.containsKey("ct.view.mode") ? viewerProps.get("ct.view.mode") : "STACK"); 
+		
+		DefaultView2d.studyModality = "CT";
     }
 
 

@@ -61,6 +61,7 @@ import org.weasis.core.api.util.ThreadUtil;
 import org.weasis.core.ui.docking.UIManager;
 import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
+import org.weasis.core.ui.editor.image.DefaultView2d;
 import org.weasis.core.util.StringUtil;
 import org.weasis.dicom.codec.DicomEncapDocElement;
 import org.weasis.dicom.codec.DicomEncapDocSeries;
@@ -130,6 +131,8 @@ public class DicomModel implements TreeModel, DataExplorerModel {
   private final Tree<MediaSeriesGroup> model;
   private PropertyChangeSupport propertyChange = null;
   private final SplittingRules splittingRules;
+  
+  public static String xraySeriesStore;
 
   public DicomModel() {
     model = new Tree<>(MediaSeriesGroupNode.rootNode);
@@ -819,6 +822,17 @@ public class DicomModel implements TreeModel, DataExplorerModel {
     }
 
     String seriesUID = TagD.getTagValue(dicomReader, Tag.SeriesInstanceUID, String.class);
+	if(DefaultView2d.studyModality != null && DefaultView2d.studyModality.equals("CR")) {
+		Series thisDicomSeries = dicomReader.buildSeries(seriesUID);
+		dicomReader.writeMetaData(thisDicomSeries);
+		
+		Integer thisSeriesNo = TagD.getTagValue(thisDicomSeries, Tag.SeriesNumber, Integer.class);
+		Integer thisInstanceNo = TagD.getTagValue(dicomReader, Tag.InstanceNumber, Integer.class);
+		Integer xraySeriesNo = (thisSeriesNo * 1000) + thisInstanceNo;
+		
+		media.setTag(TagD.get(Tag.SeriesNumber), xraySeriesNo);
+		seriesUID = xraySeriesStore;
+	}
     Series dicomSeries = (Series) getHierarchyNode(st, seriesUID);
 
     if (dicomSeries == null) {

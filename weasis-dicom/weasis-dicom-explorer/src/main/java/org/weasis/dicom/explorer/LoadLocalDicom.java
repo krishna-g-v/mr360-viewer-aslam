@@ -15,6 +15,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.dcm4che3.data.Tag;
 import org.slf4j.LoggerFactory;
@@ -34,6 +36,7 @@ import org.weasis.core.api.media.data.Thumbnail;
 import org.weasis.core.ui.docking.UIManager;
 import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
+import org.weasis.core.ui.editor.image.DefaultView2d;
 import org.weasis.core.ui.editor.image.ImageViewerPlugin;
 import org.weasis.core.ui.editor.image.SynchData;
 import org.weasis.core.ui.model.GraphicModel;
@@ -53,6 +56,8 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
   private final boolean recursive;
   private boolean openPlugin;
   private int lastOpenedSeriesNo = -1;
+  
+  public String thisStudySeriesForXray = null;
 
   public LoadLocalDicom(File[] files, boolean recursive, DataExplorerModel explorerModel) {
     super(Messages.getString("DicomExplorer.loading"), false);
@@ -87,6 +92,8 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
     final ArrayList<SeriesThumbnail> thumbs = new ArrayList<>();
     final ArrayList<File> folders = new ArrayList<>();
 
+    DefaultView2d.totalNoOfImages = file.length;
+    DefaultView2d.studyLoaded = false;
     for (File value : file) {
       if (isCancelled()) {
         return;
@@ -166,6 +173,13 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
     
     }
     
+    if(DefaultView2d.studyModality != null && DefaultView2d.studyModality.equals("CR")) {
+		if(thumbs.size() > 0) {
+			List<MediaElement> list = thumbs.get(0).getSeries().getSortedMedias(null);
+			Collections.sort(list, (l1, l2) -> TagD.getTagValue(l1, Tag.SeriesNumber, Integer.class) - TagD.getTagValue(l2, Tag.SeriesNumber, Integer.class));
+		}
+    }
+    
     for (final SeriesThumbnail t : thumbs) {
       MediaSeries<MediaElement> series = t.getSeries();
       
@@ -211,7 +225,36 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
     }
 
     String seriesUID = (String) dicomReader.getTagValue(TagD.get(Tag.SeriesInstanceUID));
-    Series dicomSeries = (Series) dicomModel.getHierarchyNode(study, seriesUID);
+    Integer xraySeriesNo = null;
+    Series dicomSeries;
+    
+    if(DefaultView2d.studyModality == null) { // first file in the dicom to scan for modality
+    	DefaultView2d.studyModality = dicomReader.getTagValue(TagD.get(Tag.Modality)).toString().equals("DX") ? "CR" : dicomReader.getTagValue(TagD.get(Tag.Modality)).toString();
+    }
+    
+    if(DefaultView2d.studyModality != null && DefaultView2d.studyModality.equals("CR")) {
+    	if(thisStudySeriesForXray == null) {
+			Series dicomSeriesOfFirstFile = dicomReader.buildSeries(seriesUID);
+			dicomReader.writeMetaData(dicomSeriesOfFirstFile);
+			Integer thisSeriesNo = TagD.getTagValue(dicomSeriesOfFirstFile, Tag.SeriesNumber, Integer.class);
+			Integer thisInstanceNo = TagD.getTagValue(dicomReader, Tag.InstanceNumber, Integer.class);
+			xraySeriesNo = (thisSeriesNo * 1000) + thisInstanceNo;
+			
+			thisStudySeriesForXray = seriesUID;
+			DicomModel.xraySeriesStore = thisStudySeriesForXray;
+    	} else {
+    		if(seriesUID.equals(thisStudySeriesForXray)) {
+    			Series dicomSeriesOfFirstFile = dicomReader.buildSeries(seriesUID);
+    			dicomReader.writeMetaData(dicomSeriesOfFirstFile);
+    			Integer thisSeriesNo = TagD.getTagValue(dicomSeriesOfFirstFile, Tag.SeriesNumber, Integer.class);
+    			Integer thisInstanceNo = TagD.getTagValue(dicomReader, Tag.InstanceNumber, Integer.class);
+    			xraySeriesNo = (thisSeriesNo * 1000) + thisInstanceNo;    			
+    		}
+    	}
+	    dicomSeries = (Series) dicomModel.getHierarchyNode(study, thisStudySeriesForXray);
+    } else
+    	dicomSeries = (Series) dicomModel.getHierarchyNode(study, seriesUID);
+    
     try {
       if (dicomSeries == null) {
         dicomSeries = dicomReader.buildSeries(seriesUID);
@@ -222,6 +265,7 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
         if (medias != null) {
           for (MediaElement media : medias) {
             dicomModel.applySplittingRules(dicomSeries, media);
+            if(DefaultView2d.studyModality != null && DefaultView2d.studyModality.equals("CR")) media.setTag(TagD.get(Tag.SeriesNumber), xraySeriesNo);
           }
           if (medias.length > 0) {
             dicomSeries.setFileSize(dicomSeries.getFileSize() + medias[0].getLength());
@@ -293,6 +337,7 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
         if (medias != null) {
           for (MediaElement media : medias) {
             dicomModel.applySplittingRules(dicomSeries, media);
+            if(xraySeriesNo != null && DefaultView2d.studyModality != null && DefaultView2d.studyModality.equals("CR")) media.setTag(TagD.get(Tag.SeriesNumber), xraySeriesNo);
           }
           if (medias.length > 0) {
             dicomSeries.setFileSize(dicomSeries.getFileSize() + medias[0].getLength());

@@ -109,7 +109,7 @@ public class LutToolBar extends WtoolBar {
     presetBtn2.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/2.png")));
     presetBtn2.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
-        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(1)).doClick();
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(2)).doClick();
       }
     });
     add(presetBtn2);
@@ -120,7 +120,7 @@ public class LutToolBar extends WtoolBar {
     presetBtn3.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/3.png")));
     presetBtn3.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
-        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(2)).doClick();
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(3)).doClick();
       }
     });
     add(presetBtn3);
@@ -131,7 +131,7 @@ public class LutToolBar extends WtoolBar {
     presetBtn4.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/4.png")));
     presetBtn4.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
-        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(3)).doClick();
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(4)).doClick();
       }
     });
     add(presetBtn4);
@@ -142,7 +142,7 @@ public class LutToolBar extends WtoolBar {
     presetBtn5.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/5.png")));
     presetBtn5.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
-        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(4)).doClick();
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(5)).doClick();
       }
     });
     add(presetBtn5);
@@ -153,7 +153,7 @@ public class LutToolBar extends WtoolBar {
     presetBtn6.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/6.png")));
     presetBtn6.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
-        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(5)).doClick();
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(6)).doClick();
       }
     });
     add(presetBtn6);
@@ -164,7 +164,7 @@ public class LutToolBar extends WtoolBar {
     presetBtn7.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/7.png")));
     presetBtn7.addActionListener(new ActionListener () {
       public void actionPerformed(ActionEvent e) {
-        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(6)).doClick();
+        ((RadioMenuItem)presetButton.getMenuModel().createJPopupMenu().getComponent(7)).doClick();
       }
     });
     add(presetBtn7);
