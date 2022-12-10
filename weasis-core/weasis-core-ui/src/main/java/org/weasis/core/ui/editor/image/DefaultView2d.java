@@ -992,7 +992,21 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
     // Need to use this logic only during xray
     if(!studyLoaded && studyModality != null && studyModality.equals("CR")) {
 	    totalLoadedImages++;
-	    if(totalLoadedImages == totalNoOfImages) { // do cleanup of variable values
+	    
+	    Optional<ComboItemListener> layoutAction = eventManager.getAction(ActionW.LAYOUT, ComboItemListener.class);
+        String layoutId = ((GridBagLayoutModel) layoutAction.get().getSelectedItem()).getId();
+        int totalCells = 1;
+        if(layoutId.startsWith("layout")) {
+          totalCells = 3;
+        } else {
+          String[] gridDimentions = layoutId.split("x");
+          totalCells = Integer.parseInt(gridDimentions[0]) * Integer.parseInt(gridDimentions[1]);
+        }
+        
+        int remainingCellsInLastPage = totalCells - (totalNoOfImages % totalCells);
+        if(totalNoOfImages == totalCells) remainingCellsInLastPage = totalCells; // boundary condition observed having a blank page at end
+        
+	    if(totalLoadedImages == (totalNoOfImages + remainingCellsInLastPage)) { // do cleanup of variable values
     		linkMode = false;
 	    	totalLoadedImages = 0;
 	    	studyLoaded = false;
