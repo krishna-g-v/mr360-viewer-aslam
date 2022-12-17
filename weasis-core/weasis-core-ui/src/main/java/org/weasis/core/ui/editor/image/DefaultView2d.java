@@ -1012,6 +1012,8 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
 	    	studyLoaded = false;
 	    	studyModality = null;
 	    }
+    } else {
+    	studyModality = null;
     }
   }
 
