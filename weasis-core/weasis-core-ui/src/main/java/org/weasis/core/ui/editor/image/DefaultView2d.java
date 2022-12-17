@@ -176,6 +176,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   public static int totalNoOfImages = 0;
   public static int totalLoadedImages = 0;
   public static boolean studyLoaded = true;
+  public static boolean manualLinkBtnPressed = false;
   
   
   protected final FocusHandler focusHandler = new FocusHandler();

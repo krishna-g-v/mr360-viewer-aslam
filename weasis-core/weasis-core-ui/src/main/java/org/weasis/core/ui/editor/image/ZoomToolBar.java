@@ -81,12 +81,14 @@ public class ZoomToolBar extends WtoolBar {
             boolean selected = abstractButton.getModel().isSelected();
 //            System.out.println("Action - selected=" + selected + "\n");
             if(selected) {
-            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/16x16/unlink.png")));
+//            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/16x16/unlink.png")));
             	DefaultView2d.linkMode = false;
+            	DefaultView2d.manualLinkBtnPressed = true;
             }
             else {
-            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/16x16/link.png")));
+//            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/16x16/link.png")));
             	DefaultView2d.linkMode = true;
+            	DefaultView2d.manualLinkBtnPressed = false;
             }
           }
         };
