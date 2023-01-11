@@ -124,7 +124,8 @@ import org.weasis.core.ui.util.TitleMenuItem;
 import org.weasis.core.util.LangUtil;
 import org.weasis.core.util.StringUtil;
 import org.weasis.opencv.data.PlanarImage;
-
+import org.weasis.core.api.media.data.MediaElement;
+import org.weasis.core.api.gui.util.SliderCineListener;
 /**
  * @author Nicolas Roduit
  * @author Benoit Jacquemoud
@@ -154,7 +155,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   }
 
   public static final String PROP_LAYER_OFFSET = "layer.offset";
-
+  public static boolean zoomEvent = false;
   public static final GraphicClipboard GRAPHIC_CLIPBOARD = new GraphicClipboard();
 
   public static final Object antialiasingOff = RenderingHints.VALUE_ANTIALIAS_OFF;
@@ -960,7 +961,10 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
 
   @Override
   public void zoom(Double viewScale) {
-	if(!linkMode && eventManager.getSelectedViewPane() != this) return;
+	if (zoomEvent) {
+		if(!linkMode && eventManager.getSelectedViewPane() != this) return;	
+	}
+	
     boolean defSize = MathUtil.isEqualToZero(viewScale);
     ZoomType type = (ZoomType) actionsInView.get(ZOOM_TYPE_CMD);
     double ratio = viewScale;
@@ -973,6 +977,10 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
 
       if (MathUtil.isEqualToZero(ratio)) {
         ratio = -adjustViewScale(1.0);
+      }
+      
+      if(!linkMode) {
+    	  ratio = -getBestFitViewScale();
       }
     }
 
@@ -1187,6 +1195,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
       } else if (command.equals(ActionW.RESET.cmd())) {
         reset();
       } else if (command.equals(ActionW.ZOOM.cmd())) {
+    	zoomEvent = true;
         double val = (Double) entry.getValue();
         // Special Cases: -200.0 => best fit, -100.0 => real world size
         if (MathUtil.isDifferent(val, -200.0) && MathUtil.isDifferent(val, -100.0)) {
@@ -1635,6 +1644,10 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
     ZoomType type = (ZoomType) actionsInView.get(ZOOM_TYPE_CMD);
     if (!ZoomType.CURRENT.equals(type)) {
       zoom(0.0);
+    } else {
+    	if(!linkMode) {
+    		zoom(0.0);
+    	}
     }
   }
 
