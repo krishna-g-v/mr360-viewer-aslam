@@ -1346,7 +1346,6 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
               pane.getGraphicManager().deleteByLayerType(LayerType.CROSSLINES);
 
               MediaSeries<DicomImageElement> s = pane.getSeries();
-              String seriesModality = TagD.getTagValue(s, Tag.Modality, String.class);
               boolean specialView = pane instanceof MipView;
               if (s != null && fruid != null && val != null && !specialView) {
                 boolean synchByDefault = fruid.equals(TagD.getTagValue(s, Tag.FrameOfReferenceUID));
