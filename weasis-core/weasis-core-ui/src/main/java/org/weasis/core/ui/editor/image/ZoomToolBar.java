@@ -15,7 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.weasis.core.api.media.data.MediaSeries;
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
@@ -24,6 +24,7 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import org.weasis.core.api.gui.util.ActionState;
 import org.weasis.core.api.gui.util.ActionW;
+import org.weasis.core.api.gui.util.ComboItemListener;
 import org.weasis.core.api.gui.util.DropButtonIcon;
 import org.weasis.core.api.gui.util.DropDownButton;
 import org.weasis.core.api.gui.util.SliderChangeListener;
@@ -82,13 +83,22 @@ public class ZoomToolBar extends WtoolBar {
 //            System.out.println("Action - selected=" + selected + "\n");
             if(selected) {
 //            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/16x16/unlink.png")));
-            	DefaultView2d.linkMode = false;
+//            	DefaultView2d.linkMode = false;
             	DefaultView2d.manualLinkBtnPressed = true;
             }
             else {
 //            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/16x16/link.png")));
-            	DefaultView2d.linkMode = true;
+//            	DefaultView2d.linkMode = true;
             	DefaultView2d.manualLinkBtnPressed = false;
+            }
+            
+            // register events only for CT modality
+            ImageViewerPlugin viewerContainer = eventManager.getSelectedView2dContainer();
+            MediaSeries viewerDicomSeries = viewerContainer.getSelectedImagePane().getSeries();
+            if(viewerDicomSeries.getToolTips().toUpperCase().contains("Modality: CT".toUpperCase())) {
+            	ComboItemListener synchAction = eventManager.getAction(ActionW.SYNCH, ComboItemListener.class).orElse(null);
+                eventManager.updateAllListeners(viewerContainer,
+                		synchAction == null ? SynchView.NONE : (SynchView) synchAction.getSelectedItem());
             }
           }
         };
