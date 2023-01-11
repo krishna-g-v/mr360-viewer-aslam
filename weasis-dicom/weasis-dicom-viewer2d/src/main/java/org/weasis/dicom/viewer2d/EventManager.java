@@ -1348,7 +1348,7 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
               MediaSeries<DicomImageElement> s = pane.getSeries();
               String seriesModality = TagD.getTagValue(s, Tag.Modality, String.class);
               boolean specialView = pane instanceof MipView;
-              if ((s != null && fruid != null && val != null && !specialView)) {
+              if (s != null && fruid != null && val != null && !specialView) {
                 boolean synchByDefault = fruid.equals(TagD.getTagValue(s, Tag.FrameOfReferenceUID));
                 oldSynch = (SynchData) pane.getActionValue(ActionW.SYNCH_LINK.cmd());
                 if (synchByDefault) {
