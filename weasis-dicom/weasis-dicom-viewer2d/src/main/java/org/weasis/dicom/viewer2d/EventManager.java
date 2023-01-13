@@ -1345,11 +1345,12 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
               pane.getGraphicManager().deleteByLayerType(LayerType.CROSSLINES);
 
               MediaSeries<DicomImageElement> s = pane.getSeries();
+              String seriesModality = TagD.getTagValue(s, Tag.Modality, String.class);
               boolean specialView = pane instanceof MipView;
-              if (s != null && fruid != null && val != null && !specialView) {
+              if ((s != null && fruid != null && val != null && !specialView) || (seriesModality.equals("CT") && DefaultView2d.manualLinkBtnPressed)) {
                 boolean synchByDefault = fruid.equals(TagD.getTagValue(s, Tag.FrameOfReferenceUID));
                 oldSynch = (SynchData) pane.getActionValue(ActionW.SYNCH_LINK.cmd());
-                if (synchByDefault) {
+                if (synchByDefault || (seriesModality.equals("CT") && DefaultView2d.manualLinkBtnPressed)) {
                   if (ImageOrientation.hasSameOrientation(series, s)) {
                     pane.setActionsInView(ActionW.SYNCH_CROSSLINE.cmd(), false);
                     // Only fully synch if no PR is applied (because can change pixel size)

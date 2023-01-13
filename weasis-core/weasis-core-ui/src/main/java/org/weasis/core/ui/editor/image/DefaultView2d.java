@@ -177,7 +177,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   public static int totalLoadedImages = 0;
   public static boolean studyLoaded = true;
   
-  
+  public static boolean manualLinkBtnPressed = false;
   protected final FocusHandler focusHandler = new FocusHandler();
   protected GraphicMouseHandler<E> graphicMouseHandler;
 
@@ -1100,6 +1100,13 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
             }
           } else {
             double location = value.getLocation().doubleValue();
+            int y = ((SliderChangeListener) eventManager.getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class).get()).getSliderValue();
+            int z = this.getFrameIndex();
+//            SliderChangeListener rotateAction = (SliderChangeListener) this.getActionValue(ActionW.ROTATION.cmd());
+//            int rt = rotateAction.getSliderModel().getValue() - 1;
+            
+            Optional<ActionW> actionKey = eventManager.getActionKey(command);
+            MouseActionAdapter er = eventManager.getAction(actionKey.get(), MouseActionAdapter.class).orElse(null);
             // TODO add a way in GUI to resynchronize series. Offset should be in Series tag and
             // related
             // to
@@ -1109,11 +1116,10 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
             // location += offset;
             // }
             imgElement =
-                series.getNearestImage(
-                    location,
-                    tileOffset,
-                    (Filter<E>) actionsInView.get(ActionW.FILTERED_SERIES.cmd()),
-                    getCurrentSortComparator());
+            		series.getMedia(z,
+                            (Filter<E>) actionsInView.get(ActionW.FILTERED_SERIES.cmd()),
+                            getCurrentSortComparator());
+            
 
             AuditLog.LOGGER.info("synch:series nb:{}", series.getSeriesNumber());
           }
