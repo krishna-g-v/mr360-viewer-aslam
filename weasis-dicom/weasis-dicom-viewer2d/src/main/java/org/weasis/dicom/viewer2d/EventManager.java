@@ -1349,6 +1349,7 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
               boolean specialView = pane instanceof MipView;
               if ((s != null && fruid != null && val != null && !specialView) || (seriesModality.equals("CT") && DefaultView2d.manualLinkBtnPressed)) {
                 boolean synchByDefault = fruid.equals(TagD.getTagValue(s, Tag.FrameOfReferenceUID));
+                DefaultView2d.synchViewByDefault = synchByDefault;
                 oldSynch = (SynchData) pane.getActionValue(ActionW.SYNCH_LINK.cmd());
                 if (synchByDefault || (seriesModality.equals("CT") && DefaultView2d.manualLinkBtnPressed)) {
                   if (ImageOrientation.hasSameOrientation(series, s)) {
