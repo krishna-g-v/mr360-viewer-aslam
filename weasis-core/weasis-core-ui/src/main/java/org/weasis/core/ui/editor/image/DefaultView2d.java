@@ -962,7 +962,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   @Override
   public void zoom(Double viewScale) {
 	if (zoomEvent) {
-		if(!linkMode && eventManager.getSelectedViewPane() != this) return;	
+		if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) && eventManager.getSelectedViewPane() != this) return;
 	}
 	
     boolean defSize = MathUtil.isEqualToZero(viewScale);
@@ -979,7 +979,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
         ratio = -adjustViewScale(1.0);
       }
       
-      if(!linkMode) {
+      if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase())) {
     	  ratio = -getBestFitViewScale();
       }
     }
@@ -1645,7 +1645,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
     if (!ZoomType.CURRENT.equals(type)) {
       zoom(0.0);
     } else {
-    	if(!linkMode) {
+    	if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase())) {
     		zoom(0.0);
     	}
     }
