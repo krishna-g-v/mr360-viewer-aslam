@@ -177,6 +177,10 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   public static int totalNoOfImages = 0;
   public static int totalLoadedImages = 0;
   public static boolean studyLoaded = true;
+  public static int referenceIndex = 0;
+  public static Series referenceSeries = null;
+  public static boolean synchViewByDefault = false;
+  
   public static boolean manualLinkBtnPressed = false;
   
   
@@ -1117,12 +1121,46 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
             // if (offset != null) {
             // location += offset;
             // }
-            imgElement =
-                series.getNearestImage(
-                    location,
-                    tileOffset,
-                    (Filter<E>) actionsInView.get(ActionW.FILTERED_SERIES.cmd()),
-                    getCurrentSortComparator());
+            
+            // for manual link and scroll 
+            if(series.getToolTips().toUpperCase().contains("Modality: CT".toUpperCase()) && manualLinkBtnPressed && !synchViewByDefault) {
+//           	 int y = ((SliderChangeListener) this.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class).get()).getSliderValue() - 1;
+           	 	int synchSeriesIndex = ((SynchEvent) evt.getNewValue()).getView().getFrameIndex();
+                int SelectedSeriesIndex = this.getFrameIndex();
+//                Series sy = (Series) this.getSeries();
+//                Series sz = (Series) ((SynchEvent) evt.getNewValue()).getView().getSeries();
+               
+                int scrollCount = synchSeriesIndex - referenceIndex;
+                if((referenceSeries != null && !referenceSeries.equals((Series) this.getSeries())) || referenceSeries == null) {
+               	 scrollCount = 0;
+                }
+                
+                
+                referenceSeries = (Series) this.getSeries();
+                referenceIndex = synchSeriesIndex;
+                SelectedSeriesIndex = SelectedSeriesIndex + scrollCount;
+                
+                
+                
+//                Optional<ActionW> actionKey = eventManager.getActionKey(command);
+//                MouseActionAdapter er = eventManager.getAction(actionKey.get(), MouseActionAdapter.class).orElse(null);
+                E referenceImg = imgElement;
+                imgElement =
+                		series.getMedia(SelectedSeriesIndex,
+                                (Filter<E>) actionsInView.get(ActionW.FILTERED_SERIES.cmd()),
+                                getCurrentSortComparator());
+                if(imgElement == null) {
+               	 imgElement = referenceImg;
+                }
+           } else {
+           		imgElement =
+                       series.getNearestImage(
+                           location,
+                           tileOffset,
+                           (Filter<E>) actionsInView.get(ActionW.FILTERED_SERIES.cmd()),
+                           getCurrentSortComparator());
+           }
+
 
             AuditLog.LOGGER.info("synch:series nb:{}", series.getSeriesNumber());
           }

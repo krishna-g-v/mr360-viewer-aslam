@@ -201,6 +201,11 @@ public class View2d extends DefaultView2d<DicomImageElement> {
      */
     if (currentZoom <= 0.0) {
       zoom(0.0);
+    } else {
+    	// resetting zoom when full size view is closed only CR/Xray 
+    	if(this.getSeries().getToolTips().toUpperCase().contains("Modality: CR".toUpperCase())) {
+    		zoom(0.0);
+    	}
     }
     if (panner != null) {
       panner.updateImageSize();

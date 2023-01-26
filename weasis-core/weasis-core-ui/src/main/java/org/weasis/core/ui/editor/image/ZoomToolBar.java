@@ -90,6 +90,16 @@ public class ZoomToolBar extends WtoolBar {
 //            	jLinkModeButton.setIcon(new ImageIcon(MouseActions.class.getResource("/icon/16x16/link.png")));
 //            	DefaultView2d.linkMode = true;
             	DefaultView2d.manualLinkBtnPressed = false;
+            	DefaultView2d.referenceIndex = 0; //resetting here when manual link scroll is unchecked
+            }
+            
+         // register events only for CT modality
+            ImageViewerPlugin viewerContainer = eventManager.getSelectedView2dContainer();
+            MediaSeries viewerDicomSeries = viewerContainer.getSelectedImagePane().getSeries();
+            if(viewerDicomSeries.getToolTips().toUpperCase().contains("Modality: CT".toUpperCase())) {
+            	ComboItemListener synchAction = eventManager.getAction(ActionW.SYNCH, ComboItemListener.class).orElse(null);
+                eventManager.updateAllListeners(viewerContainer,
+                		synchAction == null ? SynchView.NONE : (SynchView) synchAction.getSelectedItem());
             }
           }
         };
