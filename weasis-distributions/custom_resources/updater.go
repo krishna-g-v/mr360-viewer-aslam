@@ -1,4 +1,4 @@
-// version - 1.2
+// version - 1.2.2
 // conditions -
 // 1. URL on the server
 // 2. Version info page on the server
@@ -7,6 +7,11 @@
 // 	1. URL: "http://viewer-updater.medreport360.com"
 // 	2. VERSIONURL: "http://viewer-updater.medreport360.com/version_info.php"
 // 	3. it works only if installed to C:/Program Files/MedReport360-Viewer
+
+//version.txt sample
+// VERSION:3.8.1
+// BUILD-VERSION:35
+// BUILD-NO:1005
 
 package main
 
@@ -22,7 +27,6 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -37,29 +41,30 @@ var (
 
 // change here if anything related to where the logs should be placed or [installdir] or version.txt please change here
 //should be in the same path as specified below
+
 var INSTALLDIR = "C:/Program Files/MedReport360-Viewer"
 var LOGFILE = "C:/Program Files/MedReport360-Viewer/app"
 var VERSIONFILE = "C:/Program Files/MedReport360-Viewer/app"
 var Temp = os.Getenv("temp")
 var revert_back1 bool
 
+// production
 var URL = "http://viewer-updater.medreport360.com"                         // patch_files_url
 var URLVERSION = "http://viewer-updater.medreport360.com/version_info.php" // version_info_url
+var ENVIRONMENT = "production"
 
+// testing
 // var URL = "http://localhost/demo" // patch_files_url
 // var URLVERSION = "http://localhost/demo/version_info.php"
+// var ENVIRONMENT = "testing"
 
 func init() {
 	file, err := os.OpenFile(LOGFILE+"/logs.txt", os.O_APPEND|os.O_WRONLY, 0666)
-	// file.WriteString(fmt.Sprintf("\n\n\n"))
 	if err != nil {
-		// ErrorLogger.Println("log file append error")
-		// fmt.Println("log file append error")
 	}
 
 	//creating the log file
 	_, err = os.Stat(LOGFILE + "/" + "logs.txt")
-	// fmt.Println("Is logs.txt present in the directory", status)
 
 	// check if logs.txt exist, if not create a new one"
 	if os.IsNotExist(err) {
@@ -67,16 +72,21 @@ func init() {
 		file.WriteString(fmt.Sprintf("\n\n\n"))
 		// file.WriteString(fmt.Sprintf("===================The log file was not not found in the DIR: %d===================\n", LOGFILE))
 		file.WriteString(fmt.Sprintf("================================Creating a new log file===================\n"))
-		// ------------------------------if possible try to append the text to the existingg file
 	} else {
-		// file.WriteString(fmt.Sprintf("\n\n\n"))
 		// file.WriteString(fmt.Sprintf("==========================Prev Log found, appending to the same===================\n"))
 	}
 
-	InfoLogger = log.New(file, "INFO:    ", log.Ldate|log.Ltime|log.Lshortfile)
-	SuccessLogger = log.New(file, "SUCCESS: ", log.Ldate|log.Ltime|log.Lshortfile)
-	WarningLogger = log.New(file, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
-	ErrorLogger = log.New(file, "ERROR:    ", log.Ldate|log.Ltime|log.Lshortfile)
+	if ENVIRONMENT == "testing" {
+		InfoLogger = log.New(file, "INFO:    ", log.Ldate|log.Ltime)
+		SuccessLogger = log.New(file, "SUCCESS: ", log.Ldate|log.Ltime)
+		WarningLogger = log.New(file, "WARNING: ", log.Ldate|log.Ltime)
+		ErrorLogger = log.New(file, "ERROR:    ", log.Ldate|log.Ltime)
+	} else {
+		InfoLogger = log.New(file, "INFO:    ", log.Ldate|log.Ltime)
+		SuccessLogger = log.New(file, "SUCCESS: ", log.Ldate|log.Ltime)
+		WarningLogger = log.New(file, "WARNING: ", log.Ldate|log.Ltime)
+		ErrorLogger = log.New(file, "ERROR:    ", log.Ldate|log.Ltime)
+	}
 }
 
 // LOGGER - use case
@@ -87,12 +97,8 @@ func init() {
 
 func main() {
 	// checking on the server if any new version exists
-	//parser, _ := http.NewRequest("GET", URL, nil)
-	// filename := path.Base(parser.URL.Path)
-	// InfoLogger.Println(fmt.Println("file name parsed from the URL: ", filename))
 
-	//parsing the URL for latest version
-	parser, err := http.Get(URLVERSION)
+	parser, err := http.Get(URLVERSION) //version_info.php
 	if err != nil {
 		ErrorLogger.Println("error in parsing the version URL")
 		log.Fatal(err)
@@ -102,127 +108,90 @@ func main() {
 	// Read the patch version from URL in to memory
 	patch_content, err := ioutil.ReadAll(parser.Body)
 	if err != nil {
-		ErrorLogger.Println("Error reading version in URL parsing. ", err)
+		ErrorLogger.Println("Error reading version post URL parsing. ", err)
 	}
 	body := string(patch_content)
-	// fmt.Println(body)
 
-	//===============error================ v 3.8.1\n has \n
-	//getting the version of medreportviewer
-	// (?m)(?P<name>VERSION):\\s(?P<value>\\w+\\.?\\d*\\.?\\d*)
-	medversion := regexp.MustCompile("(?m)(?P<name>VERSION):\\s(?P<value>\\d\\.\\d\\.\\d)") // working extractable build number
-	template := "$key=$value\n"
+	// =====================================================================
+
+	// get the latest version numbers from the server
+
+	// VERSION
+	medversion := regexp.MustCompile("(?m)(?P<name>VERSION):(?P<value>\\d.\\d.\\d+)") // getting the VERSION number from the server
+	template := "$key=$value\r\n"
 	medresult := []byte{}
 	for _, submatches := range medversion.FindAllStringSubmatchIndex(body, -1) {
 		medresult = medversion.ExpandString(medresult, template, body, submatches)
-		// fmt.Println(submatches)
 	}
-	med_version := string(medresult)                              // converting the byte to a string
-	med_latest_patch_version := strings.Trim(med_version, "= \n") // removign the character "="
-	// fmt.Println(med_latest_patch_version)
-	// fmt.Println(med_version)
+	med_version := string(medresult)                                 // converting the byte to a string
+	med_latest_patch_version := strings.Trim(med_version, "= \r \n") // removign the character "="
 
-	// extracting the patch number from the URL
-	// pattern for checking the numericals in the URL file name
-	// (?P<name>BUILD-VERSION): +?(?P<value>.?.?)
-	re := regexp.MustCompile("(?m)(?P<name>BUILD-VERSION): +?(?P<value>.?.?)") // working extractable build number
-	// template := "$key=$value\n"
+	// BUILD-VERSION
+	re := regexp.MustCompile("(?m)(?P<name>BUILD-VERSION):(?P<value>\\d\\d+)") // getting the BUILD-VERSION from the server
 	result := []byte{}
 	for _, submatches := range re.FindAllStringSubmatchIndex(body, -1) {
 		result = re.ExpandString(result, template, body, submatches)
-		// fmt.Println(submatches)
 	}
-	patch_version := string(result)                             // converting the byte to a string
-	latest_patch_version := strings.Trim(patch_version, "= \n") // removign the character "="
-	// latest_patch_version := strings.Trim(patch_version, "\n")
-	// fmt.Println(latest_patch_version)
-	// fmt.Println(patch_version)
-	//done parsing, latest_patch_version is the ouput
+	patch_version := string(result)
+	latest_patch_version := strings.Trim(patch_version, "= \r \n")
 
-	//                        error "=false"
-	// checking for revertback
-	rb := regexp.MustCompile("(?m)(?P<name>REVERT_BACK):\\s+?(?P<value>\\w+)") // working extractable build number
-	revert_result := []byte{}
-	for _, revertmatch := range rb.FindAllStringSubmatchIndex(body, -1) {
-		result = re.ExpandString(revert_result, template, body, revertmatch)
-		//fmt.Println(revertmatch)
-	}
-	revert := string(result)                 // converting the byte to a string
-	rb_value := strings.Trim(revert, "= \n") // removign the character "="
-	// rb_value1 := strings.Trim(rb_value, "\n")
-	// fmt.Println(latest_patch_version)
-	// fmt.Println(rb_value)
-	// fmt.Println(rb_value1)
-	// rb_value := true
-	revert_back1, _ = strconv.ParseBool(rb_value)
-	// fmt.Println(revert_back1)
-
-	// BUILD-NO extraction \\ (?P<name>BUILD-NO): +?(?P<value>\d+)
-	rc := regexp.MustCompile("(?m)(?P<name>BUILD-NO): +?(?P<value>\\d+)") // working extractable build number
-	template = "$key=$value\n"
+	// BUILD-NO
+	rc := regexp.MustCompile("(?m)(?P<name>BUILD-NO):(?P<value>\\d\\d+)") // getting the BUILD-NO from the server
+	// fmt.Printf(rc.)
+	template = "$key=$value\r\n"
 	buildnoresult := []byte{}
 	for _, submatches := range rc.FindAllStringSubmatchIndex(body, -1) {
 		buildnoresult = rc.ExpandString(buildnoresult, template, body, submatches)
-		// fmt.Println(submatches)
 	}
-	buildno_version := string(buildnoresult)                              // converting the byte to a string
-	buildno_latest_patch_version := strings.Trim(buildno_version, "= \n") // removign the character "="
-	// fmt.Println(buildno_latest_patch_version)
+	buildno_version := string(buildnoresult)
+	buildno_latest_patch_version := strings.Trim(buildno_version, "= \r \n")
 
-	// gettting the present local version number
-	createversion()
-	local_content, err := ioutil.ReadFile(VERSIONFILE + "/version.txt")
-	// if err != nil {
-	// 	ErrorLogger.Println("The version.txt could not be found")
-	// 	log.Fatal(err)
-	// }
-	// localversion := string(local_content)
+	// =====================================================================
 
-	// getting the version
-	getversion := regexp.MustCompile("(?m)(?P<name>version): (?P<value>\\d+)") // working extractable build number
+	// gettting the local version number present on system
+	// from version.txt at "program files/medreport360-viewer/app/version.txt"
+
+	createversion() // will create version.txt if not present by using the values in app/conf/config.properties
+	local_content, _ := ioutil.ReadFile(VERSIONFILE + "/version.txt")
+
+	// VERSION
+	getversion := regexp.MustCompile("(?m)(?P<name>VERSION):(?P<value>\\d.\\d.\\d+)")
 	versionresult := []byte{}
 	for _, submatches := range getversion.FindAllStringSubmatchIndex(string(local_content), -1) {
 		versionresult = getversion.ExpandString(versionresult, template, string(local_content), submatches)
 	}
-	version_string := string(versionresult) // converting the byte to a string
-	localversion := string(strings.Trim(version_string, "= \n"))
+	version_string := string(versionresult)
+	localversion := string(strings.Trim(version_string, "= \r \n"))
 
-	// getting the build-no
-	getbuild := regexp.MustCompile("(?m)(?P<name>BUILD-NO): (?P<value>\\d+)") // working extractable build number
+	// BUILD-NO
+	getbuild := regexp.MustCompile("(?m)(?P<name>BUILD-NO):(?P<value>\\d\\d+)")
 	buildresult := []byte{}
 	for _, submatches := range getbuild.FindAllStringSubmatchIndex(string(local_content), -1) {
 		buildresult = getbuild.ExpandString(buildresult, template, string(local_content), submatches)
 	}
-	build_version_string := string(buildresult)                               // converting the byte to a string
-	build_local_version := string(strings.Trim(build_version_string, "= \n")) // the build version specified local folders
+	build_version_string := string(buildresult)
+	build_local_version := string(strings.Trim(build_version_string, "= \r \n"))
 
-	// fmt.Println(localversion)
-	//done
-	if revert_back1 && buildno_latest_patch_version < build_local_version {
+	// BUILD-VERSION
+	local_build_version1 := regexp.MustCompile("(?m)(?P<name>BUILD-VERSION):(?P<value>\\d\\d+)")
+	local_build_version_result := []byte{}
+	for _, submatches := range local_build_version1.FindAllStringSubmatchIndex(string(local_content), -1) {
+		local_build_version_result = re.ExpandString(local_build_version_result, template, string(local_content), submatches)
+	}
+	local_build_version := strings.Trim(string(local_build_version_result), "= \r \n")
 
-		InfoLogger.Println("\n\n\nRevert_back specified as TRUE, reverting to version: ", latest_patch_version)
-		delete_temp_files(latest_patch_version, build_local_version)
-		// revert_back(latest_patch_version, med_latest_patch_version, localversion)
-		patcher(latest_patch_version, localversion, buildno_latest_patch_version)
-		InfoLogger.Println("Revert_back successfull, terminating the script")
-		changeversiontxt(latest_patch_version, buildno_latest_patch_version)
-		// conf_rename(med_latest_patch_version, latest_patch_version, localversion, buildno_latest_patch_version)
-		InfoLogger.Println("updated the version.txt and conf.properties file")
-		old_logs()
-		os.Exit(0)
+	// =====================================================================
 
-	} else if latest_patch_version > localversion || buildno_latest_patch_version > build_local_version {
+	// if web version > local version OR web build_version > local build number OR web BUILD-NO > local BUILD-NO
+	// if 3.9.1 > 3.8.1 || 32 > 31 || 1002 > 1003
+	if latest_patch_version > local_build_version || buildno_latest_patch_version > build_local_version || med_latest_patch_version > localversion {
 		// InfoLogger.Println(fmt.Sprintf("found New patch (%s) for MedReport360-Viewer v%s", latest_patch_version, med_latest_patch_version))
-		// if buildno_latest_patch_version > build_local_version {
-		fmt.Println("\n\n\n")
-		delete_temp_files(latest_patch_version, build_local_version)
+		delete_temp_files(latest_patch_version, build_local_version) // will delete prev temp files in %temp% (zip and version_64_patch)
 		patcher(latest_patch_version, localversion, buildno_latest_patch_version)
-		SuccessLogger.Println(fmt.Sprintf("successfully patched to the latest version %s for MedReport360-Viewer v%s", latest_patch_version, med_latest_patch_version))
-		changeversiontxt(latest_patch_version, buildno_latest_patch_version)
-		// conf_rename(med_latest_patch_version, latest_patch_version, localversion, buildno_latest_patch_version)
-		InfoLogger.Println("updated the version.txt and conf.properties file")
-		InfoLogger.Println("terminating the script")
-
+		SuccessLogger.Println(fmt.Sprintf("successfully patched to the latest BUILD-VERSION %s with build_no %s, for MedReport360-Viewer v%s", latest_patch_version, buildno_latest_patch_version, med_latest_patch_version))
+		changeversiontxt(latest_patch_version, buildno_latest_patch_version, med_latest_patch_version)
+		InfoLogger.Println("updated the version and conf")
+		// InfoLogger.Println("terminating the script")
 		old_logs()
 		// }
 		os.Exit(0)
@@ -230,6 +199,7 @@ func main() {
 		// // disabling the logger when there is no patch available
 		// InfoLogger.Println(fmt.Sprintf("Already the latest patch %s for MedReport360-Viewer v%s running", localversion, med_latest_patch_version))
 		// InfoLogger.Println(fmt.Sprintf("Revert_back specified as: %v, terminating the script here", revert_back1))
+		// InfoLogger.Println("both are same version")
 		os.Exit(0)
 	}
 
@@ -291,83 +261,36 @@ func Unzip(src string, dest string) ([]string, error) {
 	return filenames, nil
 }
 
-// can be removed in further releases, as both had the same functionality revert and patcher, this will no longer be required
-// earlier used for deleting the files in prgram files/medreport, -- logic was incorrect
-// func revert_back(latest_patch_version string, med_latest_patch_version string, localversion string, buildno_latest_patch_version string) {
-// 	// here when reverting to previous version, the prev version zip should be available, how will the URL of the zip be specified,
-// 	// or if checking from a list of files on the server?
-// 	// fmt.Println("reverting back")
-// 	// 1. patch shld download to the temp fiolder and extract there
-// 	// 2. should run the script from the patch as admin
-// 	// 3. modify the script file
-
-// 	// file, _ := os.OpenFile(LOGFILE+"/"+"logs.txt", os.O_APPEND|os.O_WRONLY, 0666)
-// 	// file.WriteString(fmt.Sprintf("\n========================================Reverting to the Previous Version============================="))
-// 	// file.WriteString(fmt.Sprintf("\n==========================================Base Version %s================================", localversion))
-// 	// file.WriteString(fmt.Sprintf("\n==================================The Revert_back version is %s================================", latest_patch_version))
-// 	// file.WriteString(fmt.Sprintf("\n==========================The INSTALLDIR is: %s=======================", INSTALLDIR))
-// 	// file.WriteString(fmt.Sprintf("\n====================The URL is: %s=====================\n", URL))
-
-// 	// WarningLogger.Println("Deleting all the files in ", INSTALLDIR)
-// 	// prevversion_filepath := (INSTALLDIR)
-// 	// os.RemoveAll(prevversion_filepath + "/" + "app")
-// 	// add a random code to check if deleted or not || osremoveall doesnt accept a value
-// 	// if err != nil {
-// 	// 	ErrorLogger.Println("error in deleting all the files in : ", prevversion_filepath)
-// 	// 	log.Fatalln(err)
-// 	// }
-// 	// SuccessLogger.Println("successfully deleted all the files in : ", prevversion_filepath+"/"+"app")
-// 	InfoLogger.Println("\n\n\nstarting the patching func")
-// 	patch_url := (URL + "/patch_" + latest_patch_version + "_" + buildno_latest_patch_version + ".zip")
-// 	// fmt.Println(patch_url)
-// 	patching(patch_url)
-// 	// deleting the patch file
-// 	localfilepath := (Temp + "/patch_" + latest_patch_version + "_" + buildno_latest_patch_version + ".zip")
-// 	os.RemoveAll(localfilepath)
-// 	// deleting the patch folder
-// 	tempfolderpath := (Temp + "/" + "viewer_64_patch")
-// 	os.RemoveAll(tempfolderpath)
-// 	// SuccessLogger.Println("successfully removed the patchfile: ", localfilepath)
-// 	// SuccessLogger.Println("patching func was success")
-
-// }
-
 func patcher(latest_patch_version string, localversion string, buildno_latest_patch_version string) {
-	// file, _ := os.OpenFile(LOGFILE+"/"+"logs.txt", os.O_APPEND|os.O_WRONLY, 0666)
-	// file.WriteString(fmt.Sprintf("\n========================================patching the installer============================="))
-	// file.WriteString(fmt.Sprintf("\n==========================================Base Version %s================================", localversion))
-	// file.WriteString(fmt.Sprintf("\n==========================The INSTALLDIR is: %s=======================", INSTALLDIR))
-	// file.WriteString(fmt.Sprintf("\n====================The URL is: %s=====================\n", URL))
 
-	InfoLogger.Println("starting the patching func")
+	InfoLogger.Println("starting the patching")
 	patch_url := (URL + "/patch_" + latest_patch_version + "_" + buildno_latest_patch_version + ".zip")
 	patching(patch_url)
-	// deleting the patch file
+
+	// deleting the patch file (patch_31_1001.zip)
 	localfilepath := (Temp + "/patch_" + latest_patch_version + "_" + buildno_latest_patch_version + ".zip")
 	os.RemoveAll(localfilepath)
-	// deleting the patch folder
-	tempfilepath := (Temp + "/" + "viewer_64_patch")
 
+	// deleting the patch folder (viewer_64_patch)
+	tempfilepath := (Temp + "/" + "viewer_64_patch")
 	os.RemoveAll(tempfilepath)
 	// SuccessLogger.Println("successfully removed the patchfile: ", localfilepath)
-	// SuccessLogger.Println("patching func was success")
 
 }
 
 func patching(patch_url string) {
-	//parsing the url for the specific versioned patch
+	// will download the zip file according to the latest patch and store it in %temp%
+
 	parser, _ := http.NewRequest("GET", patch_url, nil)
 	fileName := path.Base(parser.URL.Path)
-	// fmt.Println(fileName)
-	// CREATING THE local file
-	// -------------------------------read from the registry for the input path and give as an input here   ( not done )
+
+	// creating a temp empty file (patch_31_1001.zip) acc to latest patch
 	out, err := os.Create(Temp + "/" + fileName)
 	if err != nil {
 		ErrorLogger.Println("error in creating a new local file in [windows temporary directory] ")
 		log.Fatalln(err)
 	}
 	defer out.Close()
-	// InfoLogger.Println("Successfully created a local file to write in :", out)
 
 	// checking the URL for access or active
 	resp, err := http.Get(patch_url)
@@ -375,11 +298,11 @@ func patching(patch_url string) {
 		ErrorLogger.Println("The URL is not accessible, URL:", patch_url)
 		log.Fatalln(err)
 	}
-	// -------------------------------the file on wrong url is downloading some random corrupt file, and not showing the error
+	// the file will not have the correct url and is downloading some random corrupt file, and not showing the error
 	defer resp.Body.Close()
 	// InfoLogger.Println("URl is accessible, URL:", patch_url)
 
-	// writing/downloading to the file
+	// writing/downloading to the temp file
 	out1, err := io.Copy(out, resp.Body)
 	if err != nil {
 		ErrorLogger.Println("error in downloading the patch.zip")
@@ -396,7 +319,7 @@ func patching(patch_url string) {
 	}
 	// InfoLogger.Println("successfull in unzipping the file to the local windows Temp folder")
 
-	//running the patch.bat file inside the script
+	//running the patch.bat file from the patch file
 	cmd := exec.Command("cmd", "/C", Temp+"/viewer_64_patch/patch.bat")
 	cmd.Env = os.Environ()
 	err = cmd.Run()
@@ -406,132 +329,87 @@ func patching(patch_url string) {
 		ErrorLogger.Println("Error: ", err)
 		log.Fatal(err)
 	}
-	// SuccessLogger.Println("successfully removed the patchfolder: ", localfilepath)
-	// ErrorLogger.Println("could not remove the patch file: ", localfilepath)
-	// log.Fatalln(err)
+	// Error:  exit status 1
+
 }
 func createversion() {
-	// will create a version.txt in the [INSTALLDIR]/app with the version available on the system
+	// will create a version.txt in the [INSTALLDIR]/app with the version available on the system sourced from app/conf/config.properties
 
-	// will check if both the version and build-no exists in version.txt if not will delete the whole file, reason: may end up as glitch so resolving here
-	file, _ := os.ReadFile(VERSIONFILE + "/version.txt")
-	if strings.Contains(string(file), "version:") && (strings.Contains(string(file), "BUILD-NO:")) {
+	// will check if both the version, build-version and build-no exists in version.txt if not will delete the whole file, reason: may end up as glitch so resolving here
+	// possible bug, there might not be any values assciated, and it wont delete the file
 
-	} else {
-		os.Remove(VERSIONFILE + "/version.txt")
+	file, err1 := os.ReadFile(VERSIONFILE + "/version.txt")
+	if os.IsExist(err1) {
+		if strings.Contains(string(file), "VERSION:") && (strings.Contains(string(file), "BUILD-NO:")) {
+
+		} else {
+			os.Remove(VERSIONFILE + "/version.txt")
+		}
 	}
-
 	_, err := os.OpenFile(VERSIONFILE+"/version.txt", os.O_APPEND|os.O_WRONLY, 0666)
 
 	if os.IsNotExist(err) {
-		// commenting as of now since it is not required
 		ErrorLogger.Println("Version.txt not available, creating a new file")
 		conf_file := INSTALLDIR + "/app/conf/config.properties"
 		input, _ := ioutil.ReadFile(conf_file)
 		lines := strings.Split(string(input), "\n")
 
+		// weasis.version OR version 3.8.1
 		for i, _ := range lines { //(i < 174 && i > 160)
-			confversion := regexp.MustCompile("(?m)(?P<name>weasis.version)=\\.?\\d*\\.?\\d*\\.\\d-(?P<value>\\d\\d)") // working extractable build number
-			template := "$key=$value\n"
+			confversion := regexp.MustCompile("(?m)(?P<name>weasis.version)=(?P<value>\\d\\.\\d\\.\\d+)") // working extractable build number
+			template := "$key=$value\r\n"
 			confresult := []byte{}
 			for _, submatches := range confversion.FindAllStringSubmatchIndex(lines[i], -1) {
 				confresult = confversion.ExpandString(confresult, template, lines[i], submatches)
-				// conf_version_string := string(conf_result)
 			}
-			conf_version_string := string(confresult) // converting the byte to a string
-			conf_version := strings.Trim(conf_version_string, "= \n")
+			conf_version_string := string(confresult)
+			conf_version := strings.Trim(conf_version_string, "= \r \n")
 			write, _ := os.OpenFile(VERSIONFILE+"/version.txt", os.O_CREATE|os.O_WRONLY, 0666)
-			write.WriteString("version: " + conf_version)
+			write.WriteString("VERSION:" + conf_version)
 		}
 
-		// fmt.Println(conf_version)
-
+		// BUILD-VERSION 36
 		for i, _ := range lines { //(i < 174 && i > 160)
-			buildversion := regexp.MustCompile("(?m)(?P<name>BUILD-NO)=(?P<value>\\d+)") // working extractable build number
-			template := "$key=$value\n"
+			confversion := regexp.MustCompile("(?m)(?P<name>weasis.version)=\\.?\\d*\\.?\\d*\\.\\d-(?P<value>\\d\\d+)") // working extractable build number
+			template := "$key=$value\r\n"
+			confresult := []byte{}
+			for _, submatches := range confversion.FindAllStringSubmatchIndex(lines[i], -1) {
+				confresult = confversion.ExpandString(confresult, template, lines[i], submatches)
+			}
+			conf_version_string := string(confresult)
+			conf_version := strings.Trim(conf_version_string, "= \r \n")
+			write, _ := os.OpenFile(VERSIONFILE+"/version.txt", os.O_CREATE|os.O_WRONLY, 0666)
+			write.WriteString("\nBUILD-VERSION:" + conf_version)
+		}
+
+		// BUILD-NO 1006
+		for i, _ := range lines { //(i < 174 && i > 160)
+			buildversion := regexp.MustCompile("(?m)(?P<name>BUILD-NO)=(?P<value>\\d+)")
+			template := "$key=$value\r\n"
 			buildresult := []byte{}
 			for _, submatches := range buildversion.FindAllStringSubmatchIndex(lines[i], -1) {
 				buildresult = buildversion.ExpandString(buildresult, template, lines[i], submatches)
-				// conf_version_string := string(conf_result)
 			}
-			build_version_string := string(buildresult) // converting the byte to a string
-			build_version := strings.Trim(build_version_string, "= \n")
-			// fmt.Println(conf_version)
+			build_version_string := string(buildresult)
+			build_version := strings.Trim(build_version_string, "= \r \n")
+
 			if build_version != "" {
 				write, _ := os.OpenFile(VERSIONFILE+"/version.txt", os.O_APPEND|os.O_RDWR, 0666)
-				write.WriteString("\nBUILD-NO: " + build_version)
+				write.WriteString("\nBUILD-NO:" + build_version)
 			}
 		}
 
 	}
 }
-func changeversiontxt(latest_patch_version string, buildno_latest_patch_version string) {
-	// will read the version present on the local system and as well will change the file to the latest version patched
+func changeversiontxt(latest_patch_version string, buildno_latest_patch_version string, med_latest_patch_version string) {
+	// post patching, this will be run
+	// will change the version.txt to the latest version patched
 	file, err := os.OpenFile(VERSIONFILE+"/version.txt", os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		ErrorLogger.Println("failed to read&change the version.txt in DIR", VERSIONFILE+"/version.txt")
 	}
-	file.WriteString("version: " + latest_patch_version + "\nBUILD-NO: " + buildno_latest_patch_version)
-	// SuccessLogger.Println("updated version.txt to: ", latest_patch_version)
+	file.WriteString("VERSION:" + med_latest_patch_version + "\nBUILD-VERSION:" + latest_patch_version + "\nBUILD-NO:" + buildno_latest_patch_version)
 }
-
-// working - will replace weasis.version=  & BUILD-NO= in .../app/conf/config.properties based on the latest patch version specified,
-// will execute at last
-// func conf_rename(med_latest_patch_version string, latest_patch_version string, localversion string, buildno_latest_patch_version string) {
-// 	// to change the version inside conf/conf.properties automatically on latest patch
-// 	// 1. post the patch, this part will find the weasis.properties in conf/config.properties
-// 	// 2. it will replace the version there with our latest patch as done
-// 	// 3. ex: weasis.version=3.8.1-32  BUILD-NO=1001
-
-// 	// commenting as of now since it is not required
-// 	conf_file := INSTALLDIR + "/app/conf/config.properties"
-// 	input, _ := ioutil.ReadFile(conf_file)
-// 	lines := strings.Split(string(input), "\n")
-
-// 	for i, line := range lines { //(i < 174 && i > 160)
-// 		confversion := regexp.MustCompile("(?m)(?P<name>weasis.version)=\\.?\\d*\\.?\\d*\\.\\d-(?P<value>\\d\\d)") // working extractable build number
-// 		template := "$key=$value\n"
-// 		confresult := []byte{}
-// 		for _, submatches := range confversion.FindAllStringSubmatchIndex(lines[i], -1) {
-// 			confresult = confversion.ExpandString(confresult, template, lines[i], submatches)
-
-// 		}
-// 		conf_version_string := string(confresult) // converting the byte to a string
-// 		conf_version := strings.Trim(conf_version_string, "= \n")
-
-// 		if strings.Contains(line, "weasis.version="+med_latest_patch_version+"-"+conf_version) {
-// 			lines[i] = ("weasis.version=" + med_latest_patch_version + "-" + latest_patch_version)
-// 		} else {
-// 			ErrorLogger.Println("could not replace the weasis.version=  & BUILD-NO= in .../app/conf/config.properties")
-// 		}
-
-// 		//similarly checking the build version and replacing it with the latest version obtained
-// 		buildversion := regexp.MustCompile("(?m)(?P<name>BUILD-NO)=(?P<value>\\d+)") // working extractable build number
-// 		template1 := "$key=$value\n"
-// 		buildresult := []byte{}
-// 		for _, submatches := range buildversion.FindAllStringSubmatchIndex(lines[i], -1) {
-// 			buildresult = buildversion.ExpandString(buildresult, template1, lines[i], submatches)
-
-// 		}
-// 		build_version_string := string(buildresult) // converting the byte to a string
-// 		build_version := strings.Trim(build_version_string, "= \n")
-
-// 		if strings.Contains(line, "BUILD-NO="+build_version) {
-// 			lines[i] = ("BUILD-NO=" + buildno_latest_patch_version)
-// 		} else {
-
-// 			ErrorLogger.Println("could not replace the weasis.version=  & BUILD-NO= in .../app/conf/config.properties")
-// 		}
-
-// 	}
-
-// 	output := strings.Join(lines, "\n")
-// 	InfoLogger.Println("updated the weasis.version=  & BUILD-NO= in .../app/conf/config.properties")
-// 	err := ioutil.WriteFile(conf_file, []byte(output), 0644)
-// 	if err != nil {
-// 		ErrorLogger.Println("could not write to file .../app/conf/config.properties for weasis.version=  & BUILD-NO=")
-// 	}
-// }
 
 func delete_temp_files(latest_patch_version string, build_local_version string) {
 	// will delete all the files related to our patching, prior starting the patching
@@ -540,8 +418,6 @@ func delete_temp_files(latest_patch_version string, build_local_version string) 
 	tasks := []string{temp_patch_file, temp_patch_folder}
 	for _, s := range tasks {
 		_, err := os.Stat(s)
-		// fmt.Println("Is logs.txt present in the directory", status)
-		// check if logs.txt exist, if not create a new one"
 		if os.IsNotExist(err) {
 			continue
 		} else {
@@ -552,6 +428,8 @@ func delete_temp_files(latest_patch_version string, build_local_version string) 
 }
 
 func old_logs() {
+	// will delete the old logs
+	// will run on jan 1-5  - will rename the present logs to old_logs, after 1 month of renaming it will delete the old_logs.txt
 	var filesize int64 = 1048576 //1mb
 	// var filesize int64 = 10485760 // 10mb
 	// var filesize int64 = 8586 // 8kb
@@ -600,3 +478,44 @@ func old_logs() {
 	}
 
 }
+
+// Updater
+// We can get the url of installed with place and location and files if necessary
+
+// The URL format should be
+// 	var INSTALLDIR = "C:/Program Files/MedReport360-Viewer"
+// 	var LOGFILE = "C:/Program Files/MedReport360-Viewer/app"
+// 	var VERSIONFILE = "C:/Program Files/MedReport360-Viewer/app"
+
+// 	var URL = "http://localhost/demo"       //location where the files are located on the server
+// 	var URLVERSION = "http://localhost/demo/version_info.php" 	//the version entries
+
+// 	var URL = "http://viewer-updater.medreport360.com"      //location where the files are located on the server
+// 	var URLVERSION = "http://viewer-updater.medreport360.com/version_info.php"     //the version entries
+
+// 			VERSION: 3.8.1 BUILD-VERSION: 31 REVERT_BACK: TRUE BUILD-NO: 1001
+// 			You can interchange the location of the above, but these have to be the exact same in names
+
+// The file version.txt ( should have the following contents )
+// 	1.  will autocreate if not present, based on the /app/conf/config.properties
+// 	2. If present and updating, it will be changed based on the latest update being made
+// VERSION: 32
+// BUILD-NO: 1001
+
+// ==============================================
+// =========Things to check on new patch=========
+// ==============================================
+
+// Patch to medreportviewer
+// 	Zip file name should be
+// 		patch_versionNo_revisionNo.zip
+// 		patch_31_1001.zip  >   viewer_64_patch    >    patch contents
+// 	App/conf/config.properties
+// 		Line 172 = weasis.version=3.8.1-30 ( or automation can be done here )
+// 		Line 173 = BUILD-NO=1001
+
+// Patch to medreport auto updater
+// 	The patch name should be updater_new.exe
+// 		Should be placed in app/updater_new.exe
+
+// Patch_url = localhost/demo/filename
