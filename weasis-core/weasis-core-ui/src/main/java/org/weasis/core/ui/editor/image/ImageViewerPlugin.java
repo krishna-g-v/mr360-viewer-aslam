@@ -647,6 +647,7 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
   }
 
   public void maximizedSelectedImagePane(final ViewCanvas<E> defaultView2d, MouseEvent evt) {
+	DefaultView2d.zoomEvent = false; //reset zoom event to false when screen size is varied
     final Map<LayoutConstraints, Component> elements = layoutModel.getConstraints();
     // Prevent conflict with double click for stopping to draw a graphic (like polyline)
 
@@ -720,11 +721,19 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
                   if(curSliderPos.getSliderValue() > totalCells)
                 	  movebackIterations = (curSliderPos.getSliderValue() % totalCells) - 1;
                   
+                  if(movebackIterations < 0) movebackIterations = totalCells - 1; // boundary condition of last tile selection
+                  
             	  for(int i=1; i<=movebackIterations; i++) {
                   	firstPaneWithOffset.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class)
           						.ifPresent(a -> a.setSliderValue(a.getSliderValue() - 1));
             	  }
             	  maximizedSelectedImagePane(firstPaneWithOffset, evt);
+            	  
+            	  //resetting view panes
+            	  for (int i = 0; i < view2ds.size() - 1; i++) {
+            		  view2ds.get(i).reset();
+            	  }
+            	  
               } else
             	  maximizedSelectedImagePane(defaultView2d, null);
             }
