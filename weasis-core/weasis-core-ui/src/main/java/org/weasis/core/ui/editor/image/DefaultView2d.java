@@ -1566,6 +1566,17 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
         	// WA - END
 
             pane.maximizedSelectedImagePane(firstPaneWithOffset, evt);
+            
+            //resetting view panes 
+            ImageViewerPlugin container = eventManager.getSelectedView2dContainer();
+            if (container != null) {
+            	List<ViewCanvas> viewpanels = container.getImagePanels();
+                
+            	for (ViewCanvas v : viewpanels) {
+            		v.reset();
+            	}
+            }
+          
           } else
             pane.maximizedSelectedImagePane(DefaultView2d.this, evt);
         }
@@ -1588,7 +1599,9 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
               if(curSliderPos.getSliderValue() > totalCells)
             	  movebackIterations = (curSliderPos.getSliderValue() % totalCells) - 1;
               
-        	  for(int i=1; i<=movebackIterations; i++) {
+              if(movebackIterations < 0) movebackIterations = totalCells - 1; // boundary condition of last tile selection
+              
+              for(int i=1; i<=movebackIterations; i++) {
               	firstPaneWithOffset.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class)
       						.ifPresent(a -> a.setSliderValue(a.getSliderValue() - 1));
         	  }
