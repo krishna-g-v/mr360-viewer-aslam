@@ -201,6 +201,15 @@ public class View2d extends DefaultView2d<DicomImageElement> {
      */
     if (currentZoom <= 0.0) {
       zoom(0.0);
+    } else {
+    	ImageViewerPlugin container = eventManager.getSelectedView2dContainer();
+        if (container != null) {
+        	List<ViewCanvas> viewpanels = container.getImagePanels();
+            
+        	for (ViewCanvas v : viewpanels) {
+        		v.reset();
+        	}
+        }
     }
     if (panner != null) {
       panner.updateImageSize();

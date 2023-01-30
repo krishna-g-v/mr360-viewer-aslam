@@ -1568,14 +1568,14 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
             pane.maximizedSelectedImagePane(firstPaneWithOffset, evt);
             
             //resetting view panes 
-            ImageViewerPlugin container = eventManager.getSelectedView2dContainer();
-            if (container != null) {
-            	List<ViewCanvas> viewpanels = container.getImagePanels();
-                
-            	for (ViewCanvas v : viewpanels) {
-            		v.reset();
-            	}
-            }
+//            ImageViewerPlugin container = eventManager.getSelectedView2dContainer();
+//            if (container != null) {
+//            	List<ViewCanvas> viewpanels = container.getImagePanels();
+//                
+//            	for (ViewCanvas v : viewpanels) {
+//            		v.reset();
+//            	}
+//            }
           
           } else
             pane.maximizedSelectedImagePane(DefaultView2d.this, evt);
