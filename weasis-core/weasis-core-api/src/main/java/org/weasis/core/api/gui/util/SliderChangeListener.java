@@ -15,6 +15,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Optional;
+
 import javax.swing.BoundedRangeModel;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultBoundedRangeModel;
@@ -24,9 +26,14 @@ import javax.swing.JSlider;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import org.weasis.core.api.image.GridBagLayoutModel;
 import org.weasis.core.api.service.AuditLog;
 import org.weasis.core.api.util.FontTools;
+import org.weasis.core.ui.editor.image.SynchData;
+import org.weasis.core.ui.editor.image.SynchView;
 import org.weasis.core.util.StringUtil;
+import org.weasis.dicom.viewer2d.EventManager;
 
 public abstract class SliderChangeListener extends MouseActionAdapter
     implements ChangeListener, ActionState {
@@ -371,17 +378,59 @@ public abstract class SliderChangeListener extends MouseActionAdapter
           dragAccumulator = getSliderMax();
         }
 
-        if (val < 0.0) {
-          setSliderValue((int) Math.ceil(dragAccumulator));
-        } else {
-          setSliderValue((int) Math.floor(dragAccumulator));
-        }
+//        Original code
+//        if (val < 0.0) {
+//          setSliderValue((int) Math.ceil(dragAccumulator));
+//        } else {
+//          setSliderValue((int) Math.floor(dragAccumulator));
+//        }
 
         // if (val < 0.0) {
         //   setSliderValue((int) Math.ceil(dragAccumulator) * 2); // this is for mouse drag for series scroll in tile mode
         // } else {
         //   setSliderValue((int) Math.floor(dragAccumulator) * 2);
         // }
+
+        Optional<ComboItemListener> synchAction = EventManager.getInstance().getAction(ActionW.SYNCH, ComboItemListener.class);
+
+        SynchView synchView =
+            synchAction.isPresent() ? (SynchView) synchAction.get().getSelectedItem() : null;
+        boolean tileMode =
+                synchView != null && SynchData.Mode.TILE.equals(synchView.getSynchData().getMode());
+
+        if(tileMode && !EventManager.getInstance().getSelectedView2dContainer().isViewerInFullscreen()) {
+            Optional<ComboItemListener> layoutAction = EventManager.getInstance().getAction(ActionW.LAYOUT, ComboItemListener.class);
+            String layoutId = ((GridBagLayoutModel) layoutAction.get().getSelectedItem()).getId();
+            int totalCells = 1;
+            if(layoutId.startsWith("layout")) {
+              totalCells = 3;
+            } else {
+              String[] gridDimentions = layoutId.split("x");
+              totalCells = Integer.parseInt(gridDimentions[0]) * Integer.parseInt(gridDimentions[1]);
+            }
+
+            int sliderStartValue = getSliderValue() - ((getSliderValue() % totalCells) - 1);
+
+			if (val < 0.0) {
+				if( (sliderStartValue + (((int) Math.ceil(val) == 0 ? -1 : (int) Math.ceil(val)) * totalCells)) > getSliderMax() )
+					return;
+				else
+					setSliderValue(sliderStartValue + (((int) Math.ceil(val) == 0 ? -1 : (int) Math.ceil(val)) * totalCells));
+			} else {
+				if( (sliderStartValue + (((int) Math.floor(val) == 0 ? 1 : (int) Math.floor(val)) * totalCells)) > getSliderMax() )
+					return;
+				else {
+					setSliderValue(sliderStartValue + (((int) Math.floor(val) == 0 ? 1 : (int) Math.floor(val)) * totalCells));
+				}
+			}
+		}
+		else {
+			if (val < 0.0) {
+				setSliderValue((int) Math.ceil(dragAccumulator));
+			} else {
+				setSliderValue((int) Math.floor(dragAccumulator));
+			}
+		}
 
       }
     }
