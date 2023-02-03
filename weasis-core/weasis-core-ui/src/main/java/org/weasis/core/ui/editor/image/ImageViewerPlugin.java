@@ -730,9 +730,9 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
             	  maximizedSelectedImagePane(firstPaneWithOffset, evt);
             	  
             	  //resetting view panes
-//            	  for (int i = 0; i < view2ds.size() - 1; i++) {
-//            		  view2ds.get(i).reset();
-//            	  }
+            	  for (int i = 0; i < view2ds.size() - 1; i++) {
+            		  view2ds.get(i).reset();
+            	  }
             	  
               } else
             	  maximizedSelectedImagePane(defaultView2d, null);
