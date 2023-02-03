@@ -828,7 +828,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   public final void moveOrigin(PanPoint point) {
     if (point != null) {
 //    	If Pan feature also should be unlinked then uncomment the below line
-      if(!linkMode && eventManager.getSelectedViewPane() != this) return;
+      if((series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) && eventManager.getSelectedViewPane() != this) return;
       if (PanPoint.State.CENTER.equals(point.getState())) {
         highlightedPosition.setHighlightedPosition(point.isHighlightedPosition());
         highlightedPosition.setLocation(point);
