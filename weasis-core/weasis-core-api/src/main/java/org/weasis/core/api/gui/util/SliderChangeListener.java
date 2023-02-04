@@ -397,8 +397,9 @@ public abstract class SliderChangeListener extends MouseActionAdapter
             synchAction.isPresent() ? (SynchView) synchAction.get().getSelectedItem() : null;
         boolean tileMode =
                 synchView != null && SynchData.Mode.TILE.equals(synchView.getSynchData().getMode());
+        String evtAction = getActionW().getTitle();
 
-        if(tileMode && !EventManager.getInstance().getSelectedView2dContainer().isViewerInFullscreen()) {
+        if(evtAction.equals(ActionW.SCROLL_SERIES.getTitle()) && tileMode && !EventManager.getInstance().getSelectedView2dContainer().isViewerInFullscreen()) {
             Optional<ComboItemListener> layoutAction = EventManager.getInstance().getAction(ActionW.LAYOUT, ComboItemListener.class);
             String layoutId = ((GridBagLayoutModel) layoutAction.get().getSelectedItem()).getId();
             int totalCells = 1;
