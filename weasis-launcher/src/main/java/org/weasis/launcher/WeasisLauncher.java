@@ -446,8 +446,8 @@ public class WeasisLauncher {
   InstantiationException,
   IllegalAccessException,
   UnsupportedLookAndFeelException {
-	  profileFrame.setSize(600, 600);
-	  Image icon = Toolkit.getDefaultToolkit().getImage("E:\\medreport_work\\medreport360-viewer\\weasis-distributions\\target\\portable-dist\\weasis\\resources\\images\\logo-button.png");
+	  profileFrame.setSize(300, 300);
+	  Image icon = Toolkit.getDefaultToolkit().getImage(configData.getProperty(P_WEASIS_CODEBASE_LOCAL) + File.separator + "resources/images/logo-button.png");
 	  profileFrame.setIconImage(icon);
 	  profileFrame.setTitle("Medreport360 Viewer Profile management");
 	  profileFrame.setLocationRelativeTo(null);
@@ -467,7 +467,7 @@ public class WeasisLauncher {
 	            	try {
 	            		JDialog profileDialog = new JDialog(profileFrame, true);
 	            		profileDialog.add(getProfilePanel());
-	            		profileDialog.setSize(500, 500);
+	            		profileDialog.setSize(250, 200);
 	            		profileDialog.setLocationRelativeTo(null);
 	            		profileDialog.setUndecorated(true);
 	            		
@@ -587,7 +587,7 @@ public class WeasisLauncher {
 	  }
      
 	  panel.setVisible(true);
-	  panel.setSize(400, 200);
+//	  panel.setSize(250, 250);
       return panel;
   }
         
