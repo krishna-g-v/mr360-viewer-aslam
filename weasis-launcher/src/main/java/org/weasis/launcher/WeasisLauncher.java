@@ -9,9 +9,7 @@
  */
 package org.weasis.launcher;
 
-import java.awt.Desktop;
-import java.awt.EventQueue;
-import java.awt.Font;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -21,17 +19,24 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,14 +44,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipEntry;
 import javax.management.ObjectName;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
@@ -56,6 +56,11 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.util.tracker.ServiceTracker;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import org.json.*;
 
 /**
  * @author Richard S. Hall
@@ -157,6 +162,15 @@ public class WeasisLauncher {
   public static final String P_WEASIS_RESOURCES_URL = "weasis.resources.url";
   public static final String F_RESOURCES = "resources"; // NON-NLS
   static final String MAC_OS_X = "Mac OS X"; // NON-NLS
+  
+  // profile dialog components
+  public JComboBox<String> comboBoxProfileList;
+  public JTextField profileTextField;
+  public JButton profileButton;
+  public JRadioButton selectProfileButton;
+  public JRadioButton addProfileButton;
+  public String currentProfile = "";
+  public JFrame profileFrame = new JFrame();
 
   protected Felix mFelix = null;
   protected ServiceTracker mTracker = null;
@@ -185,15 +199,25 @@ public class WeasisLauncher {
 
   public final void launch(Type type) throws Exception {
     Map<String, String> serverProp = configData.getFelixProps();
+    
+    try {
+    	showMessage(serverProp);
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        LOGGER.log(Level.SEVERE, "Error while profile dialog box is shown", e);
+    } catch (InvocationTargetException e) {
+        LOGGER.log(Level.SEVERE, "Error while profile dialog box is shown", e);
+    }
+    
     String cacheDir = serverProp.get(Constants.FRAMEWORK_STORAGE) + "-" + configData.getSourceID();
     // If there is a passed in bundle cache directory, then
     // that overwrites anything in the config file.
     serverProp.put(Constants.FRAMEWORK_STORAGE, cacheDir);
-
+    
     // Load local properties and clean if necessary the previous version
     WeasisLoader loader = loadProperties(serverProp, configData.getConfigOutput());
     WeasisMainFrame mainFrame = loader.getMainFrame();
-
+    
     String minVersion = System.getProperty(P_WEASIS_MIN_NATIVE_VERSION);
     if (Utils.hasText(minVersion)) {
       EventQueue.invokeAndWait(
@@ -276,7 +300,7 @@ public class WeasisLauncher {
       checkBundleUI(serverProp);
       frameworkLoaded = true;
 
-      showMessage(mainFrame, serverProp);
+//      showMessage(mainFrame, serverProp);
 
       // Wait for framework to stop to exit the VM.
       mFelix.waitForStop(0);
@@ -416,11 +440,157 @@ public class WeasisLauncher {
     localSourceProp.setProperty(P_WEASIS_CLEAN_CACHE, Boolean.TRUE.toString());
     FileUtil.storeProperties(sourceIdProps, localSourceProp, null);
   }
+  
+  // using showMessage to do profile management
+  private void showMessage(Map<String, String> serverProp) throws InterruptedException, InvocationTargetException, ClassNotFoundException,
+  InstantiationException,
+  IllegalAccessException,
+  UnsupportedLookAndFeelException {
+	  profileFrame.setSize(600, 600);
+	  Image icon = Toolkit.getDefaultToolkit().getImage("E:\\medreport_work\\medreport360-viewer\\weasis-distributions\\target\\portable-dist\\weasis\\resources\\images\\logo-button.png");
+	  profileFrame.setIconImage(icon);
+	  profileFrame.setTitle("Medreport360 Viewer Profile management");
+	  profileFrame.setLocationRelativeTo(null);
+	  profileFrame.setVisible(true);
+	  
+	  EventQueue.invokeAndWait(
+	            () -> {
+	            	// adding look and feel to profile frame
+	            	try {
+	            		UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceTwilightLookAndFeel");
+	            		SwingUtilities.updateComponentTreeUI(profileFrame);
+	                } catch (Exception e) {
+	                	LOGGER.log(Level.SEVERE, "Error while adding look and feel", e);
+	                }
+	            	
+	            	// adding profile confirm dialog inside the frame 
+	            	try {
+	            		JDialog profileDialog = new JDialog(profileFrame, true);
+	            		profileDialog.add(getProfilePanel());
+	            		profileDialog.setSize(500, 500);
+	            		profileDialog.setLocationRelativeTo(null);
+	            		profileDialog.setUndecorated(true);
+	            		
+	            		profileDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+	            			@Override
+	            			public void windowClosing(java.awt.event.WindowEvent e) {
+	            				System.exit(-1);
+	            			}
+	            		});
+	            		
+	            		profileButton.addActionListener(e -> {
+	            			if(selectProfileButton.isSelected()) {
+	            				String selectedProfile = ((String) comboBoxProfileList.getSelectedItem()).toLowerCase();
+	            				currentProfile = selectedProfile;
 
-  private void showMessage(final WeasisMainFrame mainFrame, Map<String, String> serverProp) {
-    return;
+	            				String getProfileUrlStr = "http://localhost/viewer/index.php?user=" + System.getProperty("user.name") + "&action=getprofile&name=" + selectedProfile;
+	            				streamApiUrls(getProfileUrlStr);
+	            			} else {
+	            				String newProfile = profileTextField.getText();
+	            				currentProfile = newProfile;
+	            				
+	            				String createUrlStr = "http://localhost/viewer/index.php?user=" + System.getProperty("user.name") + "&action=createprofile&name=" + newProfile;
+	            				streamApiUrls(createUrlStr);
+	            			}
+	            			
+	            			profileFrame.dispatchEvent(new WindowEvent(profileFrame, WindowEvent.WINDOW_CLOSING));
+	            		});
+	            		profileDialog.setVisible(true);
+	            	} catch (Exception exp) {
+	            		LOGGER.log(Level.SEVERE, "Error while adding profile confirmation dialog", exp);
+	            	}
+	 });
+	  
   }
   
+  // build profile panel
+  private JPanel getProfilePanel() {
+	  JPanel panel = new JPanel();
+	  comboBoxProfileList = new JComboBox<>(new String[] {});
+	  profileTextField = new JTextField(10);
+	  profileButton = new JButton("OK");
+	  profileTextField.setEnabled(false);
+	  
+	  panel.setLayout(new GridBagLayout());
+	  GridBagConstraints gbc = new GridBagConstraints();
+	  gbc.insets = new Insets(5, 5, 5, 5);
+	  gbc.gridx = 0;
+	  gbc.gridy = 0;
+//	  gbc.gridy = GridBagConstraints.RELATIVE;
+	  gbc.anchor = GridBagConstraints.WEST;
+
+	  ButtonGroup group = new ButtonGroup();
+	  
+	  selectProfileButton = new JRadioButton("Select Profile: ", true);
+	  addProfileButton = new JRadioButton("Add Profile: ");
+	  group.add(selectProfileButton);
+	  
+	  group.add(addProfileButton);
+	  
+	  panel.add(selectProfileButton, gbc);
+//	  gbc.insets = new Insets(25, 0, 5, 25);
+	  gbc.gridx = 1;
+	  gbc.gridy = 0;
+	  panel.add(comboBoxProfileList);
+//	  gbc.gridheight = 2;
+	  gbc.gridx = 0;
+	  gbc.gridy = 1;
+	  panel.add(addProfileButton, gbc);
+	  gbc.gridx = 1;
+	  gbc.gridy = 1;
+//	  gbc.anchor = GridBagConstraints.EAST;
+//	  gbc.gridheight = 2;
+	  panel.add(profileTextField, gbc);
+	  gbc.gridx = 0;
+	  gbc.gridy = 2;
+	  gbc.gridwidth =2;
+	  gbc.anchor = GridBagConstraints.CENTER;
+//	  gbc.gridheight = 2;
+//	  gbc.insets = new Insets(0, 0, 0, 0);
+	  panel.add(profileButton, gbc);
+	  
+	  selectProfileButton.addActionListener(e -> {
+		  if (selectProfileButton.isSelected()) {
+			  profileTextField.setEnabled(false);
+			  comboBoxProfileList.setEnabled(true);
+	      }
+	  });
+	  addProfileButton.addActionListener(e -> {
+		  if (addProfileButton.isSelected()) {
+			  profileTextField.setEnabled(true);
+			  comboBoxProfileList.setEnabled(false);
+	      }
+	  });
+	  
+	  
+	  try {
+		  	URL url = new URL("http://localhost/viewer/profiles.json");
+		  	InputStream input = url.openStream();
+	        InputStreamReader isr = new InputStreamReader(input);
+	        BufferedReader reader = new BufferedReader(isr);	        
+	        StringBuilder json = new StringBuilder();
+	        
+	        int jsonReader;
+	        while ((jsonReader = reader.read()) != -1) {
+	            json.append((char) jsonReader);
+	        }
+	        
+	        JSONObject jsonObj = new JSONObject(json.toString());
+
+	        JSONArray ja = (JSONArray) jsonObj.get("profiles");
+	        for(int i=0; i < ja.length(); i++){
+	        	comboBoxProfileList.addItem((String) ja.get(i));
+	        }
+
+	  } catch (Exception ex) {
+		  LOGGER.log(Level.SEVERE, "Error while loading profiles file");
+	  }
+     
+	  panel.setVisible(true);
+	  panel.setSize(400, 200);
+      return panel;
+  }
+        
   private void showMessage_Orig(final WeasisMainFrame mainFrame, Map<String, String> serverProp) {
     String versionOld = serverProp.get("prev." + P_WEASIS_VERSION); // NON-NLS
     String versionNew = serverProp.getOrDefault(P_WEASIS_VERSION, "0.0.0");
@@ -1303,6 +1473,8 @@ public class WeasisLauncher {
         // wait asynchronous stop (max 30 seconds to stop all bundles)
         mFelix.waitForStop(30_000);
       }
+      String saveUrlStr = "http://localhost/viewer/index.php?user=" + System.getProperty("user.name") + "&action=saveprofile&name=" + currentProfile;
+      streamApiUrls(saveUrlStr);
     } catch (Exception ex) {
       System.err.println("Error stopping framework: " + ex); // NON-NLS
       if (ex instanceof InterruptedException) {
@@ -1320,6 +1492,18 @@ public class WeasisLauncher {
 
   protected void stopSingletonServer() {
     // Do nothing in this class
+  }
+  
+  // APIs to alter the profiles
+  public void streamApiUrls(String urlLoc) {
+	  String urlStr = urlLoc;
+		try {
+			URL url = new URL(urlStr);
+		  	InputStream input = url.openStream();
+	        input.close();
+		} catch(Exception exc) {
+			LOGGER.log(Level.SEVERE, "Exception while handling profiles", exc);
+		}
   }
 
   static void cleanImageCache() {
