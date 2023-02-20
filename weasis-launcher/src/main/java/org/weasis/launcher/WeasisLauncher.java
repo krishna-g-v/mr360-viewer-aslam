@@ -1310,6 +1310,7 @@ public class WeasisLauncher {
       }
     } finally {
       cleanImageCache();
+      resetBundleCache();
       stopSingletonServer();
 
       // If System.exit() hangs call Runtime.getRuntime().halt(1) to kill the application
