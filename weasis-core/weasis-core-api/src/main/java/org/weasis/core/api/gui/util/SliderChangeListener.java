@@ -386,7 +386,56 @@ public abstract class SliderChangeListener extends MouseActionAdapter
       }
     }
   }
-
+  
+  //used only for series scroll
+  public void mouseDragged(MouseEvent e, int totalCells) {
+    if (basicState.isActionEnabled() && !e.isConsumed()) {
+      int buttonMask = getButtonMaskEx();
+      int modifier = e.getModifiersEx();
+      /*
+       * dragAccumulator == Double.NaN when the listener did not catch the Pressed MouseEvent (could append in
+       * multisplit container)
+       */
+      if ((modifier & buttonMask) != 0 && MathUtil.isDifferent(dragAccumulator, Double.MAX_VALUE)) {
+        int position = isMoveOnX() ? e.getX() : e.getY();
+        int mask = InputEvent.SHIFT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK;
+        // Accelerate the action if ctrl or shift is down
+        double acceleratorKey =
+            (modifier & mask) == 0 ? 1.0 : (modifier & mask) == mask ? 5.0 : 2.5;
+        double val = (position - lastPosition) * getMouseSensivity() * acceleratorKey;
+        if (MathUtil.isEqualToZero(val)) {
+          return;
+        }
+        lastPosition = position;
+        if (isInverse()) {
+          dragAccumulator -= val;
+        } else {
+          dragAccumulator += val;
+        }
+        if (dragAccumulator < getSliderMin()) {
+          dragAccumulator = getSliderMin();
+        }
+        if (dragAccumulator > getSliderMax()) {
+          dragAccumulator = getSliderMax();
+        }
+        
+        int sliderStartValue = getSliderValue() - ((getSliderValue() % totalCells) - 1);
+        if (val < 0.0) {
+			if( (sliderStartValue + (((int) Math.ceil(val) == 0 ? -1 : (int) Math.ceil(val)) * totalCells)) > getSliderMax() )
+				return;
+			else
+				setSliderValue(sliderStartValue + (((int) Math.ceil(val) == 0 ? -1 : (int) Math.ceil(val)) * totalCells));
+		} else {
+			if( (sliderStartValue + (((int) Math.floor(val) == 0 ? 1 : (int) Math.floor(val)) * totalCells)) > getSliderMax() )
+				return;
+			else {
+				setSliderValue(sliderStartValue + (((int) Math.floor(val) == 0 ? 1 : (int) Math.floor(val)) * totalCells));
+			}
+		}
+      }
+    }
+  }
+  
   @Override
   public void mouseWheelMoved(MouseWheelEvent e) {
     if (basicState.isActionEnabled() && !e.isConsumed()) {

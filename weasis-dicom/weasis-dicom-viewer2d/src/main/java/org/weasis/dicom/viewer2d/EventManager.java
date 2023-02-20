@@ -13,6 +13,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.image.DataBuffer;
 import java.io.IOException;
@@ -243,7 +244,33 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
     return new SliderCineListener(ActionW.SCROLL_SERIES, 1, 2, 1, speed, time, mouseSensivity) {
 
       protected CineThread currentCine;
+      
+      @Override
+      public void mouseDragged(MouseEvent e) {
+    	  Optional<ComboItemListener> synchAction = getAction(ActionW.SYNCH, ComboItemListener.class);
 
+          SynchView synchView =
+              synchAction.isPresent() ? (SynchView) synchAction.get().getSelectedItem() : null;
+          boolean tileMode =
+              synchView != null && SynchData.Mode.TILE.equals(synchView.getSynchData().getMode());
+          String evtAction = getActionW().getTitle();
+          
+          if(evtAction.equals(ActionW.SCROLL_SERIES.getTitle()) && tileMode && !EventManager.getInstance().getSelectedView2dContainer().isViewerInFullscreen()) {
+        	  Optional<ComboItemListener> layoutAction = getAction(ActionW.LAYOUT, ComboItemListener.class);
+        	  String layoutId = ((GridBagLayoutModel) layoutAction.get().getSelectedItem()).getId();
+        	  int totalCells = 1;
+        	  if(layoutId.startsWith("layout")) {
+        		  totalCells = 3;
+        	  } else {
+        		  String[] gridDimentions = layoutId.split("x");
+        		  totalCells = Integer.parseInt(gridDimentions[0]) * Integer.parseInt(gridDimentions[1]);
+        	  }
+        	  super.mouseDragged(e, totalCells);
+          } else {
+        	  super.mouseDragged(e);
+          }
+      }
+      
       @Override
       public void stateChanged(BoundedRangeModel model) {
 
