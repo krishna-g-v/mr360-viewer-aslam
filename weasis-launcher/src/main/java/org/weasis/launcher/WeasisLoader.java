@@ -74,6 +74,9 @@ public class WeasisLoader {
     downloadProgress.setFont(font);
     cancelButton = new javax.swing.JButton();
     cancelButton.setFont(font);
+    
+    //disable cancel button while loading plug-ins 
+    cancelButton.setEnabled(false);
 
     RootPaneContainer frame = mainFrame.getRootPaneContainer();
 
