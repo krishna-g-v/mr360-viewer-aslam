@@ -26,11 +26,17 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -45,7 +51,11 @@ import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
 import javax.management.ObjectName;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.html.HTMLEditorKit;
@@ -164,13 +174,13 @@ public class WeasisLauncher {
   static final String MAC_OS_X = "Mac OS X"; // NON-NLS
   
   // profile dialog components
-  public JComboBox<String> comboBoxProfileList;
-  public JTextField profileTextField;
-  public JButton profileButton;
-  public JRadioButton selectProfileButton;
-  public JRadioButton addProfileButton;
-  public String currentProfile = "";
-  public JFrame profileFrame = new JFrame();
+  public static JComboBox<String> comboBoxProfileList;
+  public static JTextField profileTextField;
+  public static JButton profileButton;
+  public static JRadioButton selectProfileButton;
+  public static JRadioButton addProfileButton;
+  public static String currentProfile = "";
+  public static JFrame profileFrame = new JFrame();
 
   protected Felix mFelix = null;
   protected ServiceTracker mTracker = null;
@@ -446,11 +456,13 @@ public class WeasisLauncher {
   InstantiationException,
   IllegalAccessException,
   UnsupportedLookAndFeelException {
-	  profileFrame.setSize(300, 300);
+	  profileFrame.setSize(350, 300);
 	  Image icon = Toolkit.getDefaultToolkit().getImage(configData.getProperty(P_WEASIS_CODEBASE_LOCAL) + File.separator + "resources/images/logo-button.png");
 	  profileFrame.setIconImage(icon);
 	  profileFrame.setTitle("Medreport360 Viewer Profile management");
 	  profileFrame.setLocationRelativeTo(null);
+	  profileFrame.setUndecorated(true);
+	  profileFrame.setOpacity(0.0f);
 	  profileFrame.setVisible(true);
 	  
 	  EventQueue.invokeAndWait(
@@ -466,10 +478,11 @@ public class WeasisLauncher {
 	            	// adding profile confirm dialog inside the frame 
 	            	try {
 	            		JDialog profileDialog = new JDialog(profileFrame, true);
+	            		profileDialog.setTitle("Medreport360 Viewer Profile management");
 	            		profileDialog.add(getProfilePanel());
-	            		profileDialog.setSize(250, 200);
+	            		profileDialog.setSize(350, 300);
 	            		profileDialog.setLocationRelativeTo(null);
-	            		profileDialog.setUndecorated(true);
+//	            		profileDialog.setUndecorated(true);
 	            		
 	            		profileDialog.addWindowListener(new java.awt.event.WindowAdapter() {
 	            			@Override
@@ -482,15 +495,48 @@ public class WeasisLauncher {
 	            			if(selectProfileButton.isSelected()) {
 	            				String selectedProfile = ((String) comboBoxProfileList.getSelectedItem()).toLowerCase();
 	            				currentProfile = selectedProfile;
+	            				
+	            				// Get existing data from remote for selected profile 
+	            				try {
+	            					String getProfileUrlStrGet = "http://viewer-updater.medreport360.com/profiles_dir/index.php?user=" + System.getProperty("user.name") + "&action=getprofile&name=" + selectedProfile;
 
-	            				String getProfileUrlStr = "http://localhost/viewer/index.php?user=" + System.getProperty("user.name") + "&action=getprofile&name=" + selectedProfile;
-	            				streamApiUrls(getProfileUrlStr);
+		            			    File viewerLocalFile = new File(System.getProperty("weasis.path"));
+		            			    String userDataRem = System.getProperty("weasis.path") + File.separator + "user.zip";
+		            			    
+	            					InputStream in = new URL(getProfileUrlStrGet).openStream();
+	            					Files.copy(in, Paths.get(userDataRem), StandardCopyOption.REPLACE_EXISTING);
+	            					
+	            					ZipFile userZipData = new ZipFile(userDataRem);
+	            					unzipPath(userZipData, viewerLocalFile.toPath());
+	            					File userFileData = new File(userDataRem);
+	            					userZipData.close();
+	            					userFileData.delete();
+	            				} catch (Exception exp) {
+	            					
+	            				}
 	            			} else {
 	            				String newProfile = profileTextField.getText();
 	            				currentProfile = newProfile;
 	            				
-	            				String createUrlStr = "http://localhost/viewer/index.php?user=" + System.getProperty("user.name") + "&action=createprofile&name=" + newProfile;
+	            				// Create new profile in remote
+	            				String createUrlStr = "http://viewer-updater.medreport360.com/profiles_dir/index.php?user=" + System.getProperty("user.name") + "&action=createprofile&name=" + newProfile;
 	            				streamApiUrls(createUrlStr);
+	            				
+	            				// Clear local data if new user
+	            				File viewerLocalFile = new File(System.getProperty("weasis.path"));            				
+	            				File[] localProfileLists = viewerLocalFile.listFiles();
+	            				if(localProfileLists != null) {
+	            				  for (int i = 0; i < localProfileLists.length; i++) {
+	            					  String fileName = localProfileLists[i].getName().toLowerCase();
+	            					  if(localProfileLists[i].isDirectory()) {	            						  
+	            						  if(fileName.startsWith("data") || fileName.startsWith("preferences")) {
+	            							  deleteLocalDirectory(localProfileLists[i]);
+	            						  }
+	            					  } else if(fileName.endsWith(".properties")) {
+	            						  localProfileLists[i].delete();
+	            					  }
+	            			      }
+	            				}	
 	            			}
 	            			
 	            			profileFrame.dispatchEvent(new WindowEvent(profileFrame, WindowEvent.WINDOW_CLOSING));
@@ -507,13 +553,13 @@ public class WeasisLauncher {
   private JPanel getProfilePanel() {
 	  JPanel panel = new JPanel();
 	  comboBoxProfileList = new JComboBox<>(new String[] {});
-	  profileTextField = new JTextField(10);
+	  profileTextField = new JTextField(9);
 	  profileButton = new JButton("OK");
 	  profileTextField.setEnabled(false);
 	  
 	  panel.setLayout(new GridBagLayout());
 	  GridBagConstraints gbc = new GridBagConstraints();
-	  gbc.insets = new Insets(5, 5, 5, 5);
+	  gbc.insets = new Insets(15, 15, 15, 15);
 	  gbc.gridx = 0;
 	  gbc.gridy = 0;
 //	  gbc.gridy = GridBagConstraints.RELATIVE;
@@ -543,8 +589,9 @@ public class WeasisLauncher {
 	  panel.add(profileTextField, gbc);
 	  gbc.gridx = 0;
 	  gbc.gridy = 2;
-	  gbc.gridwidth =2;
+	  gbc.gridwidth = 2;
 	  gbc.anchor = GridBagConstraints.CENTER;
+	  gbc.ipadx = 20;
 //	  gbc.gridheight = 2;
 //	  gbc.insets = new Insets(0, 0, 0, 0);
 	  panel.add(profileButton, gbc);
@@ -564,7 +611,7 @@ public class WeasisLauncher {
 	  
 	  
 	  try {
-		  	URL url = new URL("http://localhost/viewer/profiles.json");
+		  	URL url = new URL("http://viewer-updater.medreport360.com/profiles_dir/profiles.json");
 		  	InputStream input = url.openStream();
 	        InputStreamReader isr = new InputStreamReader(input);
 	        BufferedReader reader = new BufferedReader(isr);	        
@@ -1473,8 +1520,6 @@ public class WeasisLauncher {
         // wait asynchronous stop (max 30 seconds to stop all bundles)
         mFelix.waitForStop(30_000);
       }
-      String saveUrlStr = "http://localhost/viewer/index.php?user=" + System.getProperty("user.name") + "&action=saveprofile&name=" + currentProfile;
-      streamApiUrls(saveUrlStr);
     } catch (Exception ex) {
       System.err.println("Error stopping framework: " + ex); // NON-NLS
       if (ex instanceof InterruptedException) {
@@ -1484,13 +1529,170 @@ public class WeasisLauncher {
       cleanImageCache();
       resetBundleCache();
       stopSingletonServer();
-
-      // If System.exit() hangs call Runtime.getRuntime().halt(1) to kill the application
+      sendDataToRemoteServer();
+      	  
+	  // If System.exit() hangs call Runtime.getRuntime().halt(1) to kill the application
       Timer timer = new Timer();
       timer.schedule(new HaltTask(), 15000);
     }
   }
+  
+  // Zip a group of files
+  public static void zip(List<File> listFiles, String destZipFile) throws FileNotFoundException, IOException {
+	  ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(destZipFile));
+	  for(File file : listFiles) {
+		  if (file.isDirectory()) {
+			  if(file.getName().startsWith("cache") || file.getName().startsWith("log")) {
+				  continue; 
+			  }
+			  zipDirectory(file, file.getName(), zos);
+	      } else {
+	    	  zipFile(file, zos);
+	      }
+	  }
+	zos.flush();
+	zos.close();
+  }
+  
+  // Zip directories
+  private static void zipDirectory(File folder, String parentFolder, ZipOutputStream zos) throws FileNotFoundException, IOException {
+      for(File file : folder.listFiles()) {
+    	  if (file.isDirectory()) {
+    		  zipDirectory(file, parentFolder + "/" + file.getName(), zos);
+              continue;
+          }
+          zos.putNextEntry(new ZipEntry(parentFolder + "/" + file.getName()));
+          BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+          long bytesRead = 0;
+          byte[] bytesIn = new byte[4096];
+          int read = 0;
+          while ((read = bis.read(bytesIn)) != -1) {
+              zos.write(bytesIn, 0, read);
+              bytesRead += read;
+          }
+          zos.closeEntry();
+      }
+  }
+  
+  // Zip a file
+  private static void zipFile(File file, ZipOutputStream zos)
+          throws FileNotFoundException, IOException {
+      zos.putNextEntry(new ZipEntry(file.getName()));
+      BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+      long bytesRead = 0;
+      byte[] bytesIn = new byte[4096];
+      int read = 0;
+      while ((read = bis.read(bytesIn)) != -1) {
+          zos.write(bytesIn, 0, read);
+          bytesRead += read;
+      }
+      zos.closeEntry();
+  }
+  
+  // Unzip a file to specified path
+  public void unzipPath(ZipFile zipFiler, Path outputPath) {
+	  try {
+		  Enumeration<? extends ZipEntry> entries = zipFiler.entries();
+	    	
+		  while(entries.hasMoreElements()) {
+			  ZipEntry entry = entries.nextElement();
+		        
+			  if(entry.getName().endsWith(".zip")) {
+				  entry = null;
+				  continue;
+		      }
+			  InputStream zis = zipFiler.getInputStream(entry);
+			  Path newFilePath = outputPath.resolve(entry.getName());
+			  if (entry.isDirectory()) {
+				  Files.createDirectories(newFilePath);
+			  } else {
+				  if(!Files.exists(newFilePath.getParent())) {
+					  Files.createDirectories(newFilePath.getParent());
+		          }
+				  try (OutputStream bos = Files.newOutputStream(outputPath.resolve(newFilePath))) {
+					  byte[] buffer = new byte[Math.toIntExact(entry.getSize())];
+			          int location;
+	
+		              while ((location = zis.read(buffer)) != -1) {
+		            	  bos.write(buffer, 0, location);
+		              }
+		          } catch(IOException e) {
+		        	  e.printStackTrace();		        	        
+		          }         
+		       }
+	        }
+	    } catch(IOException e){
+	    	e.printStackTrace();   
+	    }
+  }
+ 
+  // Deleting local directories by deleting its subfolders
+  public static void deleteLocalDirectory(File file) {
+      for (File subFile : file.listFiles()) {
+         if(subFile.isDirectory()) {
+        	 deleteLocalDirectory(subFile);
+         } else {
+            subFile.delete();
+         }
+      }
+      file.delete();
+   }
+  
+  // Saving data to remote server
+  public static void sendDataToRemoteServer() {
+	  String zipFileToSend = System.getProperty("weasis.path") + File.separator + currentProfile +".zip";
+		
+	  try {
+		  File viewerLocalFile = new File(System.getProperty("weasis.path"));
+		  File[] localProfileLists = viewerLocalFile.listFiles();
+		  List<File> localProfilePaths = new ArrayList<File>();
+		  for (int i = 0; i < localProfileLists.length; i++) {
+			  if(localProfileLists[i].getName().endsWith(".zip")) continue;
+			  localProfilePaths.add(localProfileLists[i]);
+	      }
+		  zip(localProfilePaths, zipFileToSend);
+		  
+		  String saveUrlStr = "http://viewer-updater.medreport360.com/profiles_dir/index.php?user=" + System.getProperty("user.name") + "&action=saveprofile&name=" + currentProfile;
+		  File localZipFile = new File(zipFileToSend);
+		  
+		  String url = saveUrlStr;
+		  String charset = "UTF-8";
+		  File binaryFile = new File(zipFileToSend);
+		  String boundary = Long.toHexString(System.currentTimeMillis());
+		  String CRLF = "\r\n";
 
+		  URLConnection connection = new URL(url).openConnection();
+		  connection.setDoOutput(true);
+		  connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+		  try (
+		      OutputStream output = connection.getOutputStream();
+		      PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, charset), true);
+		  ) {
+		      // Send binary file.
+		      writer.append("--" + boundary).append(CRLF);
+		      writer.append("Content-Disposition: form-data; name=\"binaryFile\"; filename=\"" + binaryFile.getName() + "\"").append(CRLF);
+		      writer.append("Content-Type: " + URLConnection.guessContentTypeFromName(binaryFile.getName())).append(CRLF);
+		      writer.append("Content-Transfer-Encoding: binary").append(CRLF);
+		      writer.append(CRLF).flush();
+		      Files.copy(binaryFile.toPath(), output);
+		      output.flush();
+		      writer.append(CRLF).flush();
+
+		      // End of multipart/form-data.
+		      writer.append("--" + boundary + "--").append(CRLF).flush();
+		  }
+		  		  
+		  int responseCode = ((HttpURLConnection) connection).getResponseCode();
+		  if(responseCode == 200) {
+			  localZipFile.delete();
+		  }
+	       
+	  } catch (Exception ex) {
+		  ex.printStackTrace();
+	  }
+  }
+  
   protected void stopSingletonServer() {
     // Do nothing in this class
   }
@@ -1504,9 +1706,9 @@ public class WeasisLauncher {
 	        input.close();
 		} catch(Exception exc) {
 			LOGGER.log(Level.SEVERE, "Exception while handling profiles", exc);
-		}
+		}	
   }
-
+  
   static void cleanImageCache() {
     // Clean temp folder.
     String dir = System.getProperty("weasis.tmp.dir");
@@ -1514,4 +1716,5 @@ public class WeasisLauncher {
       FileUtil.deleteDirectoryContents(new File(dir), 3, 0);
     }
   }
+  
 }
