@@ -962,7 +962,8 @@ public class WeasisLauncher {
 
   public WeasisLoader loadProperties(Map<String, String> serverProp, StringBuilder conf) {
     String dir = configData.getProperty(P_WEASIS_PATH);
-    String profileName = configData.getProperty(P_WEASIS_PROFILE, "default"); // NON-NLS
+//    String profileName = configData.getProperty(P_WEASIS_PROFILE, "default"); // NON-NLS
+    String profileName = currentProfile;
     String user = configData.getProperty(P_WEASIS_USER);
 
     // If proxy configuration, activate it
@@ -973,8 +974,8 @@ public class WeasisLauncher {
     bufDir.append(File.separator);
     bufDir.append("preferences"); // NON-NLS
     bufDir.append(File.separator);
-    bufDir.append(user);
-    bufDir.append(File.separator);
+//    bufDir.append(user);
+//    bufDir.append(File.separator);
     bufDir.append(profileName);
     File prefDir = new File(bufDir.toString());
     try {
