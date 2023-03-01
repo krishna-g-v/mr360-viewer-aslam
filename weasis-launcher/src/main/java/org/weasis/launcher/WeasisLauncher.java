@@ -493,7 +493,7 @@ public class WeasisLauncher {
 	            		
 	            		profileButton.addActionListener(e -> {
 	            			if(selectProfileButton.isSelected()) {
-	            				String selectedProfile = ((String) comboBoxProfileList.getSelectedItem()).toLowerCase();
+	            				String selectedProfile = ((String) comboBoxProfileList.getSelectedItem());
 	            				currentProfile = selectedProfile;
 	            				
 	            				// Get existing data from remote for selected profile 
@@ -516,6 +516,7 @@ public class WeasisLauncher {
 	            				}
 	            			} else {
 	            				String newProfile = profileTextField.getText();
+	            				newProfile = newProfile.trim().replaceAll("\\s","");
 	            				currentProfile = newProfile;
 	            				
 	            				// Create new profile in remote
@@ -527,9 +528,9 @@ public class WeasisLauncher {
 	            				File[] localProfileLists = viewerLocalFile.listFiles();
 	            				if(localProfileLists != null) {
 	            				  for (int i = 0; i < localProfileLists.length; i++) {
-	            					  String fileName = localProfileLists[i].getName().toLowerCase();
+	            					  String fileName = localProfileLists[i].getName();
 	            					  if(localProfileLists[i].isDirectory()) {	            						  
-	            						  if(fileName.startsWith("data") || fileName.startsWith("preferences")) {
+	            						  if(fileName.toLowerCase().startsWith("data".toLowerCase()) || fileName.toLowerCase().startsWith("preferences".toLowerCase())) {
 	            							  deleteLocalDirectory(localProfileLists[i]);
 	            						  }
 	            					  } else if(fileName.endsWith(".properties")) {
