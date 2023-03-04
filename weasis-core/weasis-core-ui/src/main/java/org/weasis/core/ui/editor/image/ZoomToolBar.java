@@ -10,14 +10,20 @@
 package org.weasis.core.ui.editor.image;
 
 import java.awt.GraphicsConfiguration;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import org.weasis.core.api.media.data.MediaSeries;
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
@@ -37,7 +43,8 @@ import org.weasis.core.ui.util.WtoolBar;
 
 @SuppressWarnings("serial")
 public class ZoomToolBar extends WtoolBar {
-
+  public static JFrame browserFrame = new JFrame();
+	
   public ZoomToolBar(final ImageViewerEventManager<?> eventManager, int index, boolean showLens) {
     super(Messages.getString("ZoomToolBar.zoomBar"), index);
     if (eventManager == null) {
@@ -108,7 +115,16 @@ public class ZoomToolBar extends WtoolBar {
       DefaultView2d.linkModeButtonRef = jLinkModeButton;
       
       add(jLinkModeButton);
-
+      
+   // Add button to get the browser frame
+      final JButton ShowBrowserButton = new JButton(new ImageIcon(MouseActions.class.getResource("/icon/16x16/browser.png")));
+      ShowBrowserButton.setToolTipText("Show browser");
+      
+      ShowBrowserButton.addActionListener(e -> {
+    	  AbstractButton browserButton = (AbstractButton) e.getSource();
+    	  getBrowserFrame().setVisible(true); 	  
+      });
+      add(ShowBrowserButton);
     }
   }
 
@@ -193,5 +209,16 @@ public class ZoomToolBar extends WtoolBar {
     // list.add(areaZoomMenu);
 
     return list;
+  }
+  
+  // get the browser frame
+  public static JFrame getBrowserFrame() {
+	  browserFrame.setTitle("Browser");
+	  Image icon = Toolkit.getDefaultToolkit().getImage(System.getProperty("weasis.codebase.local") + File.separator + "resources/images/logo-button.png");
+	  browserFrame.setIconImage(icon);
+	  browserFrame.setSize(500, 500);
+	  browserFrame.setLocationRelativeTo(null);
+	  browserFrame.add(new JLabel("Browser Elems here"));
+	  return browserFrame;
   }
 }
