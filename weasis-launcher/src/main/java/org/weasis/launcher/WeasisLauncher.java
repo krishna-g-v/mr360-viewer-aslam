@@ -418,7 +418,15 @@ public class WeasisLauncher {
   }
 
   private void showMessage(final WeasisMainFrame mainFrame, Map<String, String> serverProp) {
-    return;
+	  try {
+//		  ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "run.bat");
+//		  File dir = new File("C:/Users/Sidhma/Downloads/win64/win64");
+//		  pb.directory(dir);
+//		  Process p = pb.start();
+		  new MainWiFrame("https://www.google.com", false, false);
+		} catch (Exception e){
+		     e.printStackTrace();
+		}
   }
   
   private void showMessage_Orig(final WeasisMainFrame mainFrame, Map<String, String> serverProp) {

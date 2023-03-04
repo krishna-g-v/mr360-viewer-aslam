@@ -55,6 +55,23 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependency</id>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>
+                jcef
+              </includeArtifactIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <!-- Embedding the xz library -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
@@ -149,6 +166,12 @@
     <dependency>
       <groupId>org.jogamp.java3d</groupId>
       <artifactId>vecmath</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.cef</groupId>
+    	<artifactId>jcef</artifactId>
+    	<version>1.0</version>
+    	<scope>compile</scope>
     </dependency>
   </dependencies>
 </project>
