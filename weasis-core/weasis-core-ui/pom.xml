@@ -129,5 +129,11 @@
       <groupId>com.google.code.bean-matchers</groupId>
       <artifactId>bean-matchers</artifactId>
     </dependency>
+    <dependency>
+    	<groupId>org.cef</groupId>
+    	<artifactId>jcef</artifactId>
+    	<version>1.0</version>
+    	<scope>compile</scope>
+    </dependency>
   </dependencies>
 </project>
