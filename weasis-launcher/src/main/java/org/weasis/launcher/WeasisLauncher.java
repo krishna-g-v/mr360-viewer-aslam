@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
@@ -47,6 +48,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
@@ -276,7 +278,16 @@ public class WeasisLauncher {
       checkBundleUI(serverProp);
       frameworkLoaded = true;
 
-      showMessage(mainFrame, serverProp);
+      
+      try {
+    	  showMessage(mainFrame, serverProp);
+      } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+          LOGGER.log(Level.SEVERE, "Error while profile dialog box is shown", e);
+      } catch (InvocationTargetException e) {
+          LOGGER.log(Level.SEVERE, "Error while profile dialog box is shown", e);
+      }
+
 
       // Wait for framework to stop to exit the VM.
       mFelix.waitForStop(0);
@@ -417,16 +428,24 @@ public class WeasisLauncher {
     FileUtil.storeProperties(sourceIdProps, localSourceProp, null);
   }
 
-  private void showMessage(final WeasisMainFrame mainFrame, Map<String, String> serverProp) {
+  private void showMessage(final WeasisMainFrame mainFrame, Map<String, String> serverProp)  throws InterruptedException, InvocationTargetException, ClassNotFoundException,
+  InstantiationException,
+  IllegalAccessException,
+  UnsupportedLookAndFeelException
+{
+	  EventQueue.invokeAndWait(
+	            () -> {
+
 	  try {
 //		  ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "run.bat");
 //		  File dir = new File("C:/Users/Sidhma/Downloads/win64/win64");
 //		  pb.directory(dir);
 //		  Process p = pb.start();
-		  new MainWiFrame("https://www.google.com", false, false);
+		  new MainWiFrame("http://www.google.com", false, false);
 		} catch (Exception e){
 		     e.printStackTrace();
 		}
+	            });
   }
   
   private void showMessage_Orig(final WeasisMainFrame mainFrame, Map<String, String> serverProp) {
