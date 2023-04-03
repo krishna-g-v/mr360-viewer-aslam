@@ -11,8 +11,19 @@ package org.weasis.dicom.explorer;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -30,6 +41,9 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 import org.apache.felix.service.command.CommandProcessor;
@@ -62,6 +76,8 @@ import org.weasis.core.ui.docking.UIManager;
 import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
 import org.weasis.core.ui.editor.image.DefaultView2d;
+import org.weasis.core.ui.editor.image.ZoomToolBar;
+import org.weasis.core.util.FileUtil;
 import org.weasis.core.util.StringUtil;
 import org.weasis.dicom.codec.DicomEncapDocElement;
 import org.weasis.dicom.codec.DicomEncapDocSeries;
@@ -1074,7 +1090,25 @@ public class DicomModel implements TreeModel, DataExplorerModel {
       for (int i = 0; i < files.length; i++) {
         files[i] = new File(largs.get(i));
       }
+      try {
+      	Thread t = new Thread(new Runnable() {
+      	    @Override
+      	    public void run() {
+      	    	saveDICOM(files[0]);       
+      	    }
+
+      	   });
+      	t.start();
+      } catch(Exception e) {
+      	
+      }
+      
       LOADING_EXECUTOR.execute(new LoadLocalDicom(files, true, DicomModel.this));
+      
+      
+      
+      
+      
     }
 
     if (opt.isSet("remote")) { // NON-NLS
@@ -1317,4 +1351,64 @@ public class DicomModel implements TreeModel, DataExplorerModel {
   public TreeModelNode getTreeModelNodeForNewPlugin() {
     return patient;
   }
+  
+  public static void saveDICOM(File dirLoc) {
+	  String folderName = dirLoc.getName();
+    DefaultView2d.loadDicomFolderName = folderName;
+	  String zipFileName = folderName+".zip";
+	  String saveUrlStr = "http://ai.medreport360.com/upload_dcm.php";
+//	  zip(localProfilePaths, zipFileToSend);
+//	  File exportDir =
+//		    FileUtil.createTempDir(
+//		            AppProperties.buildAccessibleTempDirectory("tmp", "zip"));
+	  File zipFileToSend = new File(AppProperties.buildAccessibleTempDirectory("tmp", "zip")+"/"+zipFileName);
+	  List<File> localProfilePaths = new ArrayList<File>();
+	  localProfilePaths.add(dirLoc);
+	  try {
+//		zip(localProfilePaths, zipFileToSend.toPath().toString());
+		FileUtil.zip(dirLoc, zipFileToSend);
+	  } catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	  }
+	
+	  File localZipFile = zipFileToSend;
+	  
+	  String url = saveUrlStr;
+	  String charset = "UTF-8";
+	  File binaryFile = zipFileToSend;
+	  String boundary = Long.toHexString(System.currentTimeMillis());
+	  String CRLF = "\r\n";
+	  try {
+		  URLConnection connection = new URL(url).openConnection();
+		  connection.setDoOutput(true);
+		  connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+		  try (
+				  OutputStream output = connection.getOutputStream();
+				  PrintWriter writer = new PrintWriter(new OutputStreamWriter(output, charset), true);
+				  ) {
+			  // Send binary file.
+			  writer.append("--" + boundary).append(CRLF);
+			  writer.append("Content-Disposition: form-data; name=\"dcmZipFile\"; filename=\"" + binaryFile.getName() + "\"").append(CRLF);
+			  writer.append("Content-Type: " + URLConnection.guessContentTypeFromName(binaryFile.getName())).append(CRLF);
+			  writer.append("Content-Transfer-Encoding: binary").append(CRLF);
+			  writer.append(CRLF).flush();
+			  Files.copy(binaryFile.toPath(), output);
+			  output.flush();
+			  writer.append(CRLF).flush();
+
+			  // End of multipart/form-data.
+			  writer.append("--" + boundary + "--").append(CRLF).flush();
+		  } catch(Exception epr) {
+			  epr.printStackTrace();
+		  }
+		  int responseCode = ((HttpURLConnection) connection).getResponseCode();
+//		  if(responseCode == 200) {
+//			  localZipFile.delete();
+//		  }
+	  	} catch(Exception ep) {
+		  ep.printStackTrace();
+	  	}
+  	}
 }

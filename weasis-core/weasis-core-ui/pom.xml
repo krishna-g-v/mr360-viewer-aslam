@@ -27,7 +27,7 @@
             </goals>
             <configuration>
               <includeArtifactIds>
-                lablib-checkboxtree,jxlayer,LGoodDatePicker,xchart,VectorGraphics2D
+                lablib-checkboxtree,jxlayer,LGoodDatePicker,xchart,VectorGraphics2D,jcef
               </includeArtifactIds>
             </configuration>
           </execution>
@@ -42,7 +42,7 @@
             Import-Package: \
             com.madgag.gif.fmsware;resolution:=optional,de.rototor.pdfbox.graphics2d;\
             resolution:=optional,org.apache.pdfbox.pdmodel.*;resolution:=optional,\
-            !sun.swing,*
+            !sun.swing,*;resolution:=optional,com.mr360.jcef.*;
             Export-Package: !org.weasis.core.ui.internal,org.weasis.core.ui.*
             -exportcontents: it.cnr.imaa.*,org.jdesktop.jxlayer.*,com.github.lgooddatepicker.*,\
             com.privatejgoodies.*,org.knowm.xchart.*,de.erichseifert.*
@@ -128,6 +128,11 @@
     <dependency>
       <groupId>com.google.code.bean-matchers</groupId>
       <artifactId>bean-matchers</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.mr360</groupId>
+      <artifactId>jcef</artifactId>
+      <version>1.0</version>      
     </dependency>
   </dependencies>
 </project>

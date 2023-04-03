@@ -22,3 +22,10 @@ cd weasis-distributions/script/
 
 # To build updater.go for windows x86_64
 env GOOS=windows GOARCH=amd64 go build updater.go
+
+
+# jcef inclusion
+# from medreport360-viewer/weasis-core/weasis-core-ui folder run the following with having jcef.jar packaged from extracting all the files from all the jars
+cd weasis-core/weasis-core-ui/
+jar -cvf ./jcef_lib/jcef.jar *
+mvn install:install-file -Dfile=./jcef_lib/jcef.jar -DgroupId=com.mr360 -DartifactId=jcef -Dpackaging=jar -Dversion=1.0

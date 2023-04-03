@@ -10,23 +10,29 @@
 package org.weasis.core.ui.editor.image;
 
 import java.awt.GraphicsConfiguration;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
+import java.util.logging.Level;
+
 import org.weasis.core.api.media.data.MediaSeries;
-import javax.swing.AbstractButton;
-import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JToggleButton;
-import javax.swing.SwingUtilities;
 import org.weasis.core.api.gui.util.ActionState;
 import org.weasis.core.api.gui.util.ActionW;
 import org.weasis.core.api.gui.util.ComboItemListener;
 import org.weasis.core.api.gui.util.DropButtonIcon;
 import org.weasis.core.api.gui.util.DropDownButton;
+import org.weasis.core.api.gui.util.GuiExecutor;
 import org.weasis.core.api.gui.util.SliderChangeListener;
 import org.weasis.core.api.gui.util.ToggleButtonListener;
 import org.weasis.core.api.service.AuditLog;
@@ -35,8 +41,31 @@ import org.weasis.core.ui.editor.image.dockable.MeasureTool;
 import org.weasis.core.ui.pref.Monitor;
 import org.weasis.core.ui.util.WtoolBar;
 
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import javax.swing.*;
+
+import org.cef.CefApp;
+import org.cef.CefApp.CefAppState;
+import org.cef.CefClient;
+import org.cef.CefSettings;
+import org.cef.OS;
+import org.cef.browser.CefBrowser;
+import org.cef.browser.CefFrame;
+import org.cef.callback.CefContextMenuParams;
+import org.cef.callback.CefMenuModel;
+import org.cef.handler.CefAppHandlerAdapter;
+import org.cef.handler.CefContextMenuHandler;
+
+
 @SuppressWarnings("serial")
 public class ZoomToolBar extends WtoolBar {
+  public static JFrame browserFrame = new JFrame();
+  public static JFrame loadedBrowser = null;
+  public CefClient clientRem = null;
+  public CefBrowser browserRem = null;
 
   public ZoomToolBar(final ImageViewerEventManager<?> eventManager, int index, boolean showLens) {
     super(Messages.getString("ZoomToolBar.zoomBar"), index);
@@ -108,7 +137,22 @@ public class ZoomToolBar extends WtoolBar {
       DefaultView2d.linkModeButtonRef = jLinkModeButton;
       
       add(jLinkModeButton);
-
+      
+      // Add button to get the browser frame
+      final JButton ShowBrowserButton = new JButton(new ImageIcon(MouseActions.class.getResource("/icon/16x16/browser.png")));
+      ShowBrowserButton.setToolTipText("Show AI Window");
+      
+      ShowBrowserButton.addActionListener(e -> {
+    	  if (loadedBrowser == null) {
+    	  	loadedBrowser = getBrowserFrame();
+    	  	loadedBrowser.setVisible(true);
+    	  } else {
+    		browserRem.loadURL("http://ai.medreport360.com/showAI.php?foldername="+DefaultView2d.loadDicomFolderName);
+    		loadedBrowser.setVisible(true);
+    	  }
+         
+      });
+      add(ShowBrowserButton);
     }
   }
 
@@ -194,4 +238,103 @@ public class ZoomToolBar extends WtoolBar {
 
     return list;
   }
+  
+  // get the browser frame
+  public JFrame getBrowserFrame() {
+	  browserFrame.setTitle("AI");
+	  Image icon = Toolkit.getDefaultToolkit().getImage(System.getProperty("weasis.codebase.local") + File.separator + "resources/images/logo-button.png");
+	  browserFrame.setIconImage(icon);
+	  
+	  CefApp.addAppHandler(new CefAppHandlerAdapter(null) {
+          @Override
+          public void stateHasChanged(CefAppState state) {
+              
+          }
+      });
+
+      final CefSettings settings = new CefSettings();
+      settings.windowless_rendering_enabled = false;
+      
+      final CefApp cefApp = CefApp.getInstance(settings);
+      final CefClient client = cefApp.createClient();
+      
+      client.addContextMenuHandler(new ContextMenuHandler(browserFrame));
+
+      final CefBrowser browser = client.createBrowser("http://ai.medreport360.com/showAI.php?foldername="+DefaultView2d.loadDicomFolderName, false, false);
+      final Component browserUI = browser.getUIComponent();
+      clientRem = client;
+      browserRem = browser;
+      
+   // Set up the UI for this example implementation.
+      JPanel contentPanel = new JPanel(new BorderLayout());
+      JButton reloadBtn = new JButton("Reload");
+      
+      reloadBtn.setAlignmentX(LEFT_ALIGNMENT);
+      reloadBtn.addActionListener(new ActionListener() {
+          @Override
+          public void actionPerformed(ActionEvent e) {
+              if (reloadBtn.getText().equalsIgnoreCase("reload")) {
+                  int mask = OS.isMacintosh() ? ActionEvent.META_MASK : ActionEvent.CTRL_MASK;
+                  if ((e.getModifiers() & mask) != 0) {
+                      browser.reloadIgnoreCache();
+                  } else {
+                      browser.reload();
+                  }
+              } else {
+            	  browser.stopLoad();
+              }
+          }
+      });
+      contentPanel.add(Box.createHorizontalStrut(1));
+      contentPanel.add(reloadBtn, BorderLayout.NORTH);
+      contentPanel.add(browserUI, BorderLayout.CENTER);
+      
+      browserFrame.getContentPane().add(contentPanel);
+      browserFrame.pack();
+      browserFrame.setLocationRelativeTo(null);
+      browserFrame.setSize(1145, 756);
+//      browserFrame.setVisible(true);
+
+      browserFrame.addWindowListener(new WindowAdapter() {
+          @Override
+          public void windowClosing(WindowEvent e) {
+        	  browserFrame.setVisible(false);
+          }
+      });
+	  
+	  
+//	  browserFrame.setSize(500, 500);
+//	  browserFrame.setLocationRelativeTo(null);
+//	  browserFrame.add(new JLabel("Browser Elems here"));
+	  return browserFrame;
+  }
 }
+
+// TODO: Add required options - Below System generated code to be overridden 
+class ContextMenuHandler implements CefContextMenuHandler {
+	private final Frame owner_;
+
+    public ContextMenuHandler(Frame owner) {
+        owner_ = owner;
+    }
+    
+	@Override
+	public void onBeforeContextMenu(CefBrowser arg0, CefFrame arg1, CefContextMenuParams arg2, CefMenuModel arg3) {
+		
+		arg3.clear();
+	}
+
+	@Override
+	public boolean onContextMenuCommand(CefBrowser arg0, CefFrame arg1, CefContextMenuParams arg2, int arg3, int arg4) {
+		
+		return false;
+	}
+
+	@Override
+	public void onContextMenuDismissed(CefBrowser arg0, CefFrame arg1) {
+		
+		
+	}
+	
+}
+

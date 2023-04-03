@@ -180,6 +180,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   public static int referenceIndex = 0;
   public static Series referenceSeries = null;
   public static boolean synchViewByDefault = false;
+  public static String loadDicomFolderName = null;
   
   public static boolean manualLinkBtnPressed = false;
   
