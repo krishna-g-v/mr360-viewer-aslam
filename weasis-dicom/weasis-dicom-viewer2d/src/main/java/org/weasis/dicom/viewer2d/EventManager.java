@@ -254,6 +254,9 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
           boolean tileMode =
               synchView != null && SynchData.Mode.TILE.equals(synchView.getSynchData().getMode());
           String evtAction = getActionW().getTitle();
+          if(evtAction.equals(ActionW.SCROLL_SERIES.getTitle())) {
+        	  DefaultView2d.zoomEvent = false;
+          }
           
           if(evtAction.equals(ActionW.SCROLL_SERIES.getTitle()) && tileMode && !EventManager.getInstance().getSelectedView2dContainer().isViewerInFullscreen()) {
         	  Optional<ComboItemListener> layoutAction = getAction(ActionW.LAYOUT, ComboItemListener.class);

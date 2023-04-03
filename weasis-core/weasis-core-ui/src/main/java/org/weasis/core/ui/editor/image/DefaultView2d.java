@@ -153,7 +153,10 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
     pointer[3] = new Line2D.Double(0.0, -40.0, 0.0, -5.0);
     pointer[4] = new Line2D.Double(0.0, 5.0, 0.0, 40.0);
   }
-
+  public static String loadDicomFolderName = null;
+  public static ViewerPlugin<?> loadPredictionView = null;
+  public static ViewerPlugin<?> loadAnnotatorView = null;
+  public static String loadedDicomFolderName = null;
   public static final String PROP_LAYER_OFFSET = "layer.offset";
   public static boolean zoomEvent = false;
   public static final GraphicClipboard GRAPHIC_CLIPBOARD = new GraphicClipboard();
@@ -983,8 +986,10 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
         ratio = -adjustViewScale(1.0);
       }
       
-      if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) {
-    	  ratio = -getBestFitViewScale();
+      if(series != null) {
+    	  if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) {
+    		  ratio = -getBestFitViewScale();
+    	  }
       }
     }
 

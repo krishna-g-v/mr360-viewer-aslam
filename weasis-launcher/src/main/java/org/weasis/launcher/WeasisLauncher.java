@@ -498,7 +498,7 @@ public class WeasisLauncher {
 	            				
 	            				// Get existing data from remote for selected profile 
 	            				try {
-	            					String getProfileUrlStrGet = "http://viewer-updater.medreport360.com/profiles_dir/index.php?user=" + System.getProperty("user.name") + "&action=getprofile&name=" + selectedProfile;
+	            					String getProfileUrlStrGet = "http://localhost/viewer/index.php?user=" + System.getProperty("user.name") + "&action=getprofile&name=" + selectedProfile;
 
 		            			    File viewerLocalFile = new File(System.getProperty("weasis.path"));
 		            			    String userDataRem = System.getProperty("weasis.path") + File.separator + "user.zip";
@@ -520,7 +520,7 @@ public class WeasisLauncher {
 	            				currentProfile = newProfile;
 	            				
 	            				// Create new profile in remote
-	            				String createUrlStr = "http://viewer-updater.medreport360.com/profiles_dir/index.php?user=" + System.getProperty("user.name") + "&action=createprofile&name=" + newProfile;
+	            				String createUrlStr = "http://localhost/viewer/index.php?user=" + System.getProperty("user.name") + "&action=createprofile&name=" + newProfile;
 	            				streamApiUrls(createUrlStr);
 	            				
 	            				// Clear local data if new user
@@ -612,7 +612,7 @@ public class WeasisLauncher {
 	  
 	  
 	  try {
-		  	URL url = new URL("http://viewer-updater.medreport360.com/profiles_dir/profiles.json");
+		  	URL url = new URL("http://localhost/viewer/profiles.json");
 		  	InputStream input = url.openStream();
 	        InputStreamReader isr = new InputStreamReader(input);
 	        BufferedReader reader = new BufferedReader(isr);	        
@@ -1654,7 +1654,7 @@ public class WeasisLauncher {
 	      }
 		  zip(localProfilePaths, zipFileToSend);
 		  
-		  String saveUrlStr = "http://viewer-updater.medreport360.com/profiles_dir/index.php?user=" + System.getProperty("user.name") + "&action=saveprofile&name=" + currentProfile;
+		  String saveUrlStr = "http://localhost/viewer/index.php?user=" + System.getProperty("user.name") + "&action=saveprofile&name=" + currentProfile;
 		  File localZipFile = new File(zipFileToSend);
 		  
 		  String url = saveUrlStr;

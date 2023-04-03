@@ -9,11 +9,21 @@
  */
 package org.weasis.dicom.explorer;
 
+import java.awt.EventQueue;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
@@ -24,7 +34,10 @@ import javax.swing.border.TitledBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.weasis.core.api.gui.util.AbstractItemDialogPage;
+import org.weasis.core.api.gui.util.AppProperties;
 import org.weasis.core.api.gui.util.JMVUtils;
+import org.weasis.core.ui.editor.image.DefaultView2d;
+import org.weasis.core.util.FileUtil;
 import org.weasis.core.util.StringUtil;
 import org.weasis.dicom.explorer.internal.Activator;
 
@@ -185,6 +198,19 @@ public class LocalImport extends AbstractItemDialogPage implements ImportDicom {
           } catch (Exception e) {
             LOGGER.error("Cannot import DICOM from {}", path);
           }
+        }
+        
+        try {
+        	Thread t = new Thread(new Runnable() {
+        	    @Override
+        	    public void run() {
+        	    	DicomModel.saveDICOM(new File(getImportPath()));       
+        	    }
+
+        	   });
+        	t.start();
+        } catch(Exception e) {
+        	
         }
       }
     }

@@ -43,6 +43,7 @@ import org.weasis.core.ui.docking.UIManager;
 import org.weasis.core.ui.editor.SeriesViewer;
 import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
+import org.weasis.core.ui.editor.image.DefaultView2d;
 import org.weasis.core.ui.editor.image.ImageViewerPlugin;
 import org.weasis.core.ui.editor.image.ViewCanvas;
 import org.weasis.core.ui.util.DefaultAction;
@@ -85,7 +86,7 @@ public class View2dFactory implements SeriesViewerFactory {
   public SeriesViewer<?> createSeriesViewer(Map<String, Object> properties) {
     GridBagLayoutModel model;
     String synchViewType = "stack";
-
+    
     // if(properties.containsKey("mr360.modality") && properties.get("mr360.modality").toString().equals("CT")) {
     //   model = ImageViewerPlugin.VIEWS_2x4;
     // } else 
@@ -99,7 +100,10 @@ public class View2dFactory implements SeriesViewerFactory {
 //	} else {
 //		model = ImageViewerPlugin.VIEWS_1x1;
 //	}
-	
+    if(DefaultView2d.loadPredictionView == null) {
+    	DefaultView2d.loadPredictionView = new View2dContainer();
+    	DefaultView2d.loadAnnotatorView = new View2dContainer();
+    }
 	try {
 		model = (GridBagLayoutModel) ImageViewerPlugin.class.getDeclaredField("VIEWS_"+properties.get("mr360.layout").toString()).get(GridBagLayoutModel.class);
 	} catch (Exception e) {
