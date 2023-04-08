@@ -181,6 +181,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   public static Series referenceSeries = null;
   public static boolean synchViewByDefault = false;
   public static String loadDicomFolderName = null;
+  public static ViewerPlugin<?> loadPredictionView = null;
   
   public static boolean manualLinkBtnPressed = false;
   
@@ -984,8 +985,10 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
         ratio = -adjustViewScale(1.0);
       }
       
-      if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) {
-    	  ratio = -getBestFitViewScale();
+      if(series != null) {
+    	  if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) {
+    		  ratio = -getBestFitViewScale();
+    	  }
       }
     }
 
