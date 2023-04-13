@@ -43,6 +43,7 @@ import org.weasis.core.ui.docking.UIManager;
 import org.weasis.core.ui.editor.SeriesViewer;
 import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
+import org.weasis.core.ui.editor.image.DefaultView2d;
 import org.weasis.core.ui.editor.image.ImageViewerPlugin;
 import org.weasis.core.ui.editor.image.ViewCanvas;
 import org.weasis.core.ui.util.DefaultAction;
@@ -100,6 +101,12 @@ public class View2dFactory implements SeriesViewerFactory {
 //		model = ImageViewerPlugin.VIEWS_1x1;
 //	}
 	
+    if(DefaultView2d.loadPredictionView == null) {
+    	DefaultView2d.loadPredictionView = new View2dContainer();
+      DefaultView2d.loadAnnotatorView = new View2dContainer();
+      DefaultView2d.loadReportView = new View2dContainer();
+    }
+    
 	try {
 		model = (GridBagLayoutModel) ImageViewerPlugin.class.getDeclaredField("VIEWS_"+properties.get("mr360.layout").toString()).get(GridBagLayoutModel.class);
 	} catch (Exception e) {
