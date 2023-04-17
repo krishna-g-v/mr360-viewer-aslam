@@ -58,6 +58,7 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
   private int lastOpenedSeriesNo = -1;
   
   public String thisStudySeriesForXray = null;
+  public static String seriesModality = null;
 
   public LoadLocalDicom(File[] files, boolean recursive, DataExplorerModel explorerModel) {
     super(Messages.getString("DicomExplorer.loading"), false);
@@ -173,7 +174,7 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
     
     }
     
-    if(DefaultView2d.studyModality != null && DefaultView2d.studyModality.equals("CR")) {
+    if(seriesModality != null && seriesModality.equals("CR")) {
 		if(thumbs.size() > 0) {
 			List<MediaElement> list = thumbs.get(0).getSeries().getSortedMedias(null);
 			Collections.sort(list, (l1, l2) -> TagD.getTagValue(l1, Tag.SeriesNumber, Integer.class) - TagD.getTagValue(l2, Tag.SeriesNumber, Integer.class));
@@ -199,6 +200,7 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
     String patientPseudoUID = (String) dicomReader.getTagValue(TagD.getUID(Level.PATIENT));
     MediaSeriesGroup patient =
         dicomModel.getHierarchyNode(MediaSeriesGroupNode.rootNode, patientPseudoUID);
+    seriesModality = dicomReader.getTagValue(TagD.get(Tag.Modality)).toString().equals("DX") ? "CR" : dicomReader.getTagValue(TagD.get(Tag.Modality)).toString();
     if (patient == null) {
       MediaSeriesGroup study = dicomModel.getStudyNode(studyUID);
       if (study == null) {
@@ -232,7 +234,7 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
     	DefaultView2d.studyModality = dicomReader.getTagValue(TagD.get(Tag.Modality)).toString().equals("DX") ? "CR" : dicomReader.getTagValue(TagD.get(Tag.Modality)).toString();
     }
     
-    if(DefaultView2d.studyModality != null && DefaultView2d.studyModality.equals("CR")) {
+    if(seriesModality != null && seriesModality.equals("CR")) {
     	if(thisStudySeriesForXray == null) {
 			Series dicomSeriesOfFirstFile = dicomReader.buildSeries(seriesUID);
 			dicomReader.writeMetaData(dicomSeriesOfFirstFile);
@@ -265,7 +267,7 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
         if (medias != null) {
           for (MediaElement media : medias) {
             dicomModel.applySplittingRules(dicomSeries, media);
-            if(DefaultView2d.studyModality != null && DefaultView2d.studyModality.equals("CR")) media.setTag(TagD.get(Tag.SeriesNumber), xraySeriesNo);
+            if(seriesModality != null && seriesModality.equals("CR")) media.setTag(TagD.get(Tag.SeriesNumber), xraySeriesNo);
           }
           if (medias.length > 0) {
             dicomSeries.setFileSize(dicomSeries.getFileSize() + medias[0].getLength());
@@ -337,7 +339,7 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
         if (medias != null) {
           for (MediaElement media : medias) {
             dicomModel.applySplittingRules(dicomSeries, media);
-            if(xraySeriesNo != null && DefaultView2d.studyModality != null && DefaultView2d.studyModality.equals("CR")) media.setTag(TagD.get(Tag.SeriesNumber), xraySeriesNo);
+            if(xraySeriesNo != null && seriesModality != null && seriesModality.equals("CR")) media.setTag(TagD.get(Tag.SeriesNumber), xraySeriesNo);
           }
           if (medias.length > 0) {
             dicomSeries.setFileSize(dicomSeries.getFileSize() + medias[0].getLength());
