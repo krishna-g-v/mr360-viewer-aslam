@@ -822,7 +822,8 @@ public class DicomModel implements TreeModel, DataExplorerModel {
     }
 
     String seriesUID = TagD.getTagValue(dicomReader, Tag.SeriesInstanceUID, String.class);
-	if(DefaultView2d.studyModality != null && DefaultView2d.studyModality.equals("CR")) {
+    String seriesModality = dicomReader.getTagValue(TagD.get(Tag.Modality)).toString().equals("DX") ? "CR" : dicomReader.getTagValue(TagD.get(Tag.Modality)).toString();
+	if(seriesModality != null && seriesModality.equals("CR")) {
 		Series thisDicomSeries = dicomReader.buildSeries(seriesUID);
 		dicomReader.writeMetaData(thisDicomSeries);
 		
