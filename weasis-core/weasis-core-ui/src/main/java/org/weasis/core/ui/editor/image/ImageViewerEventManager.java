@@ -469,6 +469,7 @@ public abstract class ImageViewerEventManager<E extends ImageElement> implements
             selectedView2dContainer.setSynchView(
                 (SynchView) ((ComboItemListener) synch).getSelectedItem());
           }
+          DefaultView2d.zoomEvent = false;
         }
       }
     };

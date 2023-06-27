@@ -59,6 +59,7 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
   
   public String thisStudySeriesForXray = null;
   public static String seriesModality = null;
+  public static int l = 1;
 
   public LoadLocalDicom(File[] files, boolean recursive, DataExplorerModel explorerModel) {
     super(Messages.getString("DicomExplorer.loading"), false);
@@ -69,6 +70,7 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
     this.files = files;
     this.recursive = recursive;
     this.openPlugin = true;
+//    this.thisStudySeriesForXray = null;
   }
 
   @Override
@@ -252,8 +254,13 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
     			Integer thisInstanceNo = TagD.getTagValue(dicomReader, Tag.InstanceNumber, Integer.class);
     			xraySeriesNo = (thisSeriesNo * 1000) + thisInstanceNo;    			
     		}
+    		
+//    		study = new MediaSeriesGroupNode(TagD.getUID(Level.SERIES), thisStudySeriesForXray, DicomModel.study.getTagView());
+    		      
     	}
-	    dicomSeries = (Series) dicomModel.getHierarchyNode(study, thisStudySeriesForXray);
+//	    dicomSeries = (Series) dicomModel.getHierarchyNode(study, thisStudySeriesForXray);
+	    dicomSeries = (Series) dicomModel.getSeriesNode(thisStudySeriesForXray);
+	    System.out.println(l);
     } else
     	dicomSeries = (Series) dicomModel.getHierarchyNode(study, seriesUID);
     

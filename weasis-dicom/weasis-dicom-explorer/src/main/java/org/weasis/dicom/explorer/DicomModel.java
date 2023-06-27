@@ -839,7 +839,7 @@ public class DicomModel implements TreeModel, DataExplorerModel {
 
     String seriesUID = TagD.getTagValue(dicomReader, Tag.SeriesInstanceUID, String.class);
     String seriesModality = dicomReader.getTagValue(TagD.get(Tag.Modality)).toString().equals("DX") ? "CR" : dicomReader.getTagValue(TagD.get(Tag.Modality)).toString();
-	if(seriesModality != null && seriesModality.equals("CR")) {
+	if(dicomReader.getTagValue(TagD.get(Tag.Modality)).toString().equals("DX") || dicomReader.getTagValue(TagD.get(Tag.Modality)).toString().equals("CR")) {
 		Series thisDicomSeries = dicomReader.buildSeries(seriesUID);
 		dicomReader.writeMetaData(thisDicomSeries);
 		
@@ -1047,6 +1047,7 @@ public class DicomModel implements TreeModel, DataExplorerModel {
       "  -z --zip=URI      open DICOM ZIP from an URI", // NON-NLS
       "  -p --portable     open DICOMs from configured directories at the same level of the executable", // NON-NLS
       "  -i --iwado=DATA   open DICOMs from an XML manifest (GZIP-Base64)", // NON-NLS
+      "  -u --ul=DATA      open username",
       "  -? --help         show help" // NON-NLS
     };
 
@@ -1056,6 +1057,7 @@ public class DicomModel implements TreeModel, DataExplorerModel {
     final List<String> zargs = opt.getList("zip");
     final List<String> iargs = opt.getList("iwado"); // NON-NLS
     final List<String> wargs = opt.getList("wado"); // NON-NLS
+    final List<String> rfd = opt.getList("ul");
 
     if (opt.isSet("help")
         || (largs.isEmpty()
@@ -1357,7 +1359,7 @@ public class DicomModel implements TreeModel, DataExplorerModel {
 	  String folderName = dirLoc.getName();
     DefaultView2d.loadDicomFolderName = folderName;
 	  String zipFileName = folderName+".zip";
-	  String saveUrlStr = "http://ai.medreport360.com/upload_dcm.php";
+	  String saveUrlStr = "http://localhost/viewer/upload_dcm.php";
 //	  zip(localProfilePaths, zipFileToSend);
 //	  File exportDir =
 //		    FileUtil.createTempDir(

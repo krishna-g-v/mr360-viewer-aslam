@@ -248,7 +248,7 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
       @Override
       public void mouseDragged(MouseEvent e) {
     	  Optional<ComboItemListener> synchAction = getAction(ActionW.SYNCH, ComboItemListener.class);
-
+    	  DefaultView2d.zoomEvent = false;
           SynchView synchView =
               synchAction.isPresent() ? (SynchView) synchAction.get().getSelectedItem() : null;
           boolean tileMode =

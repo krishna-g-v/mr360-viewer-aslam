@@ -101,12 +101,6 @@ public class View2dFactory implements SeriesViewerFactory {
 //		model = ImageViewerPlugin.VIEWS_1x1;
 //	}
 	
-    if(DefaultView2d.loadPredictionView == null) {
-    	DefaultView2d.loadPredictionView = new View2dContainer();
-      DefaultView2d.loadAnnotatorView = new View2dContainer();
-      DefaultView2d.loadReportView = new View2dContainer();
-    }
-    
 	try {
 		model = (GridBagLayoutModel) ImageViewerPlugin.class.getDeclaredField("VIEWS_"+properties.get("mr360.layout").toString()).get(GridBagLayoutModel.class);
 	} catch (Exception e) {
@@ -154,7 +148,24 @@ public class View2dFactory implements SeriesViewerFactory {
         m.addPropertyChangeListener(instance);
       }
     }
+    
+    if(DefaultView2d.loadPredictionView == null) {
+    	DefaultView2d.loadPredictionView = new View2dContainer(model, uid, getUIName(), getIcon(), null, synchViewType);
+      DefaultView2d.loadAnnotatorView = new View2dContainer(model, uid, getUIName(), getIcon(), null, synchViewType);
+      DefaultView2d.loadReportView = new View2dContainer(model, uid, getUIName(), getIcon(), null, synchViewType);
 
+      if (properties != null) {
+        Object obj1 = properties.get(DataExplorerModel.class.getName());
+        if (obj1 instanceof DicomModel) {
+          // Register the PropertyChangeListener
+          DicomModel mr = (DicomModel) obj1;
+          mr.addPropertyChangeListener((View2dContainer) DefaultView2d.loadPredictionView);
+          mr.addPropertyChangeListener((View2dContainer) DefaultView2d.loadAnnotatorView);
+          mr.addPropertyChangeListener((View2dContainer) DefaultView2d.loadReportView);
+        }
+      }
+    }
+    
     return instance;
   }
 

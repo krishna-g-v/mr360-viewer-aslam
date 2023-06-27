@@ -36,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -181,6 +182,7 @@ public class WeasisLauncher {
   public static JRadioButton addProfileButton;
   public static String currentProfile = "";
   public static JFrame profileFrame = new JFrame();
+  public static String profileArg;
 
   protected Felix mFelix = null;
   protected ServiceTracker mTracker = null;
@@ -201,6 +203,10 @@ public class WeasisLauncher {
   public static void main(String[] argv) throws Exception {
     final Type launchType = Type.DEFAULT;
     System.setProperty("weasis.launch.type", launchType.name());
+    
+    if(argv[argv.length-1].contains("-u")) {
+    	profileArg = argv[argv.length-1].split("-u")[1].split(" ")[1];
+    }
 
     setSystemProperties(argv);
     WeasisLauncher instance = new WeasisLauncher(new ConfigData(argv));
@@ -456,49 +462,63 @@ public class WeasisLauncher {
   InstantiationException,
   IllegalAccessException,
   UnsupportedLookAndFeelException {
-	  profileFrame.setSize(350, 300);
-	  Image icon = Toolkit.getDefaultToolkit().getImage(configData.getProperty(P_WEASIS_CODEBASE_LOCAL) + File.separator + "resources/images/logo-button.png");
-	  profileFrame.setIconImage(icon);
-	  profileFrame.setTitle("Medreport360 Viewer Profile management");
-	  profileFrame.setLocationRelativeTo(null);
-	  profileFrame.setUndecorated(true);
-	  profileFrame.setOpacity(0.0f);
-	  profileFrame.setVisible(true);
+//	  profileFrame.setSize(350, 300);
+//	  Image icon = Toolkit.getDefaultToolkit().getImage(configData.getProperty(P_WEASIS_CODEBASE_LOCAL) + File.separator + "resources/images/logo-button.png");
+//	  profileFrame.setIconImage(icon);
+//	  profileFrame.setTitle("Medreport360 Viewer Profile management");
+//	  profileFrame.setLocationRelativeTo(null);
+//	  profileFrame.setUndecorated(true);
+//	  profileFrame.setOpacity(0.0f);
+//	  profileFrame.setVisible(true);
 	  
 	  EventQueue.invokeAndWait(
 	            () -> {
 	            	// adding look and feel to profile frame
-	            	try {
-	            		UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceTwilightLookAndFeel");
-	            		SwingUtilities.updateComponentTreeUI(profileFrame);
-	                } catch (Exception e) {
-	                	LOGGER.log(Level.SEVERE, "Error while adding look and feel", e);
-	                }
+//	            	try {
+//	            		UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceTwilightLookAndFeel");
+//	            		SwingUtilities.updateComponentTreeUI(profileFrame);
+//	                } catch (Exception e) {
+//	                	LOGGER.log(Level.SEVERE, "Error while adding look and feel", e);
+//	                }
 	            	
 	            	// adding profile confirm dialog inside the frame 
 	            	try {
-	            		JDialog profileDialog = new JDialog(profileFrame, true);
-	            		profileDialog.setTitle("Medreport360 Viewer Profile management");
-	            		profileDialog.add(getProfilePanel());
-	            		profileDialog.setSize(350, 300);
-	            		profileDialog.setLocationRelativeTo(null);
-//	            		profileDialog.setUndecorated(true);
-	            		
-	            		profileDialog.addWindowListener(new java.awt.event.WindowAdapter() {
-	            			@Override
-	            			public void windowClosing(java.awt.event.WindowEvent e) {
-	            				System.exit(-1);
-	            			}
-	            		});
-	            		
-	            		profileButton.addActionListener(e -> {
-	            			if(selectProfileButton.isSelected()) {
-	            				String selectedProfile = ((String) comboBoxProfileList.getSelectedItem());
+//	            		JDialog profileDialog = new JDialog(profileFrame, true);
+//	            		profileDialog.setTitle("Medreport360 Viewer Profile management");
+//	            		profileDialog.add(getProfilePanel());
+//	            		profileDialog.setSize(350, 300);
+//	            		profileDialog.setLocationRelativeTo(null);
+////	            		profileDialog.setUndecorated(true);
+//	            		
+//	            		profileDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+//	            			@Override
+//	            			public void windowClosing(java.awt.event.WindowEvent e) {
+//	            				System.exit(-1);
+//	            			}
+//	            		});
+	            		String getAllProfiles = "http://localhost/viewer/profiles.json";
+	            		InputStream iqn = new URL(getAllProfiles).openStream();
+	            		InputStreamReader isr = new InputStreamReader(iqn);
+	        	        BufferedReader reader = new BufferedReader(isr);
+	        	        StringBuilder json = new StringBuilder();
+	        	        
+	        	        int jsonReader;
+	        	        while ((jsonReader = reader.read()) != -1) {
+	        	            json.append((char) jsonReader);
+	        	        }
+	        	        
+	        	        JSONObject jsonObj = new JSONObject(json.toString());
+
+	        	        JSONArray ja = (JSONArray) jsonObj.get("profiles");
+	        	        boolean test = Arrays.asList(ja).contains(profileArg);
+//	            		profileButton.addActionListener(e -> {
+	            			if(test) {
+	            				String selectedProfile = profileArg;
 	            				currentProfile = selectedProfile;
 	            				
 	            				// Get existing data from remote for selected profile 
 	            				try {
-	            					String getProfileUrlStrGet = "http://viewer-updater.medreport360.com/profiles_dir/index.php?user=" + System.getProperty("user.name") + "&action=getprofile&name=" + selectedProfile;
+	            					String getProfileUrlStrGet = "http://localhost/viewer/index.php?user=" + System.getProperty("user.name") + "&action=getprofile&name=" + selectedProfile;
 
 		            			    File viewerLocalFile = new File(System.getProperty("weasis.path"));
 		            			    String userDataRem = System.getProperty("weasis.path") + File.separator + "user.zip";
@@ -515,12 +535,12 @@ public class WeasisLauncher {
 	            					
 	            				}
 	            			} else {
-	            				String newProfile = profileTextField.getText();
+	            				String newProfile = profileArg;
 	            				newProfile = newProfile.trim().replaceAll("\\s","");
 	            				currentProfile = newProfile;
 	            				
 	            				// Create new profile in remote
-	            				String createUrlStr = "http://viewer-updater.medreport360.com/profiles_dir/index.php?user=" + System.getProperty("user.name") + "&action=createprofile&name=" + newProfile;
+	            				String createUrlStr = "http://localhost/viewer/index.php?user=" + System.getProperty("user.name") + "&action=createprofile&name=" + newProfile;
 	            				streamApiUrls(createUrlStr);
 	            				
 	            				// Clear local data if new user
@@ -541,8 +561,8 @@ public class WeasisLauncher {
 	            			}
 	            			
 	            			profileFrame.dispatchEvent(new WindowEvent(profileFrame, WindowEvent.WINDOW_CLOSING));
-	            		});
-	            		profileDialog.setVisible(true);
+//	            		});
+//	            		profileDialog.setVisible(true);
 	            	} catch (Exception exp) {
 	            		LOGGER.log(Level.SEVERE, "Error while adding profile confirmation dialog", exp);
 	            	}
@@ -612,7 +632,7 @@ public class WeasisLauncher {
 	  
 	  
 	  try {
-		  	URL url = new URL("http://viewer-updater.medreport360.com/profiles_dir/profiles.json");
+		  	URL url = new URL("http://localhost/viewer/profiles.json");
 		  	InputStream input = url.openStream();
 	        InputStreamReader isr = new InputStreamReader(input);
 	        BufferedReader reader = new BufferedReader(isr);	        
@@ -1654,7 +1674,7 @@ public class WeasisLauncher {
 	      }
 		  zip(localProfilePaths, zipFileToSend);
 		  
-		  String saveUrlStr = "http://viewer-updater.medreport360.com/profiles_dir/index.php?user=" + System.getProperty("user.name") + "&action=saveprofile&name=" + currentProfile;
+		  String saveUrlStr = "http://localhost/viewer/index.php?user=" + System.getProperty("user.name") + "&action=saveprofile&name=" + currentProfile;
 		  File localZipFile = new File(zipFileToSend);
 		  
 		  String url = saveUrlStr;
