@@ -22,7 +22,13 @@ public class AppLauncher extends WeasisLauncher implements Singleton.SingletonAp
   public static void main(String[] argv) throws Exception {
     final Type launchType = Type.NATIVE;
     System.setProperty("weasis.launch.type", launchType.name());
-
+    
+    if(argv[argv.length-1].contains("-u")) {
+    	profileArg = argv[argv.length-1].split("-u")[1].split(" ")[1];
+    } else {
+    	profileArg = "Default";
+    }
+    
     ConfigData configData = new ConfigData(argv);
     if (!Singleton.invoke(configData)) {
       AppLauncher instance = new AppLauncher(configData);
