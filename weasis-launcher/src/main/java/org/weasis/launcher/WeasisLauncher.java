@@ -36,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -181,6 +182,7 @@ public class WeasisLauncher {
   public static JRadioButton addProfileButton;
   public static String currentProfile = "";
   public static JFrame profileFrame = new JFrame();
+  public static String profileArg;
 
   protected Felix mFelix = null;
   protected ServiceTracker mTracker = null;
@@ -201,7 +203,13 @@ public class WeasisLauncher {
   public static void main(String[] argv) throws Exception {
     final Type launchType = Type.DEFAULT;
     System.setProperty("weasis.launch.type", launchType.name());
-
+    
+    if(argv[argv.length-1].contains("-u")) {
+    	profileArg = argv[argv.length-1].split("-u")[1].split(" ")[1];
+    } else {
+    	profileArg = "Default";
+    }
+    
     setSystemProperties(argv);
     WeasisLauncher instance = new WeasisLauncher(new ConfigData(argv));
     instance.launch(launchType);
@@ -456,44 +464,64 @@ public class WeasisLauncher {
   InstantiationException,
   IllegalAccessException,
   UnsupportedLookAndFeelException {
-	  profileFrame.setSize(350, 300);
-	  Image icon = Toolkit.getDefaultToolkit().getImage(configData.getProperty(P_WEASIS_CODEBASE_LOCAL) + File.separator + "resources/images/logo-button.png");
-	  profileFrame.setIconImage(icon);
-	  profileFrame.setTitle("Medreport360 Viewer Profile management");
-	  profileFrame.setLocationRelativeTo(null);
-	  profileFrame.setUndecorated(true);
-	  profileFrame.setOpacity(0.0f);
-	  profileFrame.setVisible(true);
+//	  profileFrame.setSize(350, 300);
+//	  Image icon = Toolkit.getDefaultToolkit().getImage(configData.getProperty(P_WEASIS_CODEBASE_LOCAL) + File.separator + "resources/images/logo-button.png");
+//	  profileFrame.setIconImage(icon);
+//	  profileFrame.setTitle("Medreport360 Viewer Profile management");
+//	  profileFrame.setLocationRelativeTo(null);
+//	  profileFrame.setUndecorated(true);
+//	  profileFrame.setOpacity(0.0f);
+//	  profileFrame.setVisible(true);
 	  
 	  EventQueue.invokeAndWait(
 	            () -> {
 	            	// adding look and feel to profile frame
-	            	try {
-	            		UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceTwilightLookAndFeel");
-	            		SwingUtilities.updateComponentTreeUI(profileFrame);
-	                } catch (Exception e) {
-	                	LOGGER.log(Level.SEVERE, "Error while adding look and feel", e);
-	                }
+//	            	try {
+//	            		UIManager.setLookAndFeel("org.pushingpixels.substance.api.skin.SubstanceTwilightLookAndFeel");
+//	            		SwingUtilities.updateComponentTreeUI(profileFrame);
+//	                } catch (Exception e) {
+//	                	LOGGER.log(Level.SEVERE, "Error while adding look and feel", e);
+//	                }
 	            	
 	            	// adding profile confirm dialog inside the frame 
 	            	try {
-	            		JDialog profileDialog = new JDialog(profileFrame, true);
-	            		profileDialog.setTitle("Medreport360 Viewer Profile management");
-	            		profileDialog.add(getProfilePanel());
-	            		profileDialog.setSize(350, 300);
-	            		profileDialog.setLocationRelativeTo(null);
-//	            		profileDialog.setUndecorated(true);
-	            		
-	            		profileDialog.addWindowListener(new java.awt.event.WindowAdapter() {
-	            			@Override
-	            			public void windowClosing(java.awt.event.WindowEvent e) {
-	            				System.exit(-1);
-	            			}
-	            		});
-	            		
-	            		profileButton.addActionListener(e -> {
-	            			if(selectProfileButton.isSelected()) {
-	            				String selectedProfile = ((String) comboBoxProfileList.getSelectedItem());
+//	            		JDialog profileDialog = new JDialog(profileFrame, true);
+//	            		profileDialog.setTitle("Medreport360 Viewer Profile management");
+//	            		profileDialog.add(getProfilePanel());
+//	            		profileDialog.setSize(350, 300);
+//	            		profileDialog.setLocationRelativeTo(null);
+////	            		profileDialog.setUndecorated(true);
+//	            		
+//	            		profileDialog.addWindowListener(new java.awt.event.WindowAdapter() {
+//	            			@Override
+//	            			public void windowClosing(java.awt.event.WindowEvent e) {
+//	            				System.exit(-1);
+//	            			}
+//	            		});
+	            		String getAllProfiles = "http://viewer-updater.medreport360.com/profiles_dir/profiles.json";
+	            		InputStream inStream = new URL(getAllProfiles).openStream();
+	            		InputStreamReader isr = new InputStreamReader(inStream);
+	        	        BufferedReader reader = new BufferedReader(isr);
+	        	        StringBuilder prfData = new StringBuilder();
+	        	        
+	        	        int jsonReader;
+	        	        while ((jsonReader = reader.read()) != -1) {
+	        	        	prfData.append((char) jsonReader);
+	        	        }
+	        	        
+	        	        JSONObject profilesObj = new JSONObject(prfData.toString());
+	        	        JSONArray profilesArr = (JSONArray) profilesObj.get("profiles");
+	        	        boolean existingUser = false;
+	        	        for (int i=0;i<profilesArr.length();i++){ 
+	        	        	if(profilesArr.get(i).toString().equals(profileArg)) {
+	        	        		existingUser = true;
+	        	        		break;
+	        	        	}
+	        	        }
+
+//	            		profileButton.addActionListener(e -> {
+	            			if(existingUser) {
+	            				String selectedProfile = profileArg.trim();
 	            				currentProfile = selectedProfile;
 	            				
 	            				// Get existing data from remote for selected profile 
@@ -515,7 +543,7 @@ public class WeasisLauncher {
 	            					
 	            				}
 	            			} else {
-	            				String newProfile = profileTextField.getText();
+	            				String newProfile = profileArg.trim();
 	            				newProfile = newProfile.trim().replaceAll("\\s","");
 	            				currentProfile = newProfile;
 	            				
@@ -541,8 +569,8 @@ public class WeasisLauncher {
 	            			}
 	            			
 	            			profileFrame.dispatchEvent(new WindowEvent(profileFrame, WindowEvent.WINDOW_CLOSING));
-	            		});
-	            		profileDialog.setVisible(true);
+//	            		});
+//	            		profileDialog.setVisible(true);
 	            	} catch (Exception exp) {
 	            		LOGGER.log(Level.SEVERE, "Error while adding profile confirmation dialog", exp);
 	            	}

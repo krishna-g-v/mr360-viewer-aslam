@@ -79,7 +79,9 @@ public class PreferenceDialog extends AbstractWizardDialog {
     } catch (InvalidSyntaxException e) {
       LOGGER.error("Get Preference pages from service", e);
     }
-
+    
+    list.add(new ModalityPrefView());
+    
     InsertableUtil.sortInsertable(list);
     for (AbstractItemDialogPage page : list) {
       pagesRoot.add(new DefaultMutableTreeNode(page));

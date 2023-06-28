@@ -28,6 +28,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -228,6 +229,30 @@ public abstract class ImageViewerPlugin<E extends ImageElement> extends ViewerPl
   protected final ImageViewerEventManager<E> eventManager;
   protected final JPanel grid;
   protected GridBagLayoutModel layoutModel;
+  public static final List<GridBagLayoutModel> DEFAULT_LAYOUT_LIST =
+	      Arrays.asList(
+	          VIEWS_1x1,
+	          VIEWS_1x2,
+	          VIEWS_1x3,
+	          VIEWS_1x4,
+	          VIEWS_2x1,
+	          VIEWS_2x2_f2,
+	          VIEWS_2_f1x2,
+	          VIEWS_2x2,
+	          VIEWS_2x3,
+	          VIEWS_2x4,
+	          VIEWS_2x5,
+	          VIEWS_3x1,
+	          VIEWS_3x2,
+	          VIEWS_3x3,
+	          VIEWS_3x4,
+	          VIEWS_3x5,
+	          VIEWS_4x1,
+	          VIEWS_4x2,
+	          VIEWS_4x3,
+	          VIEWS_4x4,
+	          VIEWS_2x6);
+	          // VIEWS_4x2);
 
   public ImageViewerPlugin(ImageViewerEventManager<E> eventManager, String pluginName) {
     this(eventManager, VIEWS_1x1, pluginName, null, null, null);
