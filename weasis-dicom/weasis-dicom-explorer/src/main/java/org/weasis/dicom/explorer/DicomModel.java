@@ -1030,6 +1030,7 @@ public class DicomModel implements TreeModel, DataExplorerModel {
       "  -z --zip=URI      open DICOM ZIP from an URI", // NON-NLS
       "  -p --portable     open DICOMs from configured directories at the same level of the executable", // NON-NLS
       "  -i --iwado=DATA   open DICOMs from an XML manifest (GZIP-Base64)", // NON-NLS
+      "  -u --ul=DATA      open DICOMs using cmd parameter",
       "  -? --help         show help" // NON-NLS
     };
 
@@ -1039,7 +1040,8 @@ public class DicomModel implements TreeModel, DataExplorerModel {
     final List<String> zargs = opt.getList("zip");
     final List<String> iargs = opt.getList("iwado"); // NON-NLS
     final List<String> wargs = opt.getList("wado"); // NON-NLS
-
+    final List<String> prfs = opt.getList("ul");
+    
     if (opt.isSet("help")
         || (largs.isEmpty()
             && rargs.isEmpty()
