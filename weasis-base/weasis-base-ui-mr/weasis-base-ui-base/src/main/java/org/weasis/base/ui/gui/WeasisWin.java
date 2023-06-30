@@ -386,12 +386,15 @@ public class WeasisWin {
     boolean setInSelection =
         LangUtil.getNULLtoFalse((Boolean) props.get(ViewerPluginBuilder.OPEN_IN_SELECTION));
 
-    Properties viewerProps = new Properties();
-    try {
-		viewerProps.load(new FileInputStream(ResourceUtil.getResource("viewer-settings.txt")));
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
+//    Properties viewerProps = new Properties();
+    Properties viewerProps = BundleTools.SYSTEM_PREFERENCES;
+    if(!(viewerProps.containsKey("us.layout") && viewerProps.containsKey("ct.layout") && viewerProps.containsKey("cr.layout"))) {
+    	try {
+    		viewerProps.load(new FileInputStream(ResourceUtil.getResource("viewer-settings.txt")));
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    }
     
     // if(seriesList.get(0).getToolTips().toUpperCase().contains("Modality: CT".toUpperCase())) {
     //   props.put("mr360.modality", "CT");

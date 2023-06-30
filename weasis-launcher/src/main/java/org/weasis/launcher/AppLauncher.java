@@ -23,7 +23,7 @@ public class AppLauncher extends WeasisLauncher implements Singleton.SingletonAp
     final Type launchType = Type.NATIVE;
     System.setProperty("weasis.launch.type", launchType.name());
     
-    if(argv[argv.length-1].contains("-u")) {
+    if((argv.length > 0) && (argv[argv.length-1].contains("-u"))) {
     	profileArg = argv[argv.length-1].split("-u")[1].split(" ")[1];
     } else {
     	profileArg = "Default";
