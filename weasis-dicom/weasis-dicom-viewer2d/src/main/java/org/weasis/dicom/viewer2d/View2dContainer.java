@@ -183,7 +183,22 @@ public class View2dContainer extends ImageViewerPlugin<DicomImageElement>
             }
           }
         });
-
+    
+    // Resetting mouse actions to default/respective saved profiles
+    Preferences bundlePrefs = BundlePreferences.getDefaultPreferences(FrameworkUtil.getBundle(this.getClass()).getBundleContext());
+    eventManager.getMouseActions().applyPreferences(bundlePrefs);
+    ImageViewerPlugin view = eventManager.getSelectedView2dContainer();
+    if (view != null) {
+      ViewerToolBar toolBar = view.getViewerToolBar();
+      if (toolBar != null) {
+          view.setMouseActions(eventManager.getMouseActions());
+          toolBar.changeButtonState("left", eventManager.getMouseActions().getLeft());
+          toolBar.changeButtonState("middle", eventManager.getMouseActions().getMiddle());
+          toolBar.changeButtonState("right", eventManager.getMouseActions().getRight());
+          toolBar.changeButtonState("wheel", eventManager.getMouseActions().getWheel());
+      }
+    }
+    
     if (!initComponents) {
       initComponents = true;
 

@@ -73,26 +73,35 @@ public class ModalityPrefView extends AbstractItemDialogPage {
   private final JLabel jLabelUsSynch = new JLabel("Synch" + StringUtil.COLON);
   private final JLabel jLabelCtSynch = new JLabel("Synch" + StringUtil.COLON);
   private final JLabel jLabelCrSynch = new JLabel("Synch" + StringUtil.COLON);
+  
+  private JLabel usLayoutTxt = new JLabel();
+  private JLabel ctLayoutTxt = new JLabel();
+  private JLabel crLayoutTxt = new JLabel();
+  private JLabel usSynchTxt = new JLabel();
+  private JLabel ctSynchTxt = new JLabel();
+  private JLabel crSynchTxt = new JLabel();
+  
+  
   private final DropDownButton usLayout, ctLayout, crLayout, synchButton, ctSynchButton, crSynchButton;
   private final ComboItemListener usComboLayout = new ComboItemListener<GridBagLayoutModel>(
     ActionW.LAYOUT, Optional.ofNullable(ImageViewerPlugin.DEFAULT_LAYOUT_LIST.toArray(new GridBagLayoutModel[0])).orElseGet(() -> new GridBagLayoutModel[0])) {
     @Override
     public void itemStateChanged(Object object) {
-
+    	usLayoutTxt.setText(((GridBagLayoutModel) this.getModel().getSelectedItem()).getId());
     }
   };
   private final ComboItemListener ctComboLayout = new ComboItemListener<GridBagLayoutModel>(
     ActionW.LAYOUT, Optional.ofNullable(ImageViewerPlugin.DEFAULT_LAYOUT_LIST.toArray(new GridBagLayoutModel[0])).orElseGet(() -> new GridBagLayoutModel[0])) {
     @Override
     public void itemStateChanged(Object object) {
-      
+    	ctLayoutTxt.setText(((GridBagLayoutModel) this.getModel().getSelectedItem()).getId());
     }
   };
   private final ComboItemListener crComboLayout = new ComboItemListener<GridBagLayoutModel>(
     ActionW.LAYOUT, Optional.ofNullable(ImageViewerPlugin.DEFAULT_LAYOUT_LIST.toArray(new GridBagLayoutModel[0])).orElseGet(() -> new GridBagLayoutModel[0])) {
     @Override
     public void itemStateChanged(Object object) {
-      
+    	crLayoutTxt.setText(((GridBagLayoutModel) this.getModel().getSelectedItem()).getId());
     }
   };
 
@@ -100,7 +109,7 @@ public class ModalityPrefView extends AbstractItemDialogPage {
         ActionW.SYNCH, Optional.ofNullable(Arrays.asList(SynchView.NONE, SynchView.DEFAULT_STACK, SynchView.DEFAULT_TILE).toArray(new SynchView[0])).orElseGet(() -> new SynchView[0])) {
     @Override
     public void itemStateChanged(Object object) {
-      
+    	usSynchTxt.setText(((SynchView) this.getModel().getSelectedItem()).getUIName());
     }
   };
 
@@ -108,7 +117,7 @@ public class ModalityPrefView extends AbstractItemDialogPage {
         ActionW.SYNCH, Optional.ofNullable(Arrays.asList(SynchView.NONE, SynchView.DEFAULT_STACK, SynchView.DEFAULT_TILE).toArray(new SynchView[0])).orElseGet(() -> new SynchView[0])) {
     @Override
     public void itemStateChanged(Object object) {
-      
+    	ctSynchTxt.setText(((SynchView) this.getModel().getSelectedItem()).getUIName());
     }
   };
 
@@ -116,7 +125,7 @@ public class ModalityPrefView extends AbstractItemDialogPage {
         ActionW.SYNCH, Optional.ofNullable(Arrays.asList(SynchView.NONE, SynchView.DEFAULT_STACK, SynchView.DEFAULT_TILE).toArray(new SynchView[0])).orElseGet(() -> new SynchView[0])) {
     @Override
     public void itemStateChanged(Object object) {
-      
+    	crSynchTxt.setText(((SynchView) this.getModel().getSelectedItem()).getUIName());
     }
   };
 
@@ -150,6 +159,7 @@ public class ModalityPrefView extends AbstractItemDialogPage {
     usLayout.setToolTipText("Define US Layout");
 
     panel.add(usLayout);
+    panel.add(usLayoutTxt);
 
     jLabelUsSynch.setBorder(new EmptyBorder(0, 50, 0, 0));
 
@@ -164,6 +174,7 @@ public class ModalityPrefView extends AbstractItemDialogPage {
     synchButton.setToolTipText("Define US Synch");
     
     panel.add(synchButton);
+    panel.add(usSynchTxt);
 
     JPanel ctPanel = new JPanel();
     ctPanel.setBorder(
@@ -190,6 +201,7 @@ public class ModalityPrefView extends AbstractItemDialogPage {
     ctLayout.setToolTipText("Define CT Layout");
 
     ctPanel.add(ctLayout);
+    ctPanel.add(ctLayoutTxt);
 
     jLabelCtSynch.setBorder(new EmptyBorder(0, 50, 0, 0));
 
@@ -204,6 +216,7 @@ public class ModalityPrefView extends AbstractItemDialogPage {
     ctSynchButton.setToolTipText("Define CT Synch");
 
     ctPanel.add(ctSynchButton);
+    ctPanel.add(ctSynchTxt);
 
     JPanel crPanel = new JPanel();
     crPanel.setBorder(
@@ -229,6 +242,7 @@ public class ModalityPrefView extends AbstractItemDialogPage {
     crLayout.setToolTipText("Define X-ray Layout");
 
     crPanel.add(crLayout);
+    crPanel.add(crLayoutTxt);
 
     jLabelCrSynch.setBorder(new EmptyBorder(0, 50, 0, 0));
 
@@ -243,7 +257,8 @@ public class ModalityPrefView extends AbstractItemDialogPage {
     crSynchButton.setToolTipText("Define X-ray Synch");
 
     crPanel.add(crSynchButton);
-      
+    crPanel.add(crSynchTxt);  
+    
     JPanel panel2 = new JPanel();
     FlowLayout flowLayout1 = (FlowLayout) panel2.getLayout();
     flowLayout1.setHgap(10);
@@ -261,16 +276,16 @@ public class ModalityPrefView extends AbstractItemDialogPage {
       String us_layout = BundleTools.SYSTEM_PREFERENCES.getProperty("us.layout");
       String ct_layout = BundleTools.SYSTEM_PREFERENCES.getProperty("ct.layout");
       String cr_layout = BundleTools.SYSTEM_PREFERENCES.getProperty("cr.layout");
-      retrivedFromProps(usComboLayout, us_layout);
-      retrivedFromProps(ctComboLayout, ct_layout);
-      retrivedFromProps(crComboLayout, cr_layout);
+      retrivedFromProps(usComboLayout, us_layout, usLayoutTxt);
+      retrivedFromProps(ctComboLayout, ct_layout, ctLayoutTxt);
+      retrivedFromProps(crComboLayout, cr_layout, crLayoutTxt);
     // }
       String us_synch = BundleTools.SYSTEM_PREFERENCES.getProperty("us.view.mode");
       String ct_synch = BundleTools.SYSTEM_PREFERENCES.getProperty("ct.view.mode");
       String cr_synch = BundleTools.SYSTEM_PREFERENCES.getProperty("cr.view.mode");
-      retrivedFromProps(usSynchView, us_synch);
-      retrivedFromProps(ctSynchView, ct_synch);
-      retrivedFromProps(crSynchView, cr_synch);
+      retrivedFromProps(usSynchView, us_synch, usSynchTxt);
+      retrivedFromProps(ctSynchView, ct_synch, ctSynchTxt);
+      retrivedFromProps(crSynchView, cr_synch, crSynchTxt);
   }
 
   @Override
@@ -334,7 +349,7 @@ public class ModalityPrefView extends AbstractItemDialogPage {
   }
 
   //Retrieve saved properties into modality preferences
-  public void retrivedFromProps(ComboItemListener thisModel, String propLayout) {
+  public void retrivedFromProps(ComboItemListener thisModel, String propLayout, JLabel thisLabel) {
     Object[] list = thisModel.getAllItem();
     Object retrievedLayoutObj = null;
     for (int i = 0; i < list.length; i++) {
@@ -352,6 +367,7 @@ public class ModalityPrefView extends AbstractItemDialogPage {
     
     if(retrievedLayoutObj != null) {
       thisModel.getModel().setSelectedItem(retrievedLayoutObj);
+      thisLabel.setText(propLayout);
     }
   }
 }
