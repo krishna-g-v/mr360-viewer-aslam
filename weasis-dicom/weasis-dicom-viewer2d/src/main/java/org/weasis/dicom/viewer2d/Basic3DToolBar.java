@@ -9,15 +9,21 @@
  */
 package org.weasis.dicom.viewer2d;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.prefs.Preferences;
 import org.weasis.core.api.explorer.model.DataExplorerModel;
 import org.weasis.core.api.gui.util.ActionState;
 import org.weasis.core.api.gui.util.ActionW;
 import org.weasis.core.api.gui.util.JMVUtils;
+import org.weasis.core.api.gui.util.RadioMenuItem;
 import org.weasis.core.api.media.data.MediaSeries;
 import org.weasis.core.api.media.data.TagW;
+import org.weasis.core.api.service.BundlePreferences;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
 import org.weasis.core.ui.editor.image.ImageViewerPlugin;
 import org.weasis.core.ui.editor.image.ViewCanvas;
@@ -29,7 +35,7 @@ import org.weasis.dicom.viewer2d.mip.MipView;
 import org.weasis.dicom.viewer2d.mpr.MPRFactory;
 
 public class Basic3DToolBar<DicomImageElement> extends WtoolBar {
-
+//  public static boolean mouseActionsSaved = false;
   public Basic3DToolBar(int index) {
     super(Messages.getString("Basic3DToolBar.title"), index);
 
@@ -44,6 +50,19 @@ public class Basic3DToolBar<DicomImageElement> extends WtoolBar {
     mipButton.setToolTipText(Messages.getString("Basic3DToolBar.mip"));
     mipButton.addActionListener(getMipAction());
     add(mipButton);
+    
+//    final JButton saveButton = new JButton();
+//    saveButton.setToolTipText("Save mouse actions");
+//    saveButton.setText("Save mouse actions");
+//    saveButton.addActionListener(new ActionListener () {
+//    	public void actionPerformed(ActionEvent e) {
+//    		Preferences bundlePrefs = BundlePreferences.getDefaultPreferences(FrameworkUtil.getBundle(this.getClass()).getBundleContext());
+//    		EventManager.getInstance().getMouseActions().savePreferences(bundlePrefs);
+//    		mouseActionsSaved = true;
+//    		
+//        }
+//    });
+//    add(saveButton);
 
     // Attach 3D functions to the SCROLL_SERIES actions
     ActionState scrollAction = EventManager.getInstance().getAction(ActionW.SCROLL_SERIES);

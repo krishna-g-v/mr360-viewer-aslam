@@ -1492,8 +1492,10 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
   public void savePreferences(BundleContext bundleContext) {
     Preferences prefs = BundlePreferences.getDefaultPreferences(bundleContext);
     zoomSetting.savePreferences(prefs);
-    // Mouse buttons preferences
-    mouseActions.savePreferences(prefs);
+    if(!ViewerToolBar.mouseActionsSaved) {
+    	// Mouse buttons preferences
+    	mouseActions.savePreferences(prefs);
+    }
     if (prefs != null) {
       // Mouse sensitivity
       Preferences prefNode = prefs.node("mouse.sensivity");
