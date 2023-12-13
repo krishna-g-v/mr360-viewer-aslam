@@ -388,7 +388,7 @@ public class WeasisWin {
 
 //    Properties viewerProps = new Properties();
     Properties viewerProps = BundleTools.SYSTEM_PREFERENCES;
-    if(!(viewerProps.containsKey("us.layout") && viewerProps.containsKey("ct.layout") && viewerProps.containsKey("cr.layout"))) {
+    if(!(viewerProps.containsKey("us.layout") && viewerProps.containsKey("ct.layout") && viewerProps.containsKey("cr.layout") && viewerProps.containsKey("mr.layout") && viewerProps.containsKey("mg.layout"))) {
     	try {
     		viewerProps.load(new FileInputStream(ResourceUtil.getResource("viewer-settings.txt")));
     	} catch (Exception e) {
@@ -423,6 +423,18 @@ public class WeasisWin {
 		props.put("mr360.synch.view", viewerProps.containsKey("ct.view.mode") ? viewerProps.get("ct.view.mode") : "STACK"); 
 		
 		DefaultView2d.studyModality = "CT";
+    } else if(seriesList.get(0).getToolTips().toUpperCase().contains("Modality: MR".toUpperCase())) {
+		props.put("mr360.modality", "MR");
+		props.put("mr360.layout", viewerProps.containsKey("mr.layout") ? viewerProps.get("mr.layout") : "1x1");
+		props.put("mr360.synch.view", viewerProps.containsKey("mr.view.mode") ? viewerProps.get("mr.view.mode") : "STACK"); 
+		
+		DefaultView2d.studyModality = "MR";
+    } else if(seriesList.get(0).getToolTips().toUpperCase().contains("Modality: MG".toUpperCase())) {
+		props.put("mr360.modality", "MG");
+		props.put("mr360.layout", viewerProps.containsKey("mg.layout") ? viewerProps.get("mg.layout") : "1x1");
+		props.put("mr360.synch.view", viewerProps.containsKey("mg.view.mode") ? viewerProps.get("mg.view.mode") : "STACK"); 
+		
+		DefaultView2d.studyModality = "MG";
     }
 
 

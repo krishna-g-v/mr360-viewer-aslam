@@ -70,19 +70,27 @@ public class ModalityPrefView extends AbstractItemDialogPage {
   private final JLabel jLabelUsLayout = new JLabel("Layout" + StringUtil.COLON);
   private final JLabel jLabelCtLayout = new JLabel("Layout" + StringUtil.COLON);
   private final JLabel jLabelCrLayout = new JLabel("Layout" + StringUtil.COLON);
+  private final JLabel jLabelMriLayout = new JLabel("Layout" + StringUtil.COLON);
+  private final JLabel jLabelMammoLayout = new JLabel("Layout" + StringUtil.COLON);
   private final JLabel jLabelUsSynch = new JLabel("Synch" + StringUtil.COLON);
   private final JLabel jLabelCtSynch = new JLabel("Synch" + StringUtil.COLON);
   private final JLabel jLabelCrSynch = new JLabel("Synch" + StringUtil.COLON);
+  private final JLabel jLabelMriSynch = new JLabel("Synch" + StringUtil.COLON);
+  private final JLabel jLabelMammoSynch = new JLabel("Synch" + StringUtil.COLON);
   
   private JLabel usLayoutTxt = new JLabel();
   private JLabel ctLayoutTxt = new JLabel();
   private JLabel crLayoutTxt = new JLabel();
+  private JLabel mriLayoutTxt = new JLabel();
+  private JLabel mammoLayoutTxt = new JLabel();
   private JLabel usSynchTxt = new JLabel();
   private JLabel ctSynchTxt = new JLabel();
   private JLabel crSynchTxt = new JLabel();
+  private JLabel mriSynchTxt = new JLabel();
+  private JLabel mammoSynchTxt = new JLabel();
   
   
-  private final DropDownButton usLayout, ctLayout, crLayout, synchButton, ctSynchButton, crSynchButton;
+  private final DropDownButton usLayout, ctLayout, crLayout, mriLayout, mammoLayout, synchButton, ctSynchButton, crSynchButton, mriSynchButton, mammoSynchButton;
   private final ComboItemListener usComboLayout = new ComboItemListener<GridBagLayoutModel>(
     ActionW.LAYOUT, Optional.ofNullable(ImageViewerPlugin.DEFAULT_LAYOUT_LIST.toArray(new GridBagLayoutModel[0])).orElseGet(() -> new GridBagLayoutModel[0])) {
     @Override
@@ -103,6 +111,20 @@ public class ModalityPrefView extends AbstractItemDialogPage {
     public void itemStateChanged(Object object) {
     	crLayoutTxt.setText(((GridBagLayoutModel) this.getModel().getSelectedItem()).getId());
     }
+  };
+  private final ComboItemListener mriComboLayout = new ComboItemListener<GridBagLayoutModel>(
+	ActionW.LAYOUT, Optional.ofNullable(ImageViewerPlugin.DEFAULT_LAYOUT_LIST.toArray(new GridBagLayoutModel[0])).orElseGet(() -> new GridBagLayoutModel[0])) {
+    @Override
+    public void itemStateChanged(Object object) {
+    	mriLayoutTxt.setText(((GridBagLayoutModel) this.getModel().getSelectedItem()).getId());
+	}
+  };
+  private final ComboItemListener mammoComboLayout = new ComboItemListener<GridBagLayoutModel>(
+	ActionW.LAYOUT, Optional.ofNullable(ImageViewerPlugin.DEFAULT_LAYOUT_LIST.toArray(new GridBagLayoutModel[0])).orElseGet(() -> new GridBagLayoutModel[0])) {
+	@Override
+	public void itemStateChanged(Object object) {
+		mammoLayoutTxt.setText(((GridBagLayoutModel) this.getModel().getSelectedItem()).getId());
+	}
   };
 
   private final ComboItemListener usSynchView = new ComboItemListener<SynchView>(
@@ -127,6 +149,22 @@ public class ModalityPrefView extends AbstractItemDialogPage {
     public void itemStateChanged(Object object) {
     	crSynchTxt.setText(((SynchView) this.getModel().getSelectedItem()).getUIName());
     }
+  };
+  
+  private final ComboItemListener mriSynchView = new ComboItemListener<SynchView>(
+	    ActionW.SYNCH, Optional.ofNullable(Arrays.asList(SynchView.NONE, SynchView.DEFAULT_STACK, SynchView.DEFAULT_TILE).toArray(new SynchView[0])).orElseGet(() -> new SynchView[0])) {
+	  @Override
+	  public void itemStateChanged(Object object) {
+	    mriSynchTxt.setText(((SynchView) this.getModel().getSelectedItem()).getUIName());
+	  }
+  };
+  
+  private final ComboItemListener mammoSynchView = new ComboItemListener<SynchView>(
+		ActionW.SYNCH, Optional.ofNullable(Arrays.asList(SynchView.NONE, SynchView.DEFAULT_STACK, SynchView.DEFAULT_TILE).toArray(new SynchView[0])).orElseGet(() -> new SynchView[0])) {
+	@Override
+	public void itemStateChanged(Object object) {
+		mammoSynchTxt.setText(((SynchView) this.getModel().getSelectedItem()).getUIName());
+	}
   };
 
   public ModalityPrefView() {
@@ -257,7 +295,89 @@ public class ModalityPrefView extends AbstractItemDialogPage {
     crSynchButton.setToolTipText("Define X-ray Synch");
 
     crPanel.add(crSynchButton);
-    crPanel.add(crSynchTxt);  
+    crPanel.add(crSynchTxt);
+    
+    JPanel mriPanel = new JPanel();
+    mriPanel.setBorder(
+        new TitledBorder(
+            null,
+            "MRI",
+            TitledBorder.LEADING,
+            TitledBorder.TOP,
+            null,
+            null));
+    add(mriPanel);
+    
+    ((FlowLayout) mriPanel.getLayout()).setAlignment(FlowLayout.LEADING);
+
+    mriPanel.add(jLabelMriLayout);
+
+    mriLayout = new DropDownButton("layout", new DropButtonIcon(new ImageIcon(MouseActions.class.getResource("/icon/32x32/layout.png")))) {
+      @Override
+      protected JPopupMenu getPopupMenu() {
+        return getLayoutPopupMenuButton(this, mriComboLayout);
+      }
+    };
+    mriLayout.setToolTipText("Define MRI Layout");
+
+    mriPanel.add(mriLayout);
+    mriPanel.add(mriLayoutTxt);
+
+    jLabelMriSynch.setBorder(new EmptyBorder(0, 50, 0, 0));
+
+    mriPanel.add(jLabelMriSynch);
+
+    mriSynchButton = new DropDownButton(ActionW.SYNCH.cmd(), new DropButtonIcon(new ImageIcon(MouseActions.class.getResource("/icon/32x32/synch.png")))) {
+      @Override
+      protected JPopupMenu getPopupMenu() {
+        return getLayoutPopupMenuButton(this, mriSynchView);
+      }
+    };
+    mriSynchButton.setToolTipText("Define MRI Synch");
+
+    mriPanel.add(mriSynchButton);
+    mriPanel.add(mriSynchTxt);
+    
+    JPanel mammoPanel = new JPanel();
+    mammoPanel.setBorder(
+        new TitledBorder(
+            null,
+            "Mammo",
+            TitledBorder.LEADING,
+            TitledBorder.TOP,
+            null,
+            null));
+    add(mammoPanel);
+    
+    ((FlowLayout) mammoPanel.getLayout()).setAlignment(FlowLayout.LEADING);
+
+    mammoPanel.add(jLabelMammoLayout);
+
+    mammoLayout = new DropDownButton("layout", new DropButtonIcon(new ImageIcon(MouseActions.class.getResource("/icon/32x32/layout.png")))) {
+      @Override
+      protected JPopupMenu getPopupMenu() {
+        return getLayoutPopupMenuButton(this, mammoComboLayout);
+      }
+    };
+    mammoLayout.setToolTipText("Define Mammo Layout");
+
+    mammoPanel.add(mammoLayout);
+    mammoPanel.add(mammoLayoutTxt);
+
+    jLabelMammoSynch.setBorder(new EmptyBorder(0, 50, 0, 0));
+
+    mammoPanel.add(jLabelMammoSynch);
+
+    mammoSynchButton = new DropDownButton(ActionW.SYNCH.cmd(), new DropButtonIcon(new ImageIcon(MouseActions.class.getResource("/icon/32x32/synch.png")))) {
+      @Override
+      protected JPopupMenu getPopupMenu() {
+        return getLayoutPopupMenuButton(this, mammoSynchView);
+      }
+    };
+    mammoSynchButton.setToolTipText("Define Mammo Synch");
+
+    mammoPanel.add(mammoSynchButton);
+    mammoPanel.add(mammoSynchTxt);
     
     JPanel panel2 = new JPanel();
     FlowLayout flowLayout1 = (FlowLayout) panel2.getLayout();
@@ -276,27 +396,39 @@ public class ModalityPrefView extends AbstractItemDialogPage {
       String us_layout = BundleTools.SYSTEM_PREFERENCES.getProperty("us.layout");
       String ct_layout = BundleTools.SYSTEM_PREFERENCES.getProperty("ct.layout");
       String cr_layout = BundleTools.SYSTEM_PREFERENCES.getProperty("cr.layout");
+      String mri_layout = BundleTools.SYSTEM_PREFERENCES.getProperty("mr.layout");
+      String mammo_layout = BundleTools.SYSTEM_PREFERENCES.getProperty("mg.layout");
       retrivedFromProps(usComboLayout, us_layout, usLayoutTxt);
       retrivedFromProps(ctComboLayout, ct_layout, ctLayoutTxt);
       retrivedFromProps(crComboLayout, cr_layout, crLayoutTxt);
+      retrivedFromProps(mriComboLayout, mri_layout, mriLayoutTxt);
+      retrivedFromProps(mammoComboLayout, mammo_layout, mammoLayoutTxt);
     // }
       String us_synch = BundleTools.SYSTEM_PREFERENCES.getProperty("us.view.mode");
       String ct_synch = BundleTools.SYSTEM_PREFERENCES.getProperty("ct.view.mode");
       String cr_synch = BundleTools.SYSTEM_PREFERENCES.getProperty("cr.view.mode");
+      String mri_synch = BundleTools.SYSTEM_PREFERENCES.getProperty("mr.view.mode");
+      String mammo_synch = BundleTools.SYSTEM_PREFERENCES.getProperty("mg.view.mode");
       retrivedFromProps(usSynchView, us_synch, usSynchTxt);
       retrivedFromProps(ctSynchView, ct_synch, ctSynchTxt);
       retrivedFromProps(crSynchView, cr_synch, crSynchTxt);
+      retrivedFromProps(mriSynchView, mri_synch, mriSynchTxt);
+      retrivedFromProps(mammoSynchView, mammo_synch, mammoSynchTxt);
   }
 
   @Override
   public void resetoDefaultValues() {
     usComboLayout.getModel().setSelectedItem(usComboLayout.getFirstItem());
-    ctComboLayout.getModel().setSelectedItem(usComboLayout.getFirstItem());
-    crComboLayout.getModel().setSelectedItem(usComboLayout.getFirstItem());
+    ctComboLayout.getModel().setSelectedItem(ctComboLayout.getFirstItem());
+    crComboLayout.getModel().setSelectedItem(crComboLayout.getFirstItem());
+    mriComboLayout.getModel().setSelectedItem(mriComboLayout.getFirstItem());
+    mammoComboLayout.getModel().setSelectedItem(mammoComboLayout.getFirstItem());
 
     usSynchView.getModel().setSelectedItem(usSynchView.getFirstItem());
     ctSynchView.getModel().setSelectedItem(ctSynchView.getFirstItem());
     crSynchView.getModel().setSelectedItem(crSynchView.getFirstItem());
+    mriSynchView.getModel().setSelectedItem(mriSynchView.getFirstItem());
+    mammoSynchView.getModel().setSelectedItem(mammoSynchView.getFirstItem());
   } 
 
   @Override
@@ -309,6 +441,12 @@ public class ModalityPrefView extends AbstractItemDialogPage {
 
     GridBagLayoutModel selectedCrLayoutObject = (GridBagLayoutModel) crComboLayout.getModel().getSelectedItem();
     String selectedCrLayoutTitle = selectedCrLayoutObject.getId();
+    
+    GridBagLayoutModel selectedMriLayoutObject = (GridBagLayoutModel) mriComboLayout.getModel().getSelectedItem();
+    String selectedMriLayoutTitle = selectedMriLayoutObject.getId();
+    
+    GridBagLayoutModel selectedMammoLayoutObject = (GridBagLayoutModel) mammoComboLayout.getModel().getSelectedItem();
+    String selectedMammoLayoutTitle = selectedMammoLayoutObject.getId();
 
     SynchView selectedUsSynchObject = (SynchView) usSynchView.getModel().getSelectedItem();
     String selectedUsSynchTitle = selectedUsSynchObject.getUIName();
@@ -318,19 +456,32 @@ public class ModalityPrefView extends AbstractItemDialogPage {
 
     SynchView selectedCrSynchObject = (SynchView) crSynchView.getModel().getSelectedItem();
     String selectedCrSynchTitle = selectedCrSynchObject.getUIName();
+    
+    SynchView selectedMriSynchObject = (SynchView) mriSynchView.getModel().getSelectedItem();
+    String selectedMriSynchTitle = selectedMriSynchObject.getUIName();
+    
+    SynchView selectedMammoSynchObject = (SynchView) mammoSynchView.getModel().getSelectedItem();
+    String selectedMammoSynchTitle = selectedMammoSynchObject.getUIName();
 
     BundleTools.SYSTEM_PREFERENCES.setProperty("us.layout", selectedUsLayoutTitle);
 
     BundleTools.SYSTEM_PREFERENCES.setProperty("ct.layout", selectedCtLayoutTitle);
 
     BundleTools.SYSTEM_PREFERENCES.setProperty("cr.layout", selectedCrLayoutTitle);
+    
+    BundleTools.SYSTEM_PREFERENCES.setProperty("mr.layout", selectedMriLayoutTitle);
+    
+    BundleTools.SYSTEM_PREFERENCES.setProperty("mg.layout", selectedMammoLayoutTitle);
 
     BundleTools.SYSTEM_PREFERENCES.setProperty("us.view.mode", selectedUsSynchTitle);
 
     BundleTools.SYSTEM_PREFERENCES.setProperty("ct.view.mode", selectedCtSynchTitle);
 
     BundleTools.SYSTEM_PREFERENCES.setProperty("cr.view.mode", selectedCrSynchTitle);
-
+    
+    BundleTools.SYSTEM_PREFERENCES.setProperty("mr.view.mode", selectedMriSynchTitle);
+    
+    BundleTools.SYSTEM_PREFERENCES.setProperty("mg.view.mode", selectedMammoSynchTitle);
 
     BundleTools.saveSystemPreferences();
   }
