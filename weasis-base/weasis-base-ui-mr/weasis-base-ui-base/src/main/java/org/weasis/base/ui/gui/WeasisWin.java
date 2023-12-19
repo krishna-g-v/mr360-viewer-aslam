@@ -469,7 +469,7 @@ public class WeasisWin {
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] gd = ge.getScreenDevices();
         if (gd.length > 1) {
-          viewer.getDockable().setExternalizable(true);
+          viewer.getDockable().setExternalizable(false);
           setExternalPosition(viewer.getDockable());
           // viewer.getDockable().addCDockableLocationListener(new CDockableLocationListener() {
           //
