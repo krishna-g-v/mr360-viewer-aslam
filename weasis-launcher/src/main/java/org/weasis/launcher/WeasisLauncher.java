@@ -1633,6 +1633,7 @@ public class WeasisLauncher {
 		      }
 			  InputStream zis = zipFiler.getInputStream(entry);
 			  Path newFilePath = outputPath.resolve(entry.getName());
+			  if(entry.getName().endsWith("persitence.properties")) continue;
 			  if (entry.isDirectory()) {
 				  Files.createDirectories(newFilePath);
 			  } else {
