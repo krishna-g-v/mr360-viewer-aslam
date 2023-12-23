@@ -1,4 +1,4 @@
-// version - 1.2.2
+// version - 1.2.3
 // conditions -
 // 1. URL on the server
 // 2. Version info page on the server
@@ -46,7 +46,8 @@ var INSTALLDIR = "C:/Program Files/MedReport360-Viewer"
 var LOGFILE = "C:/Program Files/MedReport360-Viewer/app"
 var VERSIONFILE = "C:/Program Files/MedReport360-Viewer/app"
 var Temp = os.Getenv("temp")
-var revert_back1 bool
+
+// var revert_back1 bool
 
 // production
 var URL = "http://viewer-updater.medreport360.com"                         // patch_files_url
@@ -183,7 +184,7 @@ func main() {
 	// =====================================================================
 
 	// if web version > local version OR web build_version > local build number OR web BUILD-NO > local BUILD-NO
-	// if 3.9.1 > 3.8.1 || 32 > 31 || 1002 > 1003
+	// if 3.9.1 > 3.8.1 || 32 > 31 || 1003 > 1002
 	if latest_patch_version > local_build_version || buildno_latest_patch_version > build_local_version || med_latest_patch_version > localversion {
 		// InfoLogger.Println(fmt.Sprintf("found New patch (%s) for MedReport360-Viewer v%s", latest_patch_version, med_latest_patch_version))
 		delete_temp_files(latest_patch_version, build_local_version) // will delete prev temp files in %temp% (zip and version_64_patch)
@@ -408,7 +409,9 @@ func changeversiontxt(latest_patch_version string, buildno_latest_patch_version 
 	if err != nil {
 		ErrorLogger.Println("failed to read&change the version.txt in DIR", VERSIONFILE+"/version.txt")
 	}
-	file.WriteString("VERSION:" + med_latest_patch_version + "\nBUILD-VERSION:" + latest_patch_version + "\nBUILD-NO:" + buildno_latest_patch_version)
+	file.Truncate(0)
+	// file.Seek(0, 0)
+	file.WriteString("VERSION:" + med_latest_patch_version + "\r\nBUILD-VERSION:" + latest_patch_version + "\r\nBUILD-NO:" + buildno_latest_patch_version)
 }
 
 func delete_temp_files(latest_patch_version string, build_local_version string) {
@@ -519,3 +522,6 @@ func old_logs() {
 // 		Should be placed in app/updater_new.exe
 
 // Patch_url = localhost/demo/filename
+
+// dlv version = 1.9.0 / go version = 1.18.5
+// bug fixed = the version.txt contents was not getting fully replaced, hence now using os.Trunc to truncate the byte size
