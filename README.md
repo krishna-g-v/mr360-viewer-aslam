@@ -22,3 +22,7 @@ cd weasis-distributions/script/
 
 # To build updater.go for windows x86_64
 env GOOS=windows GOARCH=amd64 go build updater.go
+
+
+# To resize the icons in bulk
+https://redketchup.io/bulk-image-resizer
