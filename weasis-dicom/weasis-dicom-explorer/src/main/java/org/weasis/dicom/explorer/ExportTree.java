@@ -13,20 +13,41 @@ import it.cnr.imaa.essi.lablib.gui.checkboxtree.CheckboxTree;
 import it.cnr.imaa.essi.lablib.gui.checkboxtree.TreeCheckingModel;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Map;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import org.weasis.dicom.explorer.CheckTreeModel.ToolTipTreeNode;
+import org.weasis.dicom.codec.KOSpecialElement;
+import org.weasis.dicom.codec.DicomMediaIO;
+import org.dcm4che3.data.Attributes;
+import java.util.Collection;
+import org.weasis.dicom.codec.macro.HierachicalSOPInstanceReference;
+import org.weasis.dicom.codec.macro.KODocumentModule;
+import org.weasis.dicom.codec.macro.SOPInstanceReferenceAndMAC;
+import org.weasis.dicom.codec.AbstractKOSpecialElement;
+import org.weasis.dicom.codec.DicomSpecialElement;
+import org.dcm4che3.data.Tag;
+import org.weasis.dicom.codec.DicomImageElement;
+import org.weasis.dicom.codec.AbstractKOSpecialElement.Reference;
+import org.weasis.dicom.codec.TagD;
+import org.weasis.core.api.media.data.MediaSeries;
+import org.weasis.core.api.media.data.Series;
+import org.weasis.core.api.media.data.TagW;
+import org.weasis.core.util.StringUtil;
+
 
 public class ExportTree extends JScrollPane {
-
+	
   private final CheckboxTree checkboxTree;
   private final CheckTreeModel checkTreeModel;
+  Set<TreePath> studyPathsSet = new HashSet<>();
 
   public ExportTree(DicomModel dicomModel) {
     this(new CheckTreeModel(dicomModel));
@@ -71,11 +92,37 @@ public class ExportTree extends JScrollPane {
     // -- checkingMode is alreadySet inDicomExport
 
     if (checkingPaths != null && checkingPaths.length > 0) {
-      Set<TreePath> studyPathsSet = new HashSet<>();
+      DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) checkTreeModel.getRootNode();
+      
+      MediaSeries<DicomImageElement> series = null;
+      for (TreePath treePath : checkingPaths) {
+    	  DefaultMutableTreeNode node = (DefaultMutableTreeNode) treePath.getLastPathComponent();
+          if (node.getUserObject() instanceof Series) {
+        	  series = ( MediaSeries<DicomImageElement>) node.getUserObject();
+        	  break;
+          }
+      }
+      
+      Collection<KOSpecialElement> keyObjectElements = DicomModel.getKoSpecialElements(series);
+      if (keyObjectElements != null && keyObjectElements.size() > 0) {
+        for (KOSpecialElement koElement : keyObjectElements) {
+          Set<String> referenceObjectSet  = ((KOSpecialElement) koElement).getReferencedSOPInstanceUIDSet();
+          Iterator referenceObjects = referenceObjectSet.iterator();
+          while(referenceObjects.hasNext()) {
+            String referenceObjectStr = (String) referenceObjects.next();
+            TreePath referenceTreePath = findTreePath(referenceObjectStr, rootNode);
+            if(referenceTreePath != null) {
+              studyPathsSet.add(referenceTreePath);
+            }
+          }
+        }
+      }
 
-      for (TreePath checkingPath : checkingPaths) {
-        if (checkingPath.getPathCount() == 4) { // 4 stands for Series Level
-          studyPathsSet.add(checkingPath.getParentPath());
+      if (keyObjectElements.size() == 0) {
+        for (TreePath checkingPath : checkingPaths) {
+          if (checkingPath.getPathCount() == 4) { // 4 stands for Series Level
+            studyPathsSet.add(checkingPath.getParentPath());
+          }
         }
       }
 
@@ -117,5 +164,44 @@ public class ExportTree extends JScrollPane {
         }
       }
     }
+  }
+
+  public TreePath findTreePath(String refObjStr, DefaultMutableTreeNode enumRootNode) {
+    TreePath referenceCheckingPath = null;
+    Enumeration<?> referenceTreeNode = ((DefaultMutableTreeNode) enumRootNode).breadthFirstEnumeration();
+    while (referenceTreeNode.hasMoreElements()) {
+      Object childRef = referenceTreeNode.nextElement();
+      if (childRef instanceof DefaultMutableTreeNode) {
+        DefaultMutableTreeNode childTreeNode = (DefaultMutableTreeNode) childRef;
+        if (childTreeNode.getLevel() != 3) { // 3 stands for Series Level
+          continue;
+        }
+        
+        String treeName = childTreeNode.getUserObject().toString();
+        
+        if(treeName.contains("GRAPHIC") || treeName.contains("graphic")) {
+        	studyPathsSet.add(new TreePath(childTreeNode.getPath()));
+        }
+        
+        Enumeration refTreeEnum = childTreeNode.children();
+        while (refTreeEnum.hasMoreElements()) {
+          DefaultMutableTreeNode refMediaElem = (DefaultMutableTreeNode) refTreeEnum.nextElement();
+          Object refMediaObj = refMediaElem.getUserObject();
+          if (refMediaObj instanceof KOSpecialElement) {
+            studyPathsSet.add(new TreePath(refMediaElem.getPath()));
+            continue;
+          }
+          Attributes refDicomImgObject = ((DicomImageElement) refMediaObj).getMediaReader().getDicomObject();
+          String referenceSOPInstanceUID = "";
+          referenceSOPInstanceUID = refDicomImgObject.getString(Tag.SOPInstanceUID);
+
+          if (refObjStr.equals(referenceSOPInstanceUID)) {
+            referenceCheckingPath = new TreePath(refMediaElem.getPath());
+//            break;
+          } 
+        }
+      }
+    }
+    return referenceCheckingPath;
   }
 }

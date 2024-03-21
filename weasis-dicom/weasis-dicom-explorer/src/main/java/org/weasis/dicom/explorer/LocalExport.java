@@ -83,7 +83,7 @@ public class LocalExport extends AbstractItemDialogPage implements ExportDicom {
   public static final String IMG_16_BIT = "exp.16-bit"; // NON-NLS
   public static final String CD_COMPATIBLE = "exp.cd";
 
-  public static final String[] EXPORT_FORMAT = {"DICOM", "DICOM ZIP", "JPEG", "PNG"}; // NON-NLS
+  public static final String[] EXPORT_FORMAT = {"DICOM ZIP", "DICOM", "JPEG", "PNG"}; // NON-NLS
 
   private final DicomModel dicomModel;
   private File outputFolder;
@@ -228,7 +228,7 @@ public class LocalExport extends AbstractItemDialogPage implements ExportDicom {
   public void browseImgFile(String format) {
     String targetDirectoryPath = Activator.IMPORT_EXPORT_PERSISTENCE.getProperty(LAST_DIR, "");
 
-    boolean isSaveFileMode = EXPORT_FORMAT[1].equals(format);
+    boolean isSaveFileMode = EXPORT_FORMAT[0].equals(format);
 
     JFileChooser fileChooser = new JFileChooser(targetDirectoryPath);
 
