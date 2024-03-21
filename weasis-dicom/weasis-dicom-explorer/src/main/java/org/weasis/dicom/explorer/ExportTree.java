@@ -37,11 +37,14 @@ import org.dcm4che3.data.Tag;
 import org.weasis.dicom.codec.DicomImageElement;
 import org.weasis.dicom.codec.AbstractKOSpecialElement.Reference;
 import org.weasis.dicom.codec.TagD;
+import org.weasis.core.api.media.data.MediaSeries;
+import org.weasis.core.api.media.data.Series;
 import org.weasis.core.api.media.data.TagW;
 import org.weasis.dicom.viewer2d.View2d;
 
-public class ExportTree extends JScrollPane {
 
+public class ExportTree extends JScrollPane {
+	
   private final CheckboxTree checkboxTree;
   private final CheckTreeModel checkTreeModel;
   Set<TreePath> studyPathsSet = new HashSet<>();
@@ -90,8 +93,17 @@ public class ExportTree extends JScrollPane {
 
     if (checkingPaths != null && checkingPaths.length > 0) {
       DefaultMutableTreeNode rootNode = (DefaultMutableTreeNode) checkTreeModel.getRootNode();
-
-      Collection<KOSpecialElement> keyObjectElements = View2d.exportKOElements;
+      
+      MediaSeries<DicomImageElement> series = null;
+      for (TreePath treePath : checkingPaths) {
+    	  DefaultMutableTreeNode node = (DefaultMutableTreeNode) treePath.getLastPathComponent();
+          if (node.getUserObject() instanceof Series) {
+        	  series = ( MediaSeries<DicomImageElement>) node.getUserObject();
+        	  break;
+          }
+      }
+      
+      Collection<KOSpecialElement> keyObjectElements = DicomModel.getKoSpecialElements(series);
       if (keyObjectElements != null && keyObjectElements.size() > 0) {
         for (KOSpecialElement koElement : keyObjectElements) {
           Set<String> referenceObjectSet  = ((KOSpecialElement) koElement).getReferencedSOPInstanceUIDSet();
