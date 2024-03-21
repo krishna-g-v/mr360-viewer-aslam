@@ -76,6 +76,7 @@ public class ZoomToolBar extends WtoolBar {
       
       final JToggleButton jLinkModeButton = new JToggleButton(new ImageIcon(MouseActions.class.getResource("/icon/16x16/link.png")));
       jLinkModeButton.setToolTipText("Link / Unlink");
+      jLinkModeButton.setText("Link");
       ActionListener actionListener = new ActionListener() {
           public void actionPerformed(ActionEvent actionEvent) {
             AbstractButton abstractButton = (AbstractButton) actionEvent.getSource();
