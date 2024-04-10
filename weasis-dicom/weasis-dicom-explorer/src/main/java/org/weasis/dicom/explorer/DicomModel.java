@@ -11,15 +11,26 @@ package org.weasis.dicom.explorer;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,12 +43,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
+
 import org.apache.felix.service.command.CommandProcessor;
 import org.dcm4che3.data.Tag;
+import org.opencv.core.MatOfInt;
+import org.opencv.imgcodecs.Imgcodecs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.weasis.core.api.command.Option;
 import org.weasis.core.api.command.Options;
+import org.weasis.core.api.explorer.DataExplorerView;
 import org.weasis.core.api.explorer.ObservableEvent;
 import org.weasis.core.api.explorer.ObservableEvent.BasicAction;
 import org.weasis.core.api.explorer.model.DataExplorerModel;
@@ -62,6 +79,10 @@ import org.weasis.core.ui.docking.UIManager;
 import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
 import org.weasis.core.ui.editor.image.DefaultView2d;
+import org.weasis.core.ui.serialize.XmlSerializer;
+import org.weasis.core.ui.model.GraphicModel;
+import org.weasis.core.util.FileUtil;
+import org.weasis.core.util.LangUtil;
 import org.weasis.core.util.StringUtil;
 import org.weasis.dicom.codec.DicomEncapDocElement;
 import org.weasis.dicom.codec.DicomEncapDocSeries;
@@ -71,6 +92,7 @@ import org.weasis.dicom.codec.DicomSeries;
 import org.weasis.dicom.codec.DicomSpecialElement;
 import org.weasis.dicom.codec.DicomVideoElement;
 import org.weasis.dicom.codec.DicomVideoSeries;
+import org.weasis.dicom.codec.FileExtractor;
 import org.weasis.dicom.codec.KOSpecialElement;
 import org.weasis.dicom.codec.PRSpecialElement;
 import org.weasis.dicom.codec.RejectedKOSpecialElement;
@@ -81,12 +103,19 @@ import org.weasis.dicom.codec.display.Modality;
 import org.weasis.dicom.codec.utils.SplittingModalityRules;
 import org.weasis.dicom.codec.utils.SplittingModalityRules.Rule;
 import org.weasis.dicom.codec.utils.SplittingRules;
+import org.weasis.dicom.explorer.internal.Activator;
 import org.weasis.dicom.explorer.rs.RsQueryParams;
 import org.weasis.dicom.explorer.wado.DicomManager;
 import org.weasis.dicom.explorer.wado.DownloadManager;
 import org.weasis.dicom.explorer.wado.LoadRemoteDicomManifest;
 import org.weasis.dicom.explorer.wado.LoadRemoteDicomURL;
 import org.weasis.dicom.explorer.wado.LoadSeries;
+import org.weasis.opencv.data.PlanarImage;
+import org.weasis.opencv.op.ImageConversion;
+import org.weasis.opencv.op.ImageProcessor;
+
+import it.cnr.imaa.essi.lablib.gui.checkboxtree.TreeCheckingModel;
+import it.cnr.imaa.essi.lablib.gui.checkboxtree.TreeCheckingModel.CheckingMode;
 
 @org.osgi.service.component.annotations.Component(
     property = {
@@ -461,6 +490,7 @@ public class DicomModel implements TreeModel, DataExplorerModel {
 
   public void removeSeries(MediaSeriesGroup dicomSeries) {
     if (dicomSeries != null) {
+      exportAnnotatedImg();
       if (!DownloadManager.TASKS.isEmpty() && dicomSeries instanceof DicomSeries) {
         DownloadManager.stopDownloading((DicomSeries) dicomSeries, this);
       }
@@ -478,6 +508,7 @@ public class DicomModel implements TreeModel, DataExplorerModel {
 
   public void removeStudy(MediaSeriesGroup studyGroup) {
     if (studyGroup != null) {
+      exportAnnotatedImg();
       if (!DownloadManager.TASKS.isEmpty()) {
         for (MediaSeriesGroup group : getChildren(studyGroup)) {
           if (group instanceof DicomSeries) {
@@ -493,12 +524,145 @@ public class DicomModel implements TreeModel, DataExplorerModel {
       }
       MediaSeriesGroup patientGroup = getParent(studyGroup, DicomModel.patient);
       removeHierarchyNode(patientGroup, studyGroup);
+      
       LOGGER.info("Remove Study: {}", studyGroup);
     }
   }
+  
+  public void exportAnnotatedImg() {
 
+	    try {      
+	        ArrayList<String> seriesGph = new ArrayList<>();
+	        CheckTreeModel model = new CheckTreeModel(DicomModel.this);
+	        initTreeCheckingModel(model);
+	        TreePath[] paths = model.getCheckingPaths();
+	        boolean hasGraphics = false;
+	        for (TreePath treePath : paths) {
+	          DefaultMutableTreeNode node = (DefaultMutableTreeNode) treePath.getLastPathComponent();
+	          if (node.getUserObject() instanceof Series) {
+	            MediaSeries<?> s = (MediaSeries<?>) node.getUserObject();
+	            for (MediaElement dicom : ((Series<?>) s).getMedias(null, null)) {
+	            	GraphicModel grModel = (GraphicModel) dicom.getTagValue(TagW.PresentationModel);
+	            	hasGraphics = grModel != null && grModel.hasSerializableGraphics();
+	            	if(hasGraphics) {
+	            		seriesGph.add((String) dicom.getTagValue(TagD.get(Tag.SOPInstanceUID)));
+	            	}
+	            }
+	          }
+	        }
+
+	        for (TreePath treePath : paths) {
+	          DefaultMutableTreeNode node = (DefaultMutableTreeNode) treePath.getLastPathComponent();
+
+	          if (node.getUserObject() instanceof DicomImageElement) {
+	            DicomImageElement img = (DicomImageElement) node.getUserObject();
+	            
+	            
+	            PlanarImage image = img.getImage(null);
+	            if (image != null) {
+	              if (seriesGph.contains(img.getTagValue(TagD.get(Tag.SOPInstanceUID)))) {
+	                String annotationsContent = XmlSerializer.writePresentationToString(img);
+	                System.out.println(annotationsContent);
+	                
+	                DefaultMutableTreeNode studyNode = (DefaultMutableTreeNode) node.getParent().getParent();
+	                String accessionNo = TagD.getTagValue((MediaSeriesGroup) studyNode.getUserObject(), Tag.AccessionNumber, String.class);
+	                String patientId = TagD.getTagValue(img, Tag.PatientID, String.class);
+	      		  	String patientName = TagD.getTagValue(img, Tag.PatientName, String.class);
+	      		  	String sopInstanceUID = TagD.getTagValue(img, Tag.SOPInstanceUID, String.class);
+	                
+	      		  	sendXMLcontent(annotationsContent, accessionNo, patientId, patientName, sopInstanceUID);
+	                
+	              }
+	            } else {
+	              LOGGER.error(
+	                  "Cannot export DICOM file to {}: {}",
+	                  "",
+	                  img.getFileCache().getOriginalFile().orElse(null));
+	            }
+	          } 
+	        }
+	      
+	    } catch (Exception e) {
+	      LOGGER.error("Cannot extract media from DICOM", e);
+	    }
+  }
+  
+  public void sendXMLcontent(String xmlData, String accessionNo, String patientId, String patientName, String sopInstanceUID) {
+	  try {
+		  URL url = new URL("http://viewer-updater.medreport360.com/ko_objects/annotations.php");
+	      Map<String,Object> params = new LinkedHashMap<>();
+	      params.put("accessionNo", accessionNo);
+	      params.put("patientId", patientId);
+	      params.put("patientName", patientName);
+	      params.put("sopInstanceUID", sopInstanceUID);
+	      params.put("xmlData", xmlData);
+	      
+	      StringBuilder postData = new StringBuilder();
+	      for (Map.Entry<String,Object> param : params.entrySet()) {
+	          if (postData.length() != 0) postData.append('&');
+	          postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+	          postData.append('=');
+	          postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
+	      }
+	      byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+	
+	      HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+	      conn.setRequestMethod("POST");
+	      conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+	      conn.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+	      conn.setDoOutput(true);
+	      conn.getOutputStream().write(postDataBytes);
+	
+	      Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
+	
+	      for (int c; (c = in.read()) >= 0;)
+	          System.out.print((char)c);
+	  } catch (Exception e) {
+		e.printStackTrace();
+	}   
+  }
+  
+  private void initTreeCheckingModel(CheckTreeModel treeModel) {
+	    TreeCheckingModel checkingModel = treeModel.getCheckingModel();
+	    checkingModel.setCheckingMode(CheckingMode.PROPAGATE_PRESERVING_UNCHECK);
+
+	    DataExplorerView explorer = UIManager.getExplorerplugin(DicomExplorer.NAME);
+	    if (explorer instanceof DicomExplorer) {
+
+	      Set<Series> openSeriesSet = ((DicomExplorer) explorer).getSelectedPatientOpenSeries();
+	      Object rootNode = treeModel.getModel().getRoot();
+
+	      if (!openSeriesSet.isEmpty() && rootNode instanceof DefaultMutableTreeNode) {
+	        List<TreePath> selectedSeriesPathsList = new ArrayList<>();
+
+	        Enumeration<?> enumTreeNode = ((DefaultMutableTreeNode) rootNode).breadthFirstEnumeration();
+	        while (enumTreeNode.hasMoreElements()) {
+	          Object child = enumTreeNode.nextElement();
+	          if (child instanceof DefaultMutableTreeNode) {
+	            DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) child;
+	            if (treeNode.getLevel() != 3) { // 3 stands for Series Level
+	              continue;
+	            }
+
+	            Object userObject = treeNode.getUserObject();
+	            if (userObject instanceof DicomSeries && openSeriesSet.contains(userObject)) {
+	              selectedSeriesPathsList.add(new TreePath(treeNode.getPath()));
+	            }
+	          }
+	        }
+
+	        if (!selectedSeriesPathsList.isEmpty()) {
+	          TreePath[] seriesCheckingPaths = selectedSeriesPathsList.toArray(new TreePath[0]);
+	          checkingModel.setCheckingPaths(seriesCheckingPaths);
+	          treeModel.setDefaultSelectionPaths(selectedSeriesPathsList);
+	        }
+	      }
+	    }
+	  }
+  
   public void removePatient(MediaSeriesGroup patientGroup) {
     if (patientGroup != null) {
+      exportAnnotatedImg();
       if (!DownloadManager.TASKS.isEmpty()) {
         for (MediaSeriesGroup studyGroup : getChildren(patientGroup)) {
           for (MediaSeriesGroup group : getChildren(studyGroup)) {
@@ -1272,6 +1436,7 @@ public class DicomModel implements TreeModel, DataExplorerModel {
   }
 
   private void closeCommand(Option opt, List<String> yargs, List<String> sargs) {
+//	exportAnnotatedImg();
     if (opt.isSet("all")) { // NON-NLS
       for (MediaSeriesGroup patientGroup : model.getSuccessors(MediaSeriesGroupNode.rootNode)) {
         removePatient(patientGroup);
