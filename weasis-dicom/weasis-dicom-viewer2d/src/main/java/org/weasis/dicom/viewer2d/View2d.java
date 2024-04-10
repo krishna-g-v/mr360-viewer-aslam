@@ -26,11 +26,21 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import java.util.Objects;
 import java.util.Optional;
 import javax.swing.ButtonGroup;
@@ -140,6 +150,7 @@ import org.weasis.dicom.viewer2d.KOComponentFactory.KOViewButton;
 import org.weasis.dicom.viewer2d.KOComponentFactory.KOViewButton.eState;
 import org.weasis.dicom.viewer2d.mpr.MprView.SliceOrientation;
 import org.weasis.opencv.data.PlanarImage;
+import org.weasis.dicom.explorer.DicomModel;
 
 public class View2d extends DefaultView2d<DicomImageElement> {
   private static final long serialVersionUID = 8334123827855840782L;
@@ -571,6 +582,33 @@ public class View2d extends DefaultView2d<DicomImageElement> {
       repaint();
     }
   }
+  
+  private void sendKOselectionLog(DicomImageElement img, boolean koObjSelected) {
+	  
+	  try {
+		  String patientId = TagD.getTagValue(img, Tag.PatientID, String.class);
+		  String patientName = TagD.getTagValue(img, Tag.PatientName, String.class);
+		  String sopInstanceUID = TagD.getTagValue(img, Tag.SOPInstanceUID, String.class);
+	      String seriesInstanceUID = TagD.getTagValue(img, Tag.SeriesInstanceUID, String.class);
+	      
+	      ViewCanvas<DicomImageElement> view2DPane = eventManager.getSelectedViewPane();
+	      Series series = (Series) view2DPane.getSeries();
+	      DicomModel tagValue = (DicomModel) series.getTagValue(TagW.ExplorerModel);
+	      MediaSeriesGroup study = tagValue.getParent(series, DicomModel.study);
+	      String accessionNo = TagD.getTagValue(study, Tag.AccessionNumber, String.class);
+	      String fileLocalUrl = img.getMediaURI().getPath();
+	      
+	      String urlStr = "http://viewer-updater.medreport360.com/ko_objects/index.php?patientId="+ patientId 
+	    		  + "&accessionNo="+accessionNo+"&patientName="+patientName+"&sopInstanceUID="+sopInstanceUID
+	    		  +"&seriesInstanceUID="+seriesInstanceUID+"&koObjSelected="+koObjSelected
+	    		  +"&fileLocalUrl="+URLEncoder.encode(fileLocalUrl, StandardCharsets.UTF_8);
+		  URL url = new URL(urlStr);
+		  InputStream input = url.openStream();
+	      input.close();
+		} catch(Exception exc) {
+			// swallow
+		}
+  }
 
   /**
    * @param img
@@ -589,14 +627,20 @@ public class View2d extends DefaultView2d<DicomImageElement> {
     if (img != null) {
       String sopInstanceUID = TagD.getTagValue(img, Tag.SOPInstanceUID, String.class);
       String seriesInstanceUID = TagD.getTagValue(img, Tag.SeriesInstanceUID, String.class);
-
+      
       if (sopInstanceUID != null && seriesInstanceUID != null) {
         Integer frame = TagD.getTagValue(img, Tag.InstanceNumber, Integer.class);
         if (selectedKO instanceof KOSpecialElement) {
           KOSpecialElement koElement = (KOSpecialElement) selectedKO;
           if (koElement.containsSopInstanceUIDReference(seriesInstanceUID, sopInstanceUID, frame)) {
-            newSelectionState = eState.SELECTED;
+        	  newSelectionState = eState.SELECTED;
+        	  // logic to export the starred ko image to directory
+        	  sendKOselectionLog(img, true);
+          } else {
+        	  // logic for remove the image for export
+        	  sendKOselectionLog(img, false);
           }
+          
         } else {
           Collection<KOSpecialElement> koElements = DicomModel.getKoSpecialElements(getSeries());
 

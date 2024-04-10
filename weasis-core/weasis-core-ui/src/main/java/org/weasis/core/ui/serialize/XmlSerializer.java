@@ -17,6 +17,7 @@ import jakarta.xml.bind.Unmarshaller;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
 import javax.xml.stream.XMLStreamReader;
@@ -71,6 +72,29 @@ public class XmlSerializer {
       }
     }
   }
+  
+  // writing annotations string to send the file 
+  public static String writePresentationToString(ImageElement img) {
+	  StringWriter sw = new StringWriter();
+	    GraphicModel model = (GraphicModel) img.getTagValue(TagW.PresentationModel);
+	    if (model != null && !model.getModels().isEmpty()) {
+	      
+
+	      try {
+	        JAXBContext jaxbContext = getJaxbContext(model.getClass());
+	        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+	        // output pretty printed
+	        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+	        // jaxbMarshaller.marshal(model, System.out);
+	        jaxbMarshaller.marshal(model, sw);
+	      } catch (Exception e) {
+	        LOGGER.error("Cannot save xml: ", e);
+	      }
+	    }
+	    return sw.toString();
+	  }
 
   public static void writePresentation(ImageElement img, Writer writer) {
     GraphicModel model = (GraphicModel) img.getTagValue(TagW.PresentationModel);
