@@ -15,6 +15,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -49,6 +50,7 @@ import org.weasis.core.api.gui.util.ToggleButtonListener;
 import org.weasis.core.api.image.util.MeasurableLayer;
 import org.weasis.core.api.image.util.Unit;
 import org.weasis.core.api.media.data.ImageElement;
+import org.weasis.core.api.service.BundleTools;
 import org.weasis.core.api.util.FontTools;
 import org.weasis.core.ui.Messages;
 import org.weasis.core.ui.docking.PluginTool;
@@ -63,6 +65,7 @@ import org.weasis.core.ui.editor.image.ViewerToolBar;
 import org.weasis.core.ui.model.graphic.DragGraphic;
 import org.weasis.core.ui.model.graphic.Graphic;
 import org.weasis.core.ui.model.graphic.GraphicSelectionListener;
+import org.weasis.core.ui.model.graphic.imp.area.ObliqueRectangleGraphic;
 import org.weasis.core.ui.model.layer.LayerType;
 import org.weasis.core.ui.model.utils.ImageStatistics;
 import org.weasis.core.ui.model.utils.bean.MeasureItem;
@@ -74,6 +77,7 @@ import org.weasis.core.ui.util.SimpleTableModel;
 import org.weasis.core.ui.util.TableColumnAdjuster;
 import org.weasis.core.ui.util.TableNumberRenderer;
 import org.weasis.core.util.StringUtil;
+import javax.swing.*;
 
 public class MeasureTool extends PluginTool implements GraphicSelectionListener {
   private static final long serialVersionUID = 1117961156637401550L;
@@ -110,6 +114,19 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
     setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     add(getIconsPanel());
     add(getSelectedMeasurePanel());
+    
+    dockable.addCDockableLocationListener(
+            event -> {
+              if (event.isShowingChanged()) {
+                  if(event.getNewShowing()) {
+                	  BundleTools.SYSTEM_PREFERENCES.setProperty("measuretool.maximized", "true");
+                  } else {
+                	  BundleTools.SYSTEM_PREFERENCES.setProperty("measuretool.maximized", "false");
+                  }
+                  BundleTools.saveSystemPreferences();
+              }
+            });
+    
   }
 
   public final JPanel getIconsPanel() {
@@ -120,6 +137,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 
     MeasureTool.buildIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4);
     MeasureTool.buildIconPanel(transform, eventManager, ActionW.DRAW, ActionW.DRAW_GRAPHICS, 4);
+    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4);
 
     transform.add(Box.createVerticalStrut(5));
 
@@ -481,4 +499,81 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
     panelLeft.add(pIcons);
     rootPanel.add(panelLeft);
   }
+  
+  public static void buildAnnotationIconPanel(
+	      JPanel rootPanel,
+	      ImageViewerEventManager<?> eventManager,
+	      ActionW action,
+	      ActionW graphicAction,
+	      int lineLength) {
+	    Optional<ComboItemListener> actionState =
+	        eventManager.getAction(graphicAction, ComboItemListener.class);
+	    if (!actionState.isPresent()) {
+	      return;
+	    }
+
+	    final JPanel pIcons = new JPanel();
+	    pIcons.setBorder(
+	        BorderFactory.createCompoundBorder(
+	            BorderFactory.createEmptyBorder(10, 3, 0, 3),
+	            new TitledBorder(
+	                null,
+	                "custom panel",
+	                TitledBorder.DEFAULT_JUSTIFICATION,
+	                TitledBorder.DEFAULT_POSITION,
+	                FontTools.getFont12Bold(),
+	                Color.GRAY)));
+
+	    JToogleButtonGroup measures = actionState.get().createButtonGroup();
+	    JToggleButton[] items = measures.getJToggleButtonList();
+	    
+//	    List<Graphic> measureGraphicList = new ArrayList<>();
+//	    measureGraphicList.add(new ObliqueRectangleGraphic());
+//	    ComboBoxModelAdapter.setModel(measureGraphicList);
+//	    ComboBoxModelAdapter dataModel = new DefaultComboBoxModel(measureGraphicList);
+//	    groupDate.setModel(dataModel);
+	    
+	    pIcons.setLayout(new GridBagLayout());
+	    for (int i = 0; i < items.length; i++) {
+	    	if(i >= 3) continue;
+	      items[i].addActionListener(
+	          e -> {
+	            ImageViewerPlugin<? extends ImageElement> view =
+	                eventManager.getSelectedView2dContainer();
+	            if (view != null) {
+	              final ViewerToolBar toolBar = view.getViewerToolBar();
+	              if (toolBar != null) {
+	                String cmd = action.cmd();
+	                if (!toolBar.isCommandActive(cmd)) {
+	                  MouseActions mouseActions = eventManager.getMouseActions();
+	                  mouseActions.setAction(MouseActions.T_LEFT, cmd);
+	                  view.setMouseActions(mouseActions);
+	                  toolBar.changeButtonState(MouseActions.T_LEFT, cmd);
+	                }
+	              }
+	            }
+	          });
+	      JLabel jb = new JLabel("MILD");
+	      FontMetrics metrics = jb.getFontMetrics(jb.getFont());
+	      GridBagConstraints constraints = new GridBagConstraints();
+	      if(i == 0) {
+	    	  constraints.insets = new Insets(0, 0, 5, 5);
+	      } else {
+	    	  constraints.insets = new Insets(0, 20, 5, 0);
+	      }
+	      constraints.gridx = i % lineLength;
+	      constraints.gridy = i / lineLength;
+	      Dimension size = items[i].getPreferredSize();
+	      if (size != null && size.width > size.height) {
+	        items[i].setPreferredSize(new Dimension(size.height + 2, size.height));
+	      }
+	      pIcons.add(items[i], constraints);
+	      
+//	      jb.setPreferredSize(new Dimension(metrics.stringWidth(jb.getText()), metrics.getHeight()));
+	      pIcons.add(jb);
+	    }
+	    JPanel panelLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+	    panelLeft.add(pIcons);
+	    rootPanel.add(panelLeft);
+	  }
 }

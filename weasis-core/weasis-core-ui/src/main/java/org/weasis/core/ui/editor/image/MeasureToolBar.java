@@ -46,6 +46,7 @@ import org.weasis.core.ui.model.graphic.imp.angle.OpenAngleToolGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.EllipseGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.ObliqueRectangleGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.PolygonGraphic;
+import org.weasis.core.ui.model.graphic.imp.area.RectangleGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.SelectGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.ThreePointsCircleGraphic;
 import org.weasis.core.ui.model.graphic.imp.line.LineGraphic;
@@ -88,7 +89,7 @@ public class MeasureToolBar extends WtoolBar {
       measureGraphicList.add(new PolylineGraphic());
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new ObliqueRectangleGraphic());
+      measureGraphicList.add(new RectangleGraphic());
     }
     if (p.getBooleanProperty("weasis.measure.ellipse", true)) {
       measureGraphicList.add(new EllipseGraphic());

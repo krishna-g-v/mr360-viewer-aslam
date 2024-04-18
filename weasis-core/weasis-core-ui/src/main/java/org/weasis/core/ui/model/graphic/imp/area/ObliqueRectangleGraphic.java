@@ -46,7 +46,7 @@ public class ObliqueRectangleGraphic extends AbstractDragGraphicArea {
   public static final Integer POINTS_NUMBER = 4;
 
   public static final Icon ICON =
-      new ImageIcon(ObliqueRectangleGraphic.class.getResource("/icon/10x10/draw-rectangle.png"));
+      new ImageIcon(ObliqueRectangleGraphic.class.getResource("/icon/22x22/NAD.png"));
 
   public static final Measurement AREA =
       new Measurement(Messages.getString("measure.area"), 1, true, true, true);
@@ -105,7 +105,7 @@ public class ObliqueRectangleGraphic extends AbstractDragGraphicArea {
 
   @Override
   public String getUIName() {
-    return Messages.getString("MeasureToolBar.rect");
+    return "MILD";
   }
 
   public ObliqueRectangleGraphic buildGraphic(Rectangle2D rectangle) throws InvalidShapeException {
