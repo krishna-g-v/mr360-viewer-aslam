@@ -18,6 +18,7 @@ import java.awt.Dimension;
 import javax.swing.JPanel;
 import org.weasis.core.api.gui.util.GuiExecutor;
 import org.weasis.core.api.gui.util.JMVUtils;
+import org.weasis.core.api.service.BundleTools;
 import org.weasis.core.ui.editor.image.dockable.MiniTool;
 
 public abstract class PluginTool extends JPanel implements DockableTool {
@@ -41,6 +42,10 @@ public abstract class PluginTool extends JPanel implements DockableTool {
 
   public PluginTool(String id, String toolName, Type type, int position) {
     this(id, toolName, null, null, type, position);
+  }
+
+  public PluginTool(String id, String toolName, Type type, int position, boolean maximized) {
+    this(id, toolName, null, maximized ? ExtendedMode.MAXIMIZED : null, type, position);
   }
 
   public PluginTool(
@@ -129,12 +134,18 @@ public abstract class PluginTool extends JPanel implements DockableTool {
 
   private void updateVisibleState() {
     if (!dockable.isVisible()) {
+      if(dockable.getUniqueId().equalsIgnoreCase("Draw & Measure")) {
+    	  if(Boolean.parseBoolean(BundleTools.SYSTEM_PREFERENCES.getProperty("measuretool.maximized")))
+    		  defaultMode = ExtendedMode.MAXIMIZED;
+		  else
+			  defaultMode = null;
+      }
       UIManager.DOCKING_CONTROL.addVetoFocusListener(UIManager.DOCKING_VETO_FOCUS);
       Component component = getToolComponent();
       if (component instanceof MiniTool) {
         JMVUtils.setPreferredWidth(component, getDockableWidth(), getDockableWidth());
       } else {
-        JMVUtils.setPreferredWidth(component, getDockableWidth());
+        JMVUtils.setPreferredWidth(component, getDockableWidth(), getDockableWidth());
       }
       if (dockable.getFocusComponent() == component) {
         UIManager.DOCKING_CONTROL.addDockable(dockable);

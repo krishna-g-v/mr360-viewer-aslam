@@ -46,6 +46,7 @@ import org.weasis.core.ui.model.graphic.imp.angle.OpenAngleToolGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.EllipseGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.ObliqueRectangleGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.PolygonGraphic;
+import org.weasis.core.ui.model.graphic.imp.area.RectangleGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.SelectGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.ThreePointsCircleGraphic;
 import org.weasis.core.ui.model.graphic.imp.line.LineGraphic;
@@ -120,6 +121,107 @@ public class MeasureToolBar extends WtoolBar {
     if (p.getBooleanProperty("weasis.measure.pixelinfo", true)) {
       measureGraphicList.add(new PixelInfoGraphic());
     }
+    
+    // AI Annotation Tools
+//    if (p.getBooleanProperty("weasis.measure.rectangle1", true)) {
+//      measureGraphicList.add(new ObliqueRectangleGraphic(true));
+//    }
+    // index 14 - 18
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Patellofemoral", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Patellofemoral", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Patellofemoral", "Moderate"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Patellofemoral", "Severe"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Patellofemoral", "Others"));
+    }
+
+    // index 19 - 23
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Medial TibioFemoral", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Medial TibioFemoral", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Medial TibioFemoral", "Moderate"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Medial TibioFemoral", "Severe"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Medial TibioFemoral", "Others"));
+    }
+
+    // index 24 - 28
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Lateral TibioFemoral", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Lateral TibioFemoral", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Lateral TibioFemoral", "Moderate"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Lateral TibioFemoral", "Severe"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Lateral TibioFemoral", "Others"));
+    }
+
+    // index 29 - 31
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Joint Effusion", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Joint Effusion", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Joint Effusion", "Others"));
+    }
+
+    // index 32 - 34
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Vascular Calcification", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Vascular Calcification", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Vascular Calcification", "Others"));
+    }
+
+    // index 35 - 37
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Quadriceps Spur", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Quadriceps Spur", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Quadriceps Spur", "Others"));
+    }
+
+    // index 38 - 40
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "OSD", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "OSD", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "OSD", "Others"));
+    }
+
+    
     measureGraphicList.forEach(g -> g.setLayerType(LayerType.MEASURE));
 
     if (p.getBooleanProperty("weasis.draw.selection", true)) {

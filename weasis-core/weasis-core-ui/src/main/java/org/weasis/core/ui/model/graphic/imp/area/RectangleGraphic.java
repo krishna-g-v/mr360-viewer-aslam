@@ -36,7 +36,7 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
   public static final Integer POINTS_NUMBER = 8;
 
   public static final Icon ICON =
-      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/draw-rectangle.png"));
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/draw-rectangle.png"));
 
   public static final Measurement AREA =
       new Measurement(Messages.getString("measure.area"), 1, true, true, true);
@@ -57,6 +57,22 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
 
   protected static final List<Measurement> MEASUREMENT_LIST = new ArrayList<>();
 
+  public boolean asAnnotation = false;
+  public String annotationKey;
+  public String annotationVal;
+
+  public static final Icon NAD_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/nad.png"));
+  public static final Icon MILD_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/mild.png"));
+  public static final Icon MODERATE_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/moderate.png"));
+  public static final Icon SEVERE_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/severe.png"));
+  public static final Icon OTHERS_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/others.png"));
+
+  
   static {
     MEASUREMENT_LIST.add(TOP_LEFT_POINT_X);
     MEASUREMENT_LIST.add(TOP_LEFT_POINT_Y);
@@ -71,9 +87,102 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
   public RectangleGraphic() {
     super(POINTS_NUMBER);
   }
+  public RectangleGraphic(boolean isAnnotation, String key, String val) {
+    this();
+	this.asAnnotation = isAnnotation;
+    this.annotationKey = key;
+    this.annotationVal = val;
+  }
 
   public RectangleGraphic(RectangleGraphic graphic) {
     super(graphic);
+    
+    // assign any properties that are declared in this class separately
+    this.asAnnotation = graphic.asAnnotation;
+    this.annotationKey = graphic.annotationKey;
+    this.annotationVal = graphic.annotationVal;
+    
+    // place a predefined box with fixed points
+    if(this.asAnnotation) {
+    	double x = 0, y = 0, w = 0, h = 0;
+    	
+    	// how to find - x, y, w, h from set of 8 points
+    	// x = x0
+    	// y = y0
+    	// w = x2 - x0
+    	// h = y3 - y0
+    	
+    	switch(this.annotationKey.toLowerCase()) {
+	    	case "patellofemoral" :
+	    		x = 482.191887675507;
+	    		y = 358.74570982839316;
+	    		w = 396.37597;
+	    		h = 129.48517;
+	    		break;
+	    	case "lateral tibiofemoral" :
+	    		x = 578.6546850994076;
+	    		y = 319.295070017849;
+	    		w = 295.4027989;
+	    		h = 200;
+	    		break;
+	    	case "medial tibiofemoral" :
+	    		x = 280.4896260081277;
+	    		y = 318.1292461953591;
+	    		w = 295.4027989;
+	    		h = 200;
+	    		break;
+	    	case "joint effusion" :
+	    		x = 1086.776212832551;
+	    		y = 551.1095461658841;
+	    		w = 259.87636;
+	    		h = 567.49765;
+	    		break;
+	    	case "vascular calcification" :
+	    		x = 381.6418547895059;
+	    		y = 461.6589383770592;
+	    		w = 441.35997;
+	    		h = 956.1507;
+	    		break;
+	    	case "quadriceps spur" :
+	    		x = 1112.2025625381325;
+	    		y = 1057.1439902379498;
+	    		w = 211.47712;
+	    		h = 382.63026;
+	    		break;
+	    	case "osd" :
+	    		x = 542.1984732824429;
+	    		y = 1717.2519083969466;
+	    		w = 223.83206;
+	    		h = 340.70992;
+	    		break;
+			default : break;
+    	}
+    	
+    	
+    	
+    	
+    	Point2D NW = new Point2D.Double(x, y);
+    	Point2D N = new Point2D.Double(x + w / 2, y);
+    	Point2D NE = new Point2D.Double(x + w, y);
+    	Point2D E = new Point2D.Double(x + w, y + h / 2);
+    	Point2D SE = new Point2D.Double(x + w, y + h);
+    	Point2D S = new Point2D.Double(x + w / 2, y + h);
+    	Point2D SW = new Point2D.Double(x, y + h);
+    	Point2D W = new Point2D.Double(x, y + h / 2);
+
+    	    	
+	    pts.add(NW);
+	    pts.add(SE);
+	    pts.add(NE);
+	    pts.add(SW);
+	    pts.add(N);
+	    pts.add(S);
+	    pts.add(E);
+	    pts.add(W);
+	    	    
+	    buildShape(null);
+    }
+
   }
 
   @Override
@@ -83,7 +192,29 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
 
   @Override
   public Icon getIcon() {
-    return ICON;
+	Icon btnIcon = ICON;
+	
+	if(this.asAnnotation) {
+		switch(this.annotationVal.toLowerCase()) {
+			case "normal" :
+				btnIcon = NAD_ICON;
+				break;
+			case "mild" :
+				btnIcon = MILD_ICON;
+				break;
+			case "moderate" :
+				btnIcon = MODERATE_ICON;
+				break;
+			case "severe" :
+				btnIcon = SEVERE_ICON;
+				break;
+			case "others" :
+				btnIcon = OTHERS_ICON;
+				break;
+		}
+	}
+	  
+    return btnIcon;
   }
 
   @Override
@@ -249,6 +380,12 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
         if (stats != null) {
           measVal.addAll(stats);
         }
+        
+        if(this.asAnnotation) {
+        	measVal.add(new MeasureItem(new Measurement("Key", 99, false, false, true), this.annotationKey, ""));
+        	measVal.add(new MeasureItem(new Measurement("Value", 99, false, false, true), this.annotationVal, ""));
+        }
+
         return measVal;
       }
     }

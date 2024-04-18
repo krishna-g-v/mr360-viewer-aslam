@@ -10,6 +10,8 @@
 package org.weasis.core.ui.editor.image.dockable;
 
 import bibliothek.gui.dock.common.CLocation;
+
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -18,6 +20,9 @@ import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Point;
+import java.awt.Robot;
+import java.awt.event.InputEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +54,7 @@ import org.weasis.core.api.gui.util.ToggleButtonListener;
 import org.weasis.core.api.image.util.MeasurableLayer;
 import org.weasis.core.api.image.util.Unit;
 import org.weasis.core.api.media.data.ImageElement;
+import org.weasis.core.api.service.BundleTools;
 import org.weasis.core.api.util.FontTools;
 import org.weasis.core.ui.Messages;
 import org.weasis.core.ui.docking.PluginTool;
@@ -63,6 +69,7 @@ import org.weasis.core.ui.editor.image.ViewerToolBar;
 import org.weasis.core.ui.model.graphic.DragGraphic;
 import org.weasis.core.ui.model.graphic.Graphic;
 import org.weasis.core.ui.model.graphic.GraphicSelectionListener;
+import org.weasis.core.ui.model.graphic.imp.area.ObliqueRectangleGraphic;
 import org.weasis.core.ui.model.layer.LayerType;
 import org.weasis.core.ui.model.utils.ImageStatistics;
 import org.weasis.core.ui.model.utils.bean.MeasureItem;
@@ -90,10 +97,22 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
   private List<DragGraphic> selectedGraphic;
 
   public MeasureTool(ImageViewerEventManager<? extends ImageElement> eventManager) {
-    super(BUTTON_NAME, BUTTON_NAME, PluginTool.Type.TOOL, 30);
+    super(BUTTON_NAME, BUTTON_NAME, PluginTool.Type.TOOL, 30, Boolean.parseBoolean(BundleTools.SYSTEM_PREFERENCES.getProperty("measuretool.maximized")));
     this.eventManager = eventManager;
     this.rootPane = new JScrollPane();
     dockable.setTitleIcon(new ImageIcon(MeasureTool.class.getResource("/icon/16x16/measure.png")));
+    dockable.addCDockableLocationListener(
+            event -> {
+              if (event.isShowingChanged()) {
+                  if(event.getNewShowing()) {
+                	  BundleTools.SYSTEM_PREFERENCES.setProperty("measuretool.maximized", "true");
+                  } else {
+                	  if(event.getNewLocation() != null)
+                		  BundleTools.SYSTEM_PREFERENCES.setProperty("measuretool.maximized", "false");
+                  }
+                  BundleTools.saveSystemPreferences();
+              }
+            });
     setDockableWidth(
         javax.swing.UIManager.getLookAndFeel() != null
             ? javax.swing.UIManager.getLookAndFeel()
@@ -120,6 +139,15 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 
     MeasureTool.buildIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4);
     MeasureTool.buildIconPanel(transform, eventManager, ActionW.DRAW, ActionW.DRAW_GRAPHICS, 4);
+    
+    // AI annotation sections
+    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Patellofemoral", 14, 18);
+    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Medial TibioFemoral", 19, 23);
+    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Lateral TibioFemoral", 24, 28);
+    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Joint Effusion", 29, 31);
+    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Vascular Calcification", 32, 34);
+    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Quadriceps Spur", 35, 37);
+    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "OSD", 38, 40);
 
     transform.add(Box.createVerticalStrut(5));
 
@@ -449,7 +477,9 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
     JToggleButton[] items = measures.getJToggleButtonList();
 
     pIcons.setLayout(new GridBagLayout());
-    for (int i = 0; i < items.length; i++) {
+//    for (int i = 0; i < items.length; i++) { // original
+    int noOfTools = (items.length > 14) ? 14 : items.length;
+    for (int i = 0; i < noOfTools; i++) { // first 14 are the default ones, from 14 onwards they are AI annotation tools
       items[i].addActionListener(
           e -> {
             ImageViewerPlugin<? extends ImageElement> view =
@@ -481,4 +511,65 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
     panelLeft.add(pIcons);
     rootPanel.add(panelLeft);
   }
+  
+  public static void buildAnnotationIconPanel(
+	      JPanel rootPanel,
+	      ImageViewerEventManager<?> eventManager,
+	      ActionW action,
+	      ActionW graphicAction,
+	      int lineLength, String panelTitle, int startIndex, int endIndex) {
+	    Optional<ComboItemListener> actionState =
+	        eventManager.getAction(graphicAction, ComboItemListener.class);
+	    if (!actionState.isPresent()) {
+	      return;
+	    }
+
+	    final JPanel pIcons = new JPanel();
+	    pIcons.setBorder(
+	        BorderFactory.createCompoundBorder(
+	            BorderFactory.createEmptyBorder(10, 3, 0, 3),
+	            new TitledBorder(
+	                null,
+	                panelTitle,
+	                TitledBorder.DEFAULT_JUSTIFICATION,
+	                TitledBorder.DEFAULT_POSITION,
+	                FontTools.getFont12Bold(),
+	                Color.GRAY)));
+
+	    JToogleButtonGroup measures = actionState.get().createButtonGroup();
+	    JToggleButton[] items = measures.getJToggleButtonList();
+	    	    
+	    pIcons.setLayout(new GridBagLayout());
+	    for (int i = startIndex; i <= endIndex; i++) {
+	      items[i].addActionListener(
+	          e -> {
+	            ImageViewerPlugin<? extends ImageElement> view =
+	                eventManager.getSelectedView2dContainer();
+	            if (view != null) {
+	              final ViewerToolBar toolBar = view.getViewerToolBar();
+	              if (toolBar != null) {
+	                String cmd = action.cmd();	                
+	                if (!toolBar.isCommandActive(cmd)) {
+	                  MouseActions mouseActions = eventManager.getMouseActions();
+	                  mouseActions.setAction(MouseActions.T_LEFT, cmd);
+	                  view.setMouseActions(mouseActions);
+	                  toolBar.changeButtonState(MouseActions.T_LEFT, cmd);
+	                }
+	              }
+	            }
+	          });
+	      GridBagConstraints constraints = new GridBagConstraints();
+	      constraints.insets = new Insets(0, 0, 5, 5);
+	      constraints.gridx = i % lineLength;
+	      constraints.gridy = i / lineLength;
+	      Dimension size = items[i].getPreferredSize();
+	      if (size != null && size.width > size.height) {
+	        items[i].setPreferredSize(new Dimension(size.height + 2, size.height));
+	      }
+	      pIcons.add(items[i], constraints);
+	    }
+	    JPanel panelLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+	    panelLeft.add(pIcons);
+	    rootPanel.add(panelLeft);
+	  }
 }

@@ -11,6 +11,7 @@ package org.weasis.core.ui.model.graphic.imp.area;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
+
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.geom.Line2D;
@@ -64,6 +65,8 @@ public class ObliqueRectangleGraphic extends AbstractDragGraphicArea {
       new Measurement(Messages.getString("measure.orientation"), 9, true, true, false);
 
   protected static final List<Measurement> MEASUREMENT_LIST = new ArrayList<>();
+  
+  public boolean asAnnotation = false;
 
   static {
     MEASUREMENT_LIST.add(CENTER_X);
@@ -91,6 +94,28 @@ public class ObliqueRectangleGraphic extends AbstractDragGraphicArea {
 
   public ObliqueRectangleGraphic(ObliqueRectangleGraphic graphic) {
     super(graphic);
+    
+    // assign any properties that are declared in this class separately
+    this.asAnnotation = graphic.asAnnotation;
+    
+    // place a predefined box with fixed points
+    if(this.asAnnotation) {
+	    ptA = new Point2D.Double(200, 1000);
+	    ptB = new Point2D.Double(900, 1000);
+	    ptC = new Point2D.Double(550, 1000);
+	    ptD = new Point2D.Double(550, 1100);
+
+        setHandlePoint(0, ptA);
+        setHandlePoint(1, ptB);
+        setHandlePoint(2, ptC);
+        setHandlePoint(3, ptD);
+        updateTool();
+    }
+  }
+  
+  public ObliqueRectangleGraphic(boolean isAnnotation) {
+    this();
+	this.asAnnotation = isAnnotation;	  
   }
 
   @Override
@@ -296,6 +321,10 @@ public class ObliqueRectangleGraphic extends AbstractDragGraphicArea {
         if (stats != null) {
           measVal.addAll(stats);
         }
+        
+//        if(this.asAnnotation) {
+//        	measVal.add(new MeasureItem(new Measurement("my label", 99, false, false, true), "", ""));
+//        }
         return measVal;
       }
     }

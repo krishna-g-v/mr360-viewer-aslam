@@ -562,7 +562,7 @@ public class DicomModel implements TreeModel, DataExplorerModel {
 	            if (image != null) {
 	              if (seriesGph.contains(img.getTagValue(TagD.get(Tag.SOPInstanceUID)))) {
 	                String annotationsContent = XmlSerializer.writePresentationToString(img);
-	                System.out.println(annotationsContent);
+//	                System.out.println(annotationsContent);
 	                
 	                DefaultMutableTreeNode studyNode = (DefaultMutableTreeNode) node.getParent().getParent();
 	                String accessionNo = TagD.getTagValue((MediaSeriesGroup) studyNode.getUserObject(), Tag.AccessionNumber, String.class);
