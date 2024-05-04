@@ -47,10 +47,10 @@ public class MouseActions {
                 | SCROLL_MASK);
     this.left =
         BundleTools.SYSTEM_PREFERENCES.getProperty(
-            "weasis.toolbar.mouse.left", ActionW.SCROLL_SERIES.cmd());
+            "weasis.toolbar.mouse.left", ActionW.PAN.cmd());
     this.middle =
         BundleTools.SYSTEM_PREFERENCES.getProperty(
-            "weasis.toolbar.mouse.middle", ActionW.PAN.cmd());
+            "weasis.toolbar.mouse.middle", ActionW.SCROLL_SERIES.cmd());
     this.right =
         BundleTools.SYSTEM_PREFERENCES.getProperty(
             "weasis.toolbar.mouse.right", ActionW.ZOOM.cmd());

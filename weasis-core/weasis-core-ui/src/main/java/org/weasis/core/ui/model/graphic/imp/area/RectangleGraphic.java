@@ -58,6 +58,7 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
   protected static final List<Measurement> MEASUREMENT_LIST = new ArrayList<>();
 
   public boolean asAnnotation = false;
+  public String annotationSide;
   public String annotationKey;
   public String annotationVal;
 
@@ -72,7 +73,27 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
   public static final Icon OTHERS_ICON =
 	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/others.png"));
 
-  
+  public static final Icon AP_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/ap.png"));
+  public static final Icon W_AP_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/w_ap.png"));
+  public static final Icon L_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/l.png"));
+  public static final Icon S_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/s.png"));
+  public static final Icon A_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/a.png"));
+  public static final Icon AP_G_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/ap_g.png"));
+  public static final Icon T1_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/t1.png"));
+  public static final Icon T2_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/t2.png"));
+  public static final Icon T3_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/t3.png"));
+  public static final Icon T4_ICON =
+	      new ImageIcon(RectangleGraphic.class.getResource("/icon/10x10/t4.png"));
+
   static {
     MEASUREMENT_LIST.add(TOP_LEFT_POINT_X);
     MEASUREMENT_LIST.add(TOP_LEFT_POINT_Y);
@@ -87,9 +108,10 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
   public RectangleGraphic() {
     super(POINTS_NUMBER);
   }
-  public RectangleGraphic(boolean isAnnotation, String key, String val) {
+  public RectangleGraphic(boolean isAnnotation, String side, String key, String val) {
     this();
 	this.asAnnotation = isAnnotation;
+    this.annotationSide = side;
     this.annotationKey = key;
     this.annotationVal = val;
   }
@@ -99,6 +121,7 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
     
     // assign any properties that are declared in this class separately
     this.asAnnotation = graphic.asAnnotation;
+    this.annotationSide = graphic.annotationSide;
     this.annotationKey = graphic.annotationKey;
     this.annotationVal = graphic.annotationVal;
     
@@ -113,6 +136,12 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
     	// h = y3 - y0
     	
     	switch(this.annotationKey.toLowerCase()) {
+	    	case "view" :
+	    		x = 10;
+	    		y = 10;
+	    		w = 2;
+	    		h = 2;
+	    		break;    	
 	    	case "patellofemoral" :
 	    		x = 482.191887675507;
 	    		y = 358.74570982839316;
@@ -155,7 +184,48 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
 	    		w = 223.83206;
 	    		h = 340.70992;
 	    		break;
-			default : break;
+
+	    	case "ap ghj" :
+	    		x = 1456.7183811129848;
+	    		y = 670.643338954469;
+	    		w = 252.95109;
+	    		h = 376.05396;
+	    		break;
+	    	case "ap acj" :
+	    		x = 1591.6256323777404;
+	    		y = 412.633220910624;
+	    		w = 286.94222;
+	    		h = 210.79258;
+	    		break;
+	    	case "ap sac" :
+	    		x = 1891.9726633922016;
+	    		y = 653.8553219700459;
+	    		w = 161.7103;
+	    		h = 234.32595;
+	    		break;
+
+	    	
+	    	case "apg ghj" :
+	    		x = 520.7323892519969;
+	    		y = 511.25115645148674;
+	    		w = 207.69789;
+	    		h = 380.42858;
+	    		break;
+	    	case "apg sac" :
+	    		x = 634.6973342986008;
+	    		y = 396.50896327792105;
+	    		w = 404.55357;
+	    		h = 290.37774;
+	    		break;
+	    	case "as" :
+	    		x = 1194.0094412345948;
+	    		y = 740.2246317357879;
+	    		w = 396.37596;
+	    		h = 341.90529;
+	    		break;
+
+	    	
+	    	default : break;
     	}
     	
     	
@@ -210,6 +280,36 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
 				break;
 			case "others" :
 				btnIcon = OTHERS_ICON;
+				break;
+			case "ap" :
+				btnIcon = AP_ICON;
+				break;
+			case "w_ap" :
+				btnIcon = W_AP_ICON;
+				break;
+			case "l" :
+				btnIcon = L_ICON;
+				break;
+			case "s" :
+				btnIcon = S_ICON;
+				break;
+			case "a" :
+				btnIcon = A_ICON;
+				break;
+			case "ap_g" :
+				btnIcon = AP_G_ICON;
+				break;
+			case "t1" :
+				btnIcon = T1_ICON;
+				break;
+			case "t2" :
+				btnIcon = T2_ICON;
+				break;
+			case "t3" :
+				btnIcon = T3_ICON;
+				break;
+			case "t4" :
+				btnIcon = T4_ICON;
 				break;
 		}
 	}
@@ -382,6 +482,7 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
         }
         
         if(this.asAnnotation) {
+        	measVal.add(new MeasureItem(new Measurement("Side", 99, false, false, true), this.annotationSide, ""));
         	measVal.add(new MeasureItem(new Measurement("Key", 99, false, false, true), this.annotationKey, ""));
         	measVal.add(new MeasureItem(new Measurement("Value", 99, false, false, true), this.annotationVal, ""));
         }

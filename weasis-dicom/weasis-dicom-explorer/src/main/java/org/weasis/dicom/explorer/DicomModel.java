@@ -22,6 +22,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -569,8 +570,10 @@ public class DicomModel implements TreeModel, DataExplorerModel {
 	                String patientId = TagD.getTagValue(img, Tag.PatientID, String.class);
 	      		  	String patientName = TagD.getTagValue(img, Tag.PatientName, String.class);
 	      		  	String sopInstanceUID = TagD.getTagValue(img, Tag.SOPInstanceUID, String.class);
+	      		  	String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
+	      		  	String profileName = Paths.get(prefPath).getFileName().toString();
 	                
-	      		  	sendXMLcontent(annotationsContent, accessionNo, patientId, patientName, sopInstanceUID);
+	      		  	sendXMLcontent(annotationsContent, accessionNo, patientId, patientName, sopInstanceUID, profileName);
 	                
 	              }
 	            } else {
@@ -587,7 +590,7 @@ public class DicomModel implements TreeModel, DataExplorerModel {
 	    }
   }
   
-  public void sendXMLcontent(String xmlData, String accessionNo, String patientId, String patientName, String sopInstanceUID) {
+  public void sendXMLcontent(String xmlData, String accessionNo, String patientId, String patientName, String sopInstanceUID, String profileName) {
 	  try {
 		  URL url = new URL("http://viewer-updater.medreport360.com/ko_objects/annotations.php");
 	      Map<String,Object> params = new LinkedHashMap<>();
@@ -596,6 +599,7 @@ public class DicomModel implements TreeModel, DataExplorerModel {
 	      params.put("patientName", patientName);
 	      params.put("sopInstanceUID", sopInstanceUID);
 	      params.put("xmlData", xmlData);
+	      params.put("profileName", profileName);
 	      
 	      StringBuilder postData = new StringBuilder();
 	      for (Map.Entry<String,Object> param : params.entrySet()) {

@@ -17,6 +17,7 @@ import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,6 +31,7 @@ import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.event.ListDataEvent;
@@ -45,7 +47,9 @@ import org.weasis.core.api.gui.util.GroupPopup;
 import org.weasis.core.api.gui.util.GroupRadioMenu;
 import org.weasis.core.api.gui.util.RadioMenuItem;
 import org.weasis.core.api.media.data.ImageElement;
+import org.weasis.core.api.media.data.MediaSeries;
 import org.weasis.core.api.service.BundlePreferences;
+import org.weasis.core.api.service.BundleTools;
 import org.weasis.core.api.service.WProperties;
 import org.weasis.core.ui.Messages;
 import org.weasis.core.ui.util.WtoolBar;
@@ -219,6 +223,40 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
 
       add(btn_1x2);
 
+      // AI enable/disable
+      String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
+  	  String profileName = Paths.get(prefPath).getFileName().toString();
+  	  if(profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || profileName.equalsIgnoreCase("update201@mail.com")) {
+	      final JToggleButton ai_view = new JToggleButton();
+	      ai_view.setToolTipText("AI View");
+	      ai_view.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/12i.png")));
+	      ai_view.addActionListener(new ActionListener () {
+	        public void actionPerformed(ActionEvent e) {
+	        	AbstractButton abstractButton = (AbstractButton) e.getSource();
+	            boolean selected = abstractButton.getModel().isSelected();
+	            
+	            // Using manual link key feature
+	            if(selected) {
+		        	DefaultView2d.aiViewEnabled = true;
+		        	eventManager.getAction(ActionW.SYNCH, ComboItemListener.class).orElse(null).setSelectedItem(SynchView.DEFAULT_STACK); // select stack mode
+	            } else {
+	            	DefaultView2d.aiViewEnabled = false;
+	            	DefaultView2d.referenceIndex = 0; //resetting here when manual link scroll is unchecked
+	            }
+	            
+	            ImageViewerPlugin viewerContainer = eventManager.getSelectedView2dContainer();
+	            MediaSeries<E> viewerDicomSeries = viewerContainer.getSelectedImagePane().getSeries();
+	            if(viewerDicomSeries.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase())) {
+	            	ComboItemListener synchAction = eventManager.getAction(ActionW.SYNCH, ComboItemListener.class).orElse(null);
+	                eventManager.updateAllListeners(viewerContainer,
+	                		synchAction == null ? SynchView.NONE : (SynchView) synchAction.getSelectedItem());
+	            }
+	        }
+	      });
+	      add(ai_view);
+  	  }
+      
+      
       final JButton btn_1x3 = new JButton();
       btn_1x3.setToolTipText("1x3 View");
       btn_1x3.setIcon(new ImageIcon(WtoolBar.class.getResource("/icon/16x16/13.png")));

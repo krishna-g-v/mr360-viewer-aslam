@@ -23,6 +23,7 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -119,7 +120,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
                     .getClass()
                     .getName()
                     .startsWith("org.pushingpixels")
-                ? 190
+                ? 290
                 : 205
             : 205);
     jbInit();
@@ -140,14 +141,32 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
     MeasureTool.buildIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4);
     MeasureTool.buildIconPanel(transform, eventManager, ActionW.DRAW, ActionW.DRAW_GRAPHICS, 4);
     
-    // AI annotation sections
-    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Patellofemoral", 14, 18);
-    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Medial TibioFemoral", 19, 23);
-    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Lateral TibioFemoral", 24, 28);
-    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Joint Effusion", 29, 31);
-    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Vascular Calcification", 32, 34);
-    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Quadriceps Spur", 35, 37);
-    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "OSD", 38, 40);
+    String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
+	String profileName = Paths.get(prefPath).getFileName().toString();
+	
+	// get the study description and filter the pathologies as per the study - knee, shoulder, etc.
+	
+	if(profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || profileName.equalsIgnoreCase("update201@mail.com")) {
+	    // AI annotation sections
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Knee Views", 14, 21);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Patellofemoral", 22, 31);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Medial TibioFemoral", 32, 41);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Lateral TibioFemoral", 42, 51);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Joint Effusion", 52, 57);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Vascular Calcification", 58, 63);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Quadriceps Spur", 64, 69);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "OSD", 70, 75);
+	    
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Shoudler Views", 76, 83);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP GHJ", 84, 93);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP ACJ", 94, 103);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP SAC", 104, 109);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G GHJ", 110, 119);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G ACJ", 110, 119);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G SAC", 120, 125);
+	    MeasureTool.buildAnnotationIconPanel(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AS", 126, 135);
+
+	}
 
     transform.add(Box.createVerticalStrut(5));
 
@@ -524,10 +543,10 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 	      return;
 	    }
 
-	    final JPanel pIcons = new JPanel();
-	    pIcons.setBorder(
+	    JPanel panelLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+	    panelLeft.setBorder(
 	        BorderFactory.createCompoundBorder(
-	            BorderFactory.createEmptyBorder(10, 3, 0, 3),
+	        	BorderFactory.createEmptyBorder(0, 3, 0, 3),
 	            new TitledBorder(
 	                null,
 	                panelTitle,
@@ -536,40 +555,78 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 	                FontTools.getFont12Bold(),
 	                Color.GRAY)));
 
-	    JToogleButtonGroup measures = actionState.get().createButtonGroup();
-	    JToggleButton[] items = measures.getJToggleButtonList();
-	    	    
-	    pIcons.setLayout(new GridBagLayout());
-	    for (int i = startIndex; i <= endIndex; i++) {
-	      items[i].addActionListener(
-	          e -> {
-	            ImageViewerPlugin<? extends ImageElement> view =
-	                eventManager.getSelectedView2dContainer();
-	            if (view != null) {
-	              final ViewerToolBar toolBar = view.getViewerToolBar();
-	              if (toolBar != null) {
-	                String cmd = action.cmd();	                
-	                if (!toolBar.isCommandActive(cmd)) {
-	                  MouseActions mouseActions = eventManager.getMouseActions();
-	                  mouseActions.setAction(MouseActions.T_LEFT, cmd);
-	                  view.setMouseActions(mouseActions);
-	                  toolBar.changeButtonState(MouseActions.T_LEFT, cmd);
-	                }
-	              }
-	            }
-	          });
-	      GridBagConstraints constraints = new GridBagConstraints();
-	      constraints.insets = new Insets(0, 0, 5, 5);
-	      constraints.gridx = i % lineLength;
-	      constraints.gridy = i / lineLength;
-	      Dimension size = items[i].getPreferredSize();
-	      if (size != null && size.width > size.height) {
-	        items[i].setPreferredSize(new Dimension(size.height + 2, size.height));
-	      }
-	      pIcons.add(items[i], constraints);
-	    }
-	    JPanel panelLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-	    panelLeft.add(pIcons);
+//	    for(int k=0; k<2; k++) {
+//	    	String subPanelTitle = (k == 0) ? "Right" : "Left";
+	    	final JPanel pRightIcons = new JPanel();
+	    	pRightIcons.setBorder(
+		        BorderFactory.createCompoundBorder(
+		            BorderFactory.createEmptyBorder(0, 3, 0, 3),
+		            new TitledBorder(
+		                null,
+		                "Right",
+		                TitledBorder.DEFAULT_JUSTIFICATION,
+		                TitledBorder.DEFAULT_POSITION,
+		                FontTools.getFont10(),
+		                Color.GRAY)));
+		    pRightIcons.setLayout(new GridBagLayout());
+
+	    	final JPanel pLeftIcons = new JPanel();
+	    	pLeftIcons.setBorder(
+		        BorderFactory.createCompoundBorder(
+		            BorderFactory.createEmptyBorder(0, 3, 0, 3),
+		            new TitledBorder(
+		                null,
+		                "Left",
+		                TitledBorder.DEFAULT_JUSTIFICATION,
+		                TitledBorder.DEFAULT_POSITION,
+		                FontTools.getFont10(),
+		                Color.GRAY)));
+		    pLeftIcons.setLayout(new GridBagLayout());
+
+		    
+		    
+		    JToogleButtonGroup measures = actionState.get().createButtonGroup();
+		    JToggleButton[] items = measures.getJToggleButtonList();
+		    
+		    int midIndx = (startIndex + endIndex) / 2;
+		    for (int i = startIndex; i <= endIndex; i++) {		      
+		      items[i].addActionListener(
+		          e -> {
+		            ImageViewerPlugin<? extends ImageElement> view =
+		                eventManager.getSelectedView2dContainer();
+		            if (view != null) {
+		              final ViewerToolBar toolBar = view.getViewerToolBar();
+		              if (toolBar != null) {
+		                String cmd = action.cmd();	                
+		                if (!toolBar.isCommandActive(cmd)) {
+		                  MouseActions mouseActions = eventManager.getMouseActions();
+		                  mouseActions.setAction(MouseActions.T_LEFT, cmd);
+		                  view.setMouseActions(mouseActions);
+		                  toolBar.changeButtonState(MouseActions.T_LEFT, cmd);
+		                }
+		              }
+		            }
+		          });
+		      GridBagConstraints constraints = new GridBagConstraints();
+		      constraints.insets = new Insets(0, 0, 5, 5);
+		      constraints.gridx = i % lineLength;
+		      constraints.gridy = i / lineLength;
+		      Dimension size = items[i].getPreferredSize();
+		      if (size != null && size.width > size.height) {
+		        items[i].setPreferredSize(new Dimension(size.height + 2, size.height));
+		      }
+		      if( i <= midIndx ) {
+		    	  pRightIcons.add(items[i]);
+		      } else {
+		    	  pLeftIcons.add(items[i]);
+		      }
+		      
+		      
+		    }
+	//	    JPanel panelLeft = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		    panelLeft.add(pRightIcons);
+		    panelLeft.add(pLeftIcons);
+//	    }
 	    rootPanel.add(panelLeft);
 	  }
 }

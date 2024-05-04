@@ -126,99 +126,466 @@ public class MeasureToolBar extends WtoolBar {
 //    if (p.getBooleanProperty("weasis.measure.rectangle1", true)) {
 //      measureGraphicList.add(new ObliqueRectangleGraphic(true));
 //    }
-    // index 14 - 18
+    
+    // index 14 - 17
+    // Right
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Patellofemoral", "Normal"));
+	  measureGraphicList.add(new RectangleGraphic(true, "Right", "View", "AP"));
+	}
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Right", "View", "W_AP"));
+	}
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Right", "View", "L"));
+	}
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Right", "View", "S"));
+	}
+    // index 18 - 21
+    // Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Left", "View", "AP"));
+	}
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Left", "View", "W_AP"));
+	}
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Left", "View", "L"));
+	}
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Left", "View", "S"));
+	}
+    
+    // index 22 - 26
+    // Right
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Patellofemoral", "Normal"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Patellofemoral", "Mild"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Patellofemoral", "Mild"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Patellofemoral", "Moderate"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Patellofemoral", "Moderate"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Patellofemoral", "Severe"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Patellofemoral", "Severe"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Patellofemoral", "Others"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Patellofemoral", "Others"));
+    }
+    // index 27 - 31
+    // Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Patellofemoral", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Left", "Patellofemoral", "Mild"));
+	}
+	if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Left", "Patellofemoral", "Moderate"));
+	}
+	if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Left", "Patellofemoral", "Severe"));
+	}
+	if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Left", "Patellofemoral", "Others"));
+	}
+    
+    // index 32 - 36
+	// Right
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Medial TibioFemoral", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Medial TibioFemoral", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Medial TibioFemoral", "Moderate"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Medial TibioFemoral", "Severe"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Medial TibioFemoral", "Others"));
+    }
+    // index 37 - 41
+	// Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Medial TibioFemoral", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Medial TibioFemoral", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Medial TibioFemoral", "Moderate"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Medial TibioFemoral", "Severe"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Medial TibioFemoral", "Others"));
     }
 
-    // index 19 - 23
+    // index 42 - 46
+	// Right
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Medial TibioFemoral", "Normal"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Lateral TibioFemoral", "Normal"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Medial TibioFemoral", "Mild"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Lateral TibioFemoral", "Mild"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Medial TibioFemoral", "Moderate"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Lateral TibioFemoral", "Moderate"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Medial TibioFemoral", "Severe"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Lateral TibioFemoral", "Severe"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Medial TibioFemoral", "Others"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Lateral TibioFemoral", "Others"));
     }
-
-    // index 24 - 28
+    // index 47 - 51
+    // Left
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Lateral TibioFemoral", "Normal"));
-    }
-    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Lateral TibioFemoral", "Mild"));
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Lateral TibioFemoral", "Normal"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Lateral TibioFemoral", "Moderate"));
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Lateral TibioFemoral", "Mild"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Lateral TibioFemoral", "Severe"));
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Lateral TibioFemoral", "Moderate"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Lateral TibioFemoral", "Others"));
-    }
-
-    // index 29 - 31
-    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Joint Effusion", "Normal"));
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Lateral TibioFemoral", "Severe"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Joint Effusion", "Mild"));
-    }
-    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Joint Effusion", "Others"));
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Lateral TibioFemoral", "Others"));
     }
 
-    // index 32 - 34
+    // index 52 - 54
+    // Right
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Vascular Calcification", "Normal"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Joint Effusion", "Normal"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Vascular Calcification", "Mild"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Joint Effusion", "Mild"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Vascular Calcification", "Others"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Joint Effusion", "Others"));
+    }
+    // index 55 - 57
+    // Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Joint Effusion", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Joint Effusion", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Joint Effusion", "Others"));
+    }
+    
+    // index 58 - 60
+    // Right
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Vascular Calcification", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Vascular Calcification", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Vascular Calcification", "Others"));
+    }
+    // index 61 - 63
+    // Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Vascular Calcification", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Vascular Calcification", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Vascular Calcification", "Others"));
+    }
+    
+
+    // index 64 - 66
+    // Right
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Quadriceps Spur", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Quadriceps Spur", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "Quadriceps Spur", "Others"));
+    }
+    // index 67 - 69
+    // Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Quadriceps Spur", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Quadriceps Spur", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "Quadriceps Spur", "Others"));
     }
 
-    // index 35 - 37
+    // index 70 - 72
+    // Right    
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Quadriceps Spur", "Normal"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "OSD", "Normal"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Quadriceps Spur", "Mild"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "OSD", "Mild"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "Quadriceps Spur", "Others"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "OSD", "Others"));
+    }
+    // index 73 - 75
+    // Left    
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "OSD", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "OSD", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "OSD", "Others"));
     }
 
-    // index 38 - 40
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    // index 76 - 79
+    // Right
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "OSD", "Normal"));
+	  measureGraphicList.add(new RectangleGraphic(true, "Right", "View", "AP"));
+	}
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Right", "View", "AP_G"));
+	}
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Right", "View", "L"));
+	}
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Right", "View", "A"));
+	}
+    // index 80 - 83
+    // Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Left", "View", "AP"));
+	}
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Left", "View", "AP_G"));
+	}
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Left", "View", "L"));
+	}
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+	  measureGraphicList.add(new RectangleGraphic(true, "Left", "View", "A"));
+	}
+
+    
+    // index 84 - 88
+	// Right
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP GHJ", "Normal"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "OSD", "Mild"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP GHJ", "Mild"));
     }
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
-      measureGraphicList.add(new RectangleGraphic(true, "OSD", "Others"));
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP GHJ", "Moderate"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP GHJ", "Severe"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP GHJ", "Others"));
+    }
+    // index 89 - 93
+    // Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP GHJ", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP GHJ", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP GHJ", "Moderate"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP GHJ", "Severe"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP GHJ", "Others"));
+    }
+
+    
+    // index 94 - 98
+	// Right
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP ACJ", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP ACJ", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP ACJ", "Moderate"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP ACJ", "Severe"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP ACJ", "Others"));
+    }
+    // index 99 - 103
+    // Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP ACJ", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP ACJ", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP ACJ", "Moderate"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP ACJ", "Severe"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP ACJ", "Others"));
+    }
+
+    
+    // index 104 - 106
+	// Right
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP SAC", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP SAC", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AP SAC", "Others"));
+    }
+    // index 107 - 109
+    // Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP SAC", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP SAC", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AP SAC", "Others"));
+    }
+
+
+    // index 110 - 114
+	// Right
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "APG GHJ", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "APG GHJ", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "APG GHJ", "Moderate"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "APG GHJ", "Severe"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "APG GHJ", "Others"));
+    }
+    // index 115 - 119
+    // Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "APG GHJ", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "APG GHJ", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "APG GHJ", "Moderate"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "APG GHJ", "Severe"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "APG GHJ", "Others"));
+    }
+
+    
+    // index 120 - 122
+	// Right
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "APG SAC", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "APG SAC", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "APG SAC", "Others"));
+    }
+    // index 123 - 125
+    // Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "APG SAC", "Normal"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "APG SAC", "Mild"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "APG SAC", "Others"));
+    }
+
+    
+    // index 126 - 130
+	// Right
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AS", "T1"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AS", "T2"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AS", "T3"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AS", "T4"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Right", "AS", "Others"));
+    }
+    // index 131 - 135
+    // Left
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AS", "T1"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AS", "T2"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AS", "T3"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AS", "T4"));
+    }
+    if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
+      measureGraphicList.add(new RectangleGraphic(true, "Left", "AS", "Others"));
     }
 
     

@@ -182,7 +182,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   public static boolean synchViewByDefault = false;
   
   public static boolean manualLinkBtnPressed = false;
-  
+  public static boolean aiViewEnabled = false;
   
   protected final FocusHandler focusHandler = new FocusHandler();
   protected GraphicMouseHandler<E> graphicMouseHandler;
@@ -620,6 +620,16 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
       E oldImage = imageLayer.getSourceImage();
       if (!img.equals(oldImage)) {
         updateGraphics = true;
+        
+        // Controlling AI view graphic model
+        List<ViewCanvas<E>> view2ds = eventManager.getSelectedView2dContainer().getImagePanels();
+        SynchView synchView = (SynchView) eventManager.getAction(ActionW.SYNCH, ComboItemListener.class).get().getSelectedItem();
+        
+        if (view2ds.size() == 2 && this == view2ds.get(0) && aiViewEnabled) {
+        	view2ds.get(0).setGraphicManager(new XmlGraphicModel(img));
+        	updateGraphics = false;
+  	  	}
+        
         actionsInView.put(ActionW.SPATIAL_UNIT.cmd(), img.getPixelSpacingUnit());
         if (eventManager.getSelectedViewPane() == this) {
           ActionState spUnitAction = eventManager.getAction(ActionW.SPATIAL_UNIT);
@@ -1123,7 +1133,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
             // }
             
             // for manual link and scroll 
-            if(series.getToolTips().toUpperCase().contains("Modality: CT".toUpperCase()) && manualLinkBtnPressed && !synchViewByDefault) {
+            if((series.getToolTips().toUpperCase().contains("Modality: CT".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase())) && (manualLinkBtnPressed || aiViewEnabled) && !synchViewByDefault) {
 //           	 int y = ((SliderChangeListener) this.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class).get()).getSliderValue() - 1;
            	 	int synchSeriesIndex = ((SynchEvent) evt.getNewValue()).getView().getFrameIndex();
                 int SelectedSeriesIndex = this.getFrameIndex();
