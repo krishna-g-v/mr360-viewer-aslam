@@ -317,9 +317,9 @@ public class LocalExport extends AbstractItemDialogPage implements ExportDicom {
                   new ObservableEvent(
                       ObservableEvent.BasicAction.LOADING_START, dicomModel, null, this));
               if (EXPORT_FORMAT[0].equals(format)) {
-                writeDicom(this, exportDir, model, false);
-              } else if (EXPORT_FORMAT[1].equals(format)) {
                 writeDicom(this, exportDir, model, true);
+              } else if (EXPORT_FORMAT[1].equals(format)) {
+                writeDicom(this, exportDir, model, false);
               } else {
                 writeOther(this, exportDir, model, format);
               }

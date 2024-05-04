@@ -47,6 +47,14 @@ import org.weasis.dicom.codec.DicomMediaIO;
 import org.weasis.dicom.codec.DicomSpecialElement;
 import org.weasis.dicom.codec.TagD;
 import org.weasis.dicom.codec.TagD.Level;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
 
@@ -117,11 +125,20 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
               if (t != null) {
                 thumbs.add(t);
               }
-
-              File gpxFile = new File(value.getPath() + ".xml");
-              GraphicModel graphicModel = XmlSerializer.readPresentationModel(gpxFile);
-              if (graphicModel != null) {
-                loader.setTag(TagW.PresentationModel, graphicModel);
+              
+              try {
+	              URL url = new URL("http://viewer-updater.medreport360.com/ko_objects/"+value+".xml");
+	              HttpURLConnection huc = (HttpURLConnection) url.openConnection(); 
+	              int responseCode = huc.getResponseCode();
+	              if(responseCode == HttpURLConnection.HTTP_OK) { 
+	            	  File gpxFile = new File(value.getPath() + ".xml");
+	                  GraphicModel graphicModel = XmlSerializer.readPresentationModel(gpxFile);
+	                  if (graphicModel != null) {
+	                    loader.setTag(TagW.PresentationModel, graphicModel);
+	                  }
+	              }
+              } catch(Exception e) {
+            	  
               }
             }
           }

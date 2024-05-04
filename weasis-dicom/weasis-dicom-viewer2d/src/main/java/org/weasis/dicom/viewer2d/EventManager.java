@@ -551,6 +551,7 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
       public void mouseWheelMoved(MouseWheelEvent e) {
         if (isActionEnabled()) {
           DefaultView2d.zoomEvent = false;
+          DefaultView2d.evtAction = getActionW().getTitle();
           Optional<ComboItemListener> synchAction = getAction(ActionW.SYNCH, ComboItemListener.class);
 
           SynchView synchView =
@@ -1375,11 +1376,14 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
               MediaSeries<DicomImageElement> s = pane.getSeries();
               String seriesModality = TagD.getTagValue(s, Tag.Modality, String.class);
               boolean specialView = pane instanceof MipView;
-              if ((s != null && fruid != null && val != null && !specialView) || (seriesModality != null && seriesModality.equals("CT") && DefaultView2d.manualLinkBtnPressed)) {
-                boolean synchByDefault = fruid.equals(TagD.getTagValue(s, Tag.FrameOfReferenceUID));
-                DefaultView2d.synchViewByDefault = synchByDefault;
+              if ((s != null && fruid != null && val != null && !specialView) || (seriesModality != null && (seriesModality.equals("CT") || seriesModality.equals("CR")) && (DefaultView2d.manualLinkBtnPressed || DefaultView2d.aiViewEnabled))) {
+            	  boolean synchByDefault = false;
+            	  if(fruid != null) {
+                	synchByDefault = fruid.equals(TagD.getTagValue(s, Tag.FrameOfReferenceUID));
+                	DefaultView2d.synchViewByDefault = synchByDefault;
+                }
                 oldSynch = (SynchData) pane.getActionValue(ActionW.SYNCH_LINK.cmd());
-                if (synchByDefault || (seriesModality != null && seriesModality.equals("CT") && DefaultView2d.manualLinkBtnPressed)) {
+                if (synchByDefault || (seriesModality != null && (seriesModality.equals("CT") || seriesModality.equals("CR")) && (DefaultView2d.manualLinkBtnPressed || DefaultView2d.aiViewEnabled))) {
                   if (ImageOrientation.hasSameOrientation(series, s)) {
                     pane.setActionsInView(ActionW.SYNCH_CROSSLINE.cmd(), false);
                     // Only fully synch if no PR is applied (because can change pixel size)
@@ -1492,10 +1496,10 @@ public class EventManager extends ImageViewerEventManager<DicomImageElement>
   public void savePreferences(BundleContext bundleContext) {
     Preferences prefs = BundlePreferences.getDefaultPreferences(bundleContext);
     zoomSetting.savePreferences(prefs);
-    if(!ViewerToolBar.mouseActionsSaved) {
+    // if(!ViewerToolBar.mouseActionsSaved) {
     	// Mouse buttons preferences
-    	mouseActions.savePreferences(prefs);
-    }
+    	// mouseActions.savePreferences(prefs);
+    // }
     if (prefs != null) {
       // Mouse sensitivity
       Preferences prefNode = prefs.node("mouse.sensivity");
