@@ -40,6 +40,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -54,6 +55,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -62,6 +64,7 @@ import javax.swing.TransferHandler;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
+import javax.swing.JPanel;
 import org.opencv.core.CvType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,6 +99,7 @@ import org.weasis.core.api.media.data.SeriesComparator;
 import org.weasis.core.api.media.data.TagW;
 import org.weasis.core.api.service.AuditLog;
 import org.weasis.core.api.util.FontTools;
+import org.weasis.core.api.media.data.TagW;
 import org.weasis.core.ui.Messages;
 import org.weasis.core.ui.docking.DockableTool;
 import org.weasis.core.ui.docking.UIManager;
@@ -109,6 +113,7 @@ import org.weasis.core.ui.model.graphic.DragGraphic;
 import org.weasis.core.ui.model.graphic.Graphic;
 import org.weasis.core.ui.model.graphic.GraphicSelectionListener;
 import org.weasis.core.ui.model.imp.XmlGraphicModel;
+import org.weasis.core.ui.model.layer.GraphicLayer;
 import org.weasis.core.ui.model.layer.LayerAnnotation;
 import org.weasis.core.ui.model.layer.LayerType;
 import org.weasis.core.ui.model.layer.imp.RenderedImageLayer;
@@ -118,6 +123,7 @@ import org.weasis.core.ui.model.utils.bean.PanPoint;
 import org.weasis.core.ui.model.utils.bean.PanPoint.State;
 import org.weasis.core.ui.model.utils.imp.DefaultViewModel;
 import org.weasis.core.ui.pref.Monitor;
+import org.weasis.core.ui.serialize.XmlSerializer;
 import org.weasis.core.ui.util.DefaultAction;
 import org.weasis.core.ui.util.MouseEventDouble;
 import org.weasis.core.ui.util.TitleMenuItem;
@@ -126,6 +132,7 @@ import org.weasis.core.util.StringUtil;
 import org.weasis.opencv.data.PlanarImage;
 import org.weasis.core.api.media.data.MediaElement;
 import org.weasis.core.api.gui.util.SliderCineListener;
+import org.weasis.core.ui.editor.image.dockable.MeasureTool;
 /**
  * @author Nicolas Roduit
  * @author Benoit Jacquemoud
@@ -465,7 +472,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   public void setSeries(MediaSeries<E> newSeries, E selectedMedia) {
     MediaSeries<E> oldsequence = this.series;
     this.series = newSeries;
-
+    
     if (oldsequence == null && newSeries == null) {
       return;
     }
@@ -508,6 +515,19 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
     // Set the sequence to the state OPEN
     if (newSeries != null) {
       newSeries.setOpen(true);
+    }
+    
+    // Enable/disable study tables based on selection series type
+    List<JPanel> iconsTabPanels = MeasureTool.iconsTables;
+    String studyDesciption = newSeries.getToolTips().toLowerCase().split("study: ")[1].split("<br>")[0];
+    if(iconsTabPanels != null && iconsTabPanels.size() > 0) {
+	    for(JPanel iconsTabPanel : iconsTabPanels) {
+	    	if(studyDesciption.contains(iconsTabPanel.getName())) {
+	    		iconsTabPanel.setVisible(true);
+		    } else {
+		    	iconsTabPanel.setVisible(false);
+		    }
+	    }
     }
   }
 
@@ -618,6 +638,14 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
       closeLens();
     } else {
       E oldImage = imageLayer.getSourceImage();
+//      if(oldImage == null) {
+    	  GraphicModel modelLiest = (GraphicModel) img.getTagValue(TagW.PresentationModel);
+    	  if (modelLiest != null) {
+    		  for(Graphic gModel: modelLiest.getModels()) {
+    			  gModel.getLayer().setSerializable(true);
+    		  }
+          }
+//      }
       if (!img.equals(oldImage)) {
         updateGraphics = true;
         
@@ -682,6 +710,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
             new ArrayList<>(graphicManager.getGraphicSelectionListeners());
         setGraphicManager(modelList);
         gListeners.forEach(l -> graphicManager.addGraphicSelectionListener(l));
+//        ((ViewCanvas) img).getGraphicManager().setSelectedGraphic(modelList.getModels());
       }
 
       if (panner != null) {
@@ -692,6 +721,34 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
         lens.updateZoom();
       }
     }
+    GraphicModel modelLiest = (GraphicModel) img.getTagValue(TagW.PresentationModel);
+//    Objects.requireNonNull((ViewCanvas<?>) img);
+//	  modelLiest.getLayers();
+//	    GraphicLayer layer = modelLiest.getLayers().get(0);
+
+//	    if (!imageLayer.getVisible() || !(Boolean) ((ViewCanvas<?>) img).getActionValue(ActionW.DRAWINGS.cmd())) {
+//	      JOptionPane.showMessageDialog(
+//	    		  ((ViewCanvas<?>) img).getJComponent(),
+//	          Messages.getString("AbstractLayerModel.msg_not_vis"),
+//	          Messages.getString("AbstractLayerModel.draw"),
+//	          JOptionPane.ERROR_MESSAGE);
+
+//	    } else {
+//	      Graphic graph = modelLiest.getAllGraphics().get(0);
+//	      if (graph != null) {
+//	        graph.updateLabel(Boolean.TRUE, (ViewCanvas<?>) img);
+//	        for (PropertyChangeListener listener : ((ViewCanvas<?>) img).getGraphicManager().getGraphicsListeners()) {
+//	          graph.addPropertyChangeListener(listener);
+//	        }
+//	        graph.setLayer((GraphicLayer) imageLayer);
+//	        ((ViewCanvas<?>) img).getGraphicManager().addGraphic(graph);
+//	      }
+	      
+//	    }
+	  
+    
+    
+  
   }
 
   @Override

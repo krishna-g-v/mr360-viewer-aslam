@@ -40,6 +40,7 @@ import org.weasis.core.ui.editor.image.DefaultView2d;
 import org.weasis.core.ui.editor.image.ImageViewerPlugin;
 import org.weasis.core.ui.editor.image.SynchData;
 import org.weasis.core.ui.model.GraphicModel;
+import org.weasis.core.ui.model.graphic.Graphic;
 import org.weasis.core.ui.serialize.XmlSerializer;
 import org.weasis.core.util.FileUtil;
 import org.weasis.dicom.codec.DicomCodec;
@@ -112,17 +113,22 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
                   value, DicomMediaIO.DICOM_MIMETYPE)) {
             DicomMediaIO loader = new DicomMediaIO(value);
             if (loader.isReadableDicom()) {
-              // Issue: must handle adding image to viewer and building thumbnail (middle image)
+            	File gpxFile = new File(value.getPath() + ".xml");
+                GraphicModel graphicModel = XmlSerializer.readPresentationModel(gpxFile);
+                if (graphicModel != null) {
+                  loader.setTag(TagW.PresentationModel, graphicModel);
+                  for(Graphic gModel: graphicModel.getModels()) {
+        			  gModel.getLayer().setSerializable(true);
+        		  	}
+                }
+                
+            	// Issue: must handle adding image to viewer and building thumbnail (middle image)
               SeriesThumbnail t = buildDicomStructure(loader, openPlugin);
               if (t != null) {
                 thumbs.add(t);
               }
 
-              File gpxFile = new File(value.getPath() + ".xml");
-              GraphicModel graphicModel = XmlSerializer.readPresentationModel(gpxFile);
-              if (graphicModel != null) {
-                loader.setTag(TagW.PresentationModel, graphicModel);
-              }
+              
             }
           }
         }
