@@ -16,6 +16,7 @@ import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -50,6 +51,24 @@ public class XmlSerializer {
         LOGGER.error("Cannot load xml: ", e);
       }
     }
+    return null;
+  }
+
+  public static GraphicModel readPresentationModel(InputStream gpxFileIoStream) {
+	try {
+	    JAXBContext jaxbContext = getJaxbContext(XmlGraphicModel.class);
+	    Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+	    GraphicModel model = (GraphicModel) jaxbUnmarshaller.unmarshal(gpxFileIoStream);
+	    int length = model.getModels().size();
+	    model.getModels().removeIf(g -> g.getLayer() == null);
+	    if (length > model.getModels().size()) {
+	      LOGGER.error(
+	          "Removing {} graphics wihout a attached layer", model.getModels().size() - length);
+	    }
+	    return model;
+	} catch (Exception e) {
+	    LOGGER.error("Cannot load xml: ", e);
+	}
     return null;
   }
 

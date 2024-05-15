@@ -55,6 +55,7 @@ import org.weasis.core.ui.model.graphic.imp.angle.OpenAngleToolGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.EllipseGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.ObliqueRectangleGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.PolygonGraphic;
+import org.weasis.core.ui.model.graphic.imp.area.RectangleGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.SelectGraphic;
 import org.weasis.core.ui.model.graphic.imp.area.ThreePointsCircleGraphic;
 import org.weasis.core.ui.model.graphic.imp.line.LineGraphic;
@@ -108,6 +109,7 @@ public abstract class AbstractGraphicModel extends DefaultUUID implements Graphi
     @XmlElement(name = "openAngle", type = OpenAngleToolGraphic.class),
     @XmlElement(name = "cobbAngle", type = CobbAngleToolGraphic.class),
     @XmlElement(name = "rectangle", type = ObliqueRectangleGraphic.class),
+    @XmlElement(name = "irectangle", type = RectangleGraphic.class),
     @XmlElement(name = "ellipse", type = EllipseGraphic.class),
     @XmlElement(name = "fourPointsAngle", type = FourPointsAngleToolGraphic.class),
     @XmlElement(name = "line", type = LineGraphic.class),

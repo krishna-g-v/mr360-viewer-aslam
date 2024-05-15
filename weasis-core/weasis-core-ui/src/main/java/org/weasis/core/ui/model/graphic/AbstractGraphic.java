@@ -32,6 +32,7 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -52,6 +53,7 @@ import org.weasis.core.api.gui.util.GeomUtil;
 import org.weasis.core.api.gui.util.MathUtil;
 import org.weasis.core.api.image.util.Unit;
 import org.weasis.core.ui.editor.image.ViewCanvas;
+import org.weasis.core.ui.model.graphic.imp.area.RectangleGraphic;
 import org.weasis.core.ui.model.layer.GraphicLayer;
 import org.weasis.core.ui.model.layer.LayerType;
 import org.weasis.core.ui.model.utils.bean.AdvancedShape;
@@ -947,6 +949,25 @@ public abstract class AbstractGraphic extends DefaultUUID implements Graphic {
 
     @Override
     public Graphic unmarshal(AbstractGraphic v) throws Exception {
+      if(v instanceof RectangleGraphic) {
+	      String[] labels = v.getGraphicLabel().getLabels();
+	      List<String> labelsArr = Arrays.asList(labels);
+	      String side = "", key = "", value = "";
+	      for (String str : labelsArr) {
+	  		if(str.toLowerCase().contains("side")) {
+	  		  side = str.split(":")[1].trim();
+	  		} else if(str.toLowerCase().contains("key")) {
+			  key = str.split(":")[1].trim();
+			} else if(str.toLowerCase().contains("value")) {
+			  value = str.split(":")[1].trim();
+			}
+		  }
+	      ((RectangleGraphic)v).asAnnotation = true;
+	      ((RectangleGraphic)v).annotationSide = side;
+	      ((RectangleGraphic)v).annotationKey = key;
+	      ((RectangleGraphic)v).annotationVal = value;
+      }
+      
       v.buildGraphic(v.getPts());
       return v;
     }

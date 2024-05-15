@@ -30,6 +30,11 @@ import org.weasis.core.ui.model.utils.bean.Measurement;
 import org.weasis.core.ui.model.utils.exceptions.InvalidShapeException;
 import org.weasis.core.ui.util.MouseEventDouble;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
+
+@XmlType(name = "irectangle")
+@XmlRootElement(name = "irectangle")
 public class RectangleGraphic extends AbstractDragGraphicArea {
   private static final long serialVersionUID = -2862114022989550927L;
 

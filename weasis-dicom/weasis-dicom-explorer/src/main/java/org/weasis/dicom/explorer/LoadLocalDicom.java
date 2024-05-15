@@ -12,6 +12,9 @@ package org.weasis.dicom.explorer;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -33,6 +36,7 @@ import org.weasis.core.api.media.data.Series;
 import org.weasis.core.api.media.data.SeriesThumbnail;
 import org.weasis.core.api.media.data.TagW;
 import org.weasis.core.api.media.data.Thumbnail;
+import org.weasis.core.api.service.BundleTools;
 import org.weasis.core.ui.docking.UIManager;
 import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
@@ -40,6 +44,7 @@ import org.weasis.core.ui.editor.image.DefaultView2d;
 import org.weasis.core.ui.editor.image.ImageViewerPlugin;
 import org.weasis.core.ui.editor.image.SynchData;
 import org.weasis.core.ui.model.GraphicModel;
+import org.weasis.core.ui.model.graphic.Graphic;
 import org.weasis.core.ui.serialize.XmlSerializer;
 import org.weasis.core.util.FileUtil;
 import org.weasis.dicom.codec.DicomCodec;
@@ -113,16 +118,49 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
             DicomMediaIO loader = new DicomMediaIO(value);
             if (loader.isReadableDicom()) {
               // Issue: must handle adding image to viewer and building thumbnail (middle image)
+
+          	  boolean loadAnnotationsFromServer = false;
+              String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
+          	  String profileName = Paths.get(prefPath).getFileName().toString();
+          	  try {
+          	    if(profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || profileName.equalsIgnoreCase("update201@mail.com")) {
+          		  URL predictionXmlFileOnServer = new URL("http://viewer-updater.medreport360.com/ko_objects/predictions/" + value.getName() + ".xml");
+          		  HttpURLConnection httpConn = (HttpURLConnection) predictionXmlFileOnServer.openConnection();
+          		  int responseCode = httpConn.getResponseCode();
+          		  if(responseCode == HttpURLConnection.HTTP_OK) {
+          			GraphicModel graphicModel = XmlSerializer.readPresentationModel(httpConn.getInputStream());
+    				if (graphicModel != null) {
+    				  loader.setTag(TagW.PresentationModel, graphicModel);
+//    				  for(Graphic gModel: graphicModel.getModels()) {
+//    				    gModel.getLayer().setSerializable(true);
+//    		      	  }    				  
+    				}
+          			loadAnnotationsFromServer = true;
+          		  }
+          	    }	
+          	  } catch (Exception e) {
+				// Swallow
+			  }
+          	  if(!loadAnnotationsFromServer) {
+				File gpxFile = new File(value.getPath() + ".xml");
+				GraphicModel graphicModel = XmlSerializer.readPresentationModel(gpxFile);
+				if (graphicModel != null) {
+				  loader.setTag(TagW.PresentationModel, graphicModel);
+//				  for(Graphic gModel: graphicModel.getModels()) {
+//				    gModel.getLayer().setSerializable(true);
+//	      		  }
+				}          		  
+          	  }
+          	  
+          	  
+          	  
               SeriesThumbnail t = buildDicomStructure(loader, openPlugin);
               if (t != null) {
                 thumbs.add(t);
               }
 
-              File gpxFile = new File(value.getPath() + ".xml");
-              GraphicModel graphicModel = XmlSerializer.readPresentationModel(gpxFile);
-              if (graphicModel != null) {
-                loader.setTag(TagW.PresentationModel, graphicModel);
-              }
+              
+              
             }
           }
         }

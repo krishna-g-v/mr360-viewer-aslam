@@ -53,6 +53,7 @@ import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
@@ -509,6 +510,19 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
     if (newSeries != null) {
       newSeries.setOpen(true);
     }
+    
+	// Enable/disable study tables based on selection series type
+	List<JPanel> iconsTabPanels = MeasureTool.iconsTables;
+	String studyDesciption = newSeries.getToolTips().toLowerCase().split("study: ")[1].split("<br>")[0];
+	if(iconsTabPanels != null && iconsTabPanels.size() > 0) {
+		for(JPanel iconsTabPanel : iconsTabPanels) {
+			if(studyDesciption.contains(iconsTabPanel.getName())) {
+				iconsTabPanel.setVisible(true);
+			} else {
+				iconsTabPanel.setVisible(false);
+			}
+		}
+	}
   }
 
   protected void closingSeries(MediaSeries<E> mediaSeries) {
@@ -618,6 +632,13 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
       closeLens();
     } else {
       E oldImage = imageLayer.getSourceImage();
+      GraphicModel gModelList = (GraphicModel) img.getTagValue(TagW.PresentationModel);
+      // to remember the graphics annotations during scroll, update it everytime the mouse scroll is used
+      if (gModelList != null) {
+    	  for(Graphic gModel: gModelList.getModels()) {
+    		  gModel.getLayer().setSerializable(true);
+    	  }
+      }
       if (!img.equals(oldImage)) {
         updateGraphics = true;
         
@@ -993,7 +1014,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
         ratio = -adjustViewScale(1.0);
       }
       
-      if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) {
+      if(series != null && (series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) ) {
     	  ratio = -getBestFitViewScale();
       }
     }
