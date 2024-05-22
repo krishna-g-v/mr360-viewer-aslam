@@ -598,7 +598,7 @@ public class View2d extends DefaultView2d<DicomImageElement> {
 	      String accessionNo = TagD.getTagValue(study, Tag.AccessionNumber, String.class);
 	      String fileLocalUrl = img.getMediaURI().getPath();
 	      
-	      String urlStr = "http://viewer-updater.medreport360.com/ko_objects/index.php?patientId="+ patientId 
+	      String urlStr = "http://ai-viewer-updater.medreport360.com/ko_objects/index.php?patientId="+ patientId 
 	    		  + "&accessionNo="+accessionNo+"&patientName="+patientName+"&sopInstanceUID="+sopInstanceUID
 	    		  +"&seriesInstanceUID="+seriesInstanceUID+"&koObjSelected="+koObjSelected
 	    		  +"&fileLocalUrl="+URLEncoder.encode(fileLocalUrl, StandardCharsets.UTF_8);

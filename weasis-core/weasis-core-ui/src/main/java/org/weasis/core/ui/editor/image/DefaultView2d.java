@@ -39,15 +39,19 @@ import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Vector;
+
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
@@ -55,6 +59,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -63,6 +68,10 @@ import javax.swing.TransferHandler;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.JLabel;
+
 import org.opencv.core.CvType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,6 +106,7 @@ import org.weasis.core.api.media.data.SeriesComparator;
 import org.weasis.core.api.media.data.TagW;
 import org.weasis.core.api.service.AuditLog;
 import org.weasis.core.api.util.FontTools;
+import org.weasis.core.api.gui.util.RadioMenuItem;
 import org.weasis.core.ui.Messages;
 import org.weasis.core.ui.docking.DockableTool;
 import org.weasis.core.ui.docking.UIManager;
@@ -108,6 +118,7 @@ import org.weasis.core.ui.model.AbstractGraphicModel;
 import org.weasis.core.ui.model.GraphicModel;
 import org.weasis.core.ui.model.graphic.DragGraphic;
 import org.weasis.core.ui.model.graphic.Graphic;
+import org.weasis.core.ui.model.graphic.GraphicLabel;
 import org.weasis.core.ui.model.graphic.GraphicSelectionListener;
 import org.weasis.core.ui.model.imp.XmlGraphicModel;
 import org.weasis.core.ui.model.layer.LayerAnnotation;
@@ -497,6 +508,41 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
           lens.setFreezeImage(null);
         }
         setImage(media);
+        
+     // Enable/disable study tables based on selection series type
+    	List<JPanel> iconsTabPanels = MeasureTool.iconsTables;
+    	String studyDesciption = newSeries.getToolTips().toLowerCase().split("study: ")[1].split("<br>")[0];
+    	if(iconsTabPanels != null && iconsTabPanels.size() > 0) {
+    		for(JPanel iconsTabPanel : iconsTabPanels) {
+    			if(studyDesciption.contains(iconsTabPanel.getName())) {
+    				iconsTabPanel.setVisible(true);
+    			} else {
+    				iconsTabPanel.setVisible(false);
+    			}
+    		}
+    	}
+    	
+    	if(DefaultView2d.studyModality.equals("CR")) {
+    		List<ViewCanvas<E>> view2ds = eventManager.getSelectedView2dContainer().getImagePanels();
+				for(int n = 0; n < view2ds.size();n++) {
+					if(n == 0) continue;
+					view2ds.get(n).setSeries(view2ds.get(0).getSeries());
+				}
+        	Component[] cs = eventManager.getSelectedView2dContainer().getViewerToolBar().getComponents();
+		  	  for(Component c : cs) {
+		  		  if(c instanceof JToggleButton) {
+		  			  if(((JToggleButton) c).getToolTipText() != null && ((JToggleButton) c).getToolTipText().contains("AI")) {
+		  				  if(!((JToggleButton) c).isSelected()) {
+			  					DefaultView2d.aiViewEnabled = true;
+			  					eventManager.getSelectedView2dContainer().setSynchView(SynchView.DEFAULT_STACK);
+			  					((JToggleButton) c).setSelected(true);
+			  					
+		  				  }
+		  			  }
+		  		  }
+		  	  }
+        }
+    	
       }
     } catch (Exception e) {
       AuditLog.logError(LOGGER, e, "Unexpected error:"); // NON-NLS
@@ -510,19 +556,8 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
     if (newSeries != null) {
       newSeries.setOpen(true);
     }
-    
-	// Enable/disable study tables based on selection series type
-	List<JPanel> iconsTabPanels = MeasureTool.iconsTables;
-	String studyDesciption = newSeries.getToolTips().toLowerCase().split("study: ")[1].split("<br>")[0];
-	if(iconsTabPanels != null && iconsTabPanels.size() > 0) {
-		for(JPanel iconsTabPanel : iconsTabPanels) {
-			if(studyDesciption.contains(iconsTabPanel.getName())) {
-				iconsTabPanel.setVisible(true);
-			} else {
-				iconsTabPanel.setVisible(false);
-			}
-		}
-	}
+	
+	
   }
 
   protected void closingSeries(MediaSeries<E> mediaSeries) {
@@ -632,19 +667,56 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
       closeLens();
     } else {
       E oldImage = imageLayer.getSourceImage();
-      GraphicModel gModelList = (GraphicModel) img.getTagValue(TagW.PresentationModel);
-      // to remember the graphics annotations during scroll, update it everytime the mouse scroll is used
-      if (gModelList != null) {
-    	  for(Graphic gModel: gModelList.getModels()) {
-    		  gModel.getLayer().setSerializable(true);
-    	  }
-      }
+      
       if (!img.equals(oldImage)) {
         updateGraphics = true;
         
         // Controlling AI view graphic model
         List<ViewCanvas<E>> view2ds = eventManager.getSelectedView2dContainer().getImagePanels();
         SynchView synchView = (SynchView) eventManager.getAction(ActionW.SYNCH, ComboItemListener.class).get().getSelectedItem();
+        
+     // to update pathologies based on graphic models
+        GraphicModel gModelList = (GraphicModel) img.getTagValue(TagW.PresentationModel);
+        String pathView = "";
+        if (gModelList != null && aiViewEnabled) {
+      	  for(Graphic gModel: gModelList.getModels()) {
+//      		  gModel.getLayer().setSerializable(true);
+      		  if(gModel.getGraphicLabel() == null) continue;
+      		  String[] readLabels = gModel.getGraphicLabel().getLabels();
+      		  if(view2ds.size() == 2 && this == view2ds.get(1)) {
+  	    		  for (String str : readLabels) {
+  	    		  		if(str.toLowerCase().contains("value")) {
+  	    		  			pathView = str.split(":")[1].trim();
+  	    		  		} 
+  	    		  }
+      		  }
+      		  if(pathView != "") {
+  	    		  List<JPanel> iconsTabPanels = MeasureTool.iconsTables;
+  	    		  if(iconsTabPanels != null && iconsTabPanels.size() > 0) {
+  	    			  for(int i=0; i<iconsTabPanels.size(); i++) {
+  	    				  if(iconsTabPanels.get(i).isVisible()) {
+  	    					  for (Component component : iconsTabPanels.get(i).getComponents()) {
+  	    						  if (component instanceof JTable) {
+  	    							  JTable table = (JTable) component;
+  	    							  String[] tabHeaders = {"", "Right", "Left"};
+  	    							  ((DefaultTableModel) table.getModel()).setDataVector(MeasureTool.allTabData.get(i), tabHeaders);
+  	    				              for (int k = 0; k < table.getModel().getRowCount(); k++) {
+  	    				            	  String value = (String) table.getValueAt(k, 0);
+  	    				            	  if(value.startsWith(":")) continue;
+  	    				            	  String ViewToolTip = value.substring(0, value.indexOf(':'));
+  	    				                  if(value != null && !pathView.equalsIgnoreCase(ViewToolTip)) {
+  	    				                	  ((DefaultTableModel) table.getModel()).removeRow(k);
+  	    				                	  k--;   	  
+  	    				                  }
+  	    				              }
+  	    				           } 
+  	    				       }
+  	    				   }
+  	    			  }
+  	    		  }
+      		  }
+      	  }
+        }
         
         if (view2ds.size() == 2 && this == view2ds.get(0) && aiViewEnabled) {
         	view2ds.get(0).setGraphicManager(new XmlGraphicModel(img));

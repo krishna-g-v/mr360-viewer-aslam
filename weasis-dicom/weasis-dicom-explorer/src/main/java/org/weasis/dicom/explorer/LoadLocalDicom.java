@@ -124,16 +124,17 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
           	  String profileName = Paths.get(prefPath).getFileName().toString();
           	  try {
           	    if(profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || profileName.equalsIgnoreCase("update201@mail.com")) {
-          		  URL predictionXmlFileOnServer = new URL("http://viewer-updater.medreport360.com/ko_objects/predictions/" + value.getName() + ".xml");
+          		  URL predictionXmlFileOnServer = new URL("http://ai-viewer-updater.medreport360.com/ko_objects/predictions/" + value.getName() + ".xml");
           		  HttpURLConnection httpConn = (HttpURLConnection) predictionXmlFileOnServer.openConnection();
           		  int responseCode = httpConn.getResponseCode();
           		  if(responseCode == HttpURLConnection.HTTP_OK) {
           			GraphicModel graphicModel = XmlSerializer.readPresentationModel(httpConn.getInputStream());
     				if (graphicModel != null) {
     				  loader.setTag(TagW.PresentationModel, graphicModel);
-//    				  for(Graphic gModel: graphicModel.getModels()) {
-//    				    gModel.getLayer().setSerializable(true);
-//    		      	  }    				  
+    				  // to remember the graphics annotations during scroll, update it everytime the mouse scroll is used
+    				  for(Graphic gModel: graphicModel.getModels()) {
+    				    gModel.getLayer().setSerializable(true);
+    		      	  }    				  
     				}
           			loadAnnotationsFromServer = true;
           		  }
@@ -146,9 +147,10 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
 				GraphicModel graphicModel = XmlSerializer.readPresentationModel(gpxFile);
 				if (graphicModel != null) {
 				  loader.setTag(TagW.PresentationModel, graphicModel);
-//				  for(Graphic gModel: graphicModel.getModels()) {
-//				    gModel.getLayer().setSerializable(true);
-//	      		  }
+				  // to remember the graphics annotations during scroll, update it everytime the mouse scroll is used
+				  for(Graphic gModel: graphicModel.getModels()) {
+				    gModel.getLayer().setSerializable(true);
+	      		  }
 				}          		  
           	  }
           	  

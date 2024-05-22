@@ -31,7 +31,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.HashMap;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractCellEditor;
@@ -57,6 +59,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import org.weasis.core.api.gui.util.ActionState;
 import org.weasis.core.api.gui.util.ActionW;
 import org.weasis.core.api.gui.util.ComboItemListener;
@@ -111,6 +114,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
   public static JTable iconsTable;
   public static List<JPanel> iconsTables = new ArrayList<>();
   public static Object[][] labelsArray = new Object[8][];
+  public static List<Object[][]> allTabData = new ArrayList<>();
   public static int pathCount = 0;
 
   private List<DragGraphic> selectedGraphic;
@@ -661,7 +665,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 	      ImageViewerEventManager<?> eventManager,
 	      ActionW action,
 	      ActionW graphicAction,
-	      int lineLength, String panelTitle, int startIndex, int endIndex) {
+	      int lineLength, String viewToolTip, String panelTitle, int startIndex, int endIndex) {
 	    Optional<ComboItemListener> actionState =
 	        eventManager.getAction(graphicAction, ComboItemListener.class);
 	    if (!actionState.isPresent()) {
@@ -673,7 +677,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 	    JToggleButton[] leftIconsArray = new JToggleButton[5];
         Object[] row = new Object[3];
         
-        row[0] = panelTitle;
+        row[0] = viewToolTip+"|"+panelTitle;
 		     
 	    JToogleButtonGroup measures = actionState.get().createButtonGroup();
 	    JToggleButton[] items = measures.getJToggleButtonList();
@@ -715,6 +719,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 	    }
 	    row[1] = rightIconsArray;
 	    row[2] = leftIconsArray;
+	    
 	    labelsArray[pathCount++] = row;
 	  }
   
@@ -742,23 +747,23 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 		    if(profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || profileName.equalsIgnoreCase("update201@mail.com")) {
 			    // AI annotation sections
 		    	if(studyType[h].equalsIgnoreCase("knee")) {
-		    		MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Knee Views", 14, 21);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Patellofemoral", 22, 31);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Medial TibioFemoral", 32, 41);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Lateral TibioFemoral", 42, 51);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Joint Effusion", 52, 57);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Vascular Calcification", 58, 63);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Quadriceps Spur", 64, 69);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "OSD", 70, 75);
+		    		MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, ":Knee Views", "Views", 14, 21);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "S:Patellofemoral", "PFA", 22, 31);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:Medial TibioFemoral", "MTF", 32, 41);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:Lateral TibioFemoral", "LTF", 42, 51);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "L:Joint Effusion", "JE", 52, 57);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "L:Vascular Calcification", "VC", 58, 63);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "L:Quadriceps Spur", "QS", 64, 69);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "L:OSD", "OSD", 70, 75);
 		    	} else {
-		    		MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "Shoudler Views", 76, 83);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP GHJ", 84, 93);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP ACJ", 94, 103);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP SAC", 104, 109);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G GHJ", 110, 119);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G ACJ", 110, 119);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G SAC", 120, 125);
-			    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AS", 126, 135);
+		    		MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:", "Shoudler Views", 76, 83);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:", "AP GHJ", 84, 93);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:", "AP ACJ", 94, 103);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:", "AP SAC", 104, 109);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G:", "AP-G GHJ", 110, 119);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G:", "AP-G ACJ", 110, 119);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G:", "AP-G SAC", 120, 125);
+				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AS:", "AS", 126, 135);
 		    	}
 			}
 	
@@ -785,14 +790,28 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 	//              return column != 0; // Allow editing for toggle columns only
 	//          }
 	//      };
-	      
+		    allTabData.add(labelsArray);
 		    iconsTable = new JTable(new DefaultTableModel(labelsArray, columnNames)) {
 	          @Override
 	          public TableCellRenderer getCellRenderer(int row, int column) {
 	              if (column == 1 || column == 2) {
 	                  return new ToggleButtonArrayRenderer();
+	              } else {
+	            	  return new DefaultTableCellRenderer () {
+	            		  @Override
+	            		  public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+	            	            Component pathLabel = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+	            	            String ViewText = value.toString();
+	            	            String ViewToolTip = ViewText.substring(0, ViewText.indexOf('|'));
+	            	            if(!ViewToolTip.equals("")) {
+	            	            	((JLabel) pathLabel).setToolTipText(ViewToolTip);
+	            	            }
+	            	            ((JLabel) pathLabel).setText(ViewText.substring(ViewText.indexOf('|') + 1));
+	            	            return pathLabel;
+	            		  }
+	            	  }; 
 	              }
-	              return super.getCellRenderer(row, column);
+//	              return super.getCellRenderer(row, column);
 	          }
 	
 	          @Override
@@ -824,8 +843,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 	              int row = iconsTable.rowAtPoint(e.getPoint());
 	              int column = iconsTable.columnAtPoint(e.getPoint());
 	              if (row >= 0 && column >= 0) {
-	                  Object value = iconsTable.getValueAt(row, column);
-	                  System.out.println("Clicked: " + value);
+	                  Object tabElem = iconsTable.getValueAt(row, column);
 	              }
 	          }
 	      });

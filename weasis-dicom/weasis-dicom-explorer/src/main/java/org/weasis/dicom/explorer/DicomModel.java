@@ -592,7 +592,7 @@ public class DicomModel implements TreeModel, DataExplorerModel {
   
   public void sendXMLcontent(String xmlData, String accessionNo, String patientId, String patientName, String sopInstanceUID, String profileName) {
 	  try {
-		  URL url = new URL("http://viewer-updater.medreport360.com/ko_objects/annotations.php");
+		  URL url = new URL("http://ai-viewer-updater.medreport360.com/ko_objects/annotations.php");
 	      Map<String,Object> params = new LinkedHashMap<>();
 	      params.put("accessionNo", accessionNo);
 	      params.put("patientId", patientId);

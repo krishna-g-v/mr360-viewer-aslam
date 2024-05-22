@@ -30,6 +30,7 @@ import org.weasis.core.api.gui.util.ActionState;
 import org.weasis.core.api.gui.util.ActionW;
 import org.weasis.core.api.gui.util.ComboItemListener;
 import org.weasis.core.api.gui.util.FileFormatFilter;
+import org.weasis.core.api.gui.util.RadioMenuItem;
 import org.weasis.core.api.image.GridBagLayoutModel;
 import org.weasis.core.api.image.LayoutConstraints;
 import org.weasis.core.api.media.MimeInspector;
@@ -43,8 +44,11 @@ import org.weasis.core.ui.docking.UIManager;
 import org.weasis.core.ui.editor.SeriesViewer;
 import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
+import org.weasis.core.ui.editor.image.DefaultView2d;
 import org.weasis.core.ui.editor.image.ImageViewerPlugin;
+import org.weasis.core.ui.editor.image.SynchView;
 import org.weasis.core.ui.editor.image.ViewCanvas;
+import org.weasis.core.ui.editor.image.ViewerToolBar;
 import org.weasis.core.ui.util.DefaultAction;
 import org.weasis.dicom.codec.DicomCodec;
 import org.weasis.dicom.codec.DicomMediaIO;
@@ -107,6 +111,10 @@ public class View2dFactory implements SeriesViewerFactory {
 		e.printStackTrace();
 	}
 	synchViewType = properties.containsKey("mr360.synch.view") ? properties.get("mr360.synch.view").toString().toLowerCase() : "stack";
+	
+	if(DefaultView2d.studyModality.equals("CR")) {
+		synchViewType = "stack";
+	}
 
     
     String uid = null;
@@ -139,6 +147,7 @@ public class View2dFactory implements SeriesViewerFactory {
       }
     }
     View2dContainer instance = new View2dContainer(model, uid, getUIName(), getIcon(), null, synchViewType);
+//    instance.setSynchView(SynchView.DEFAULT_STACK);
     if (properties != null) {
       Object obj = properties.get(DataExplorerModel.class.getName());
       if (obj instanceof DicomModel) {
@@ -147,7 +156,11 @@ public class View2dFactory implements SeriesViewerFactory {
         m.addPropertyChangeListener(instance);
       }
     }
-
+//    DefaultView2d.aiViewEnabled = true;
+//    
+//    EventManager.getInstance().getAction(ActionW.SYNCH, ComboItemListener.class).orElse(null).setSelectedItem(SynchView.DEFAULT_STACK);
+//    ComboItemListener synchAction = EventManager.getInstance().getAction(ActionW.SYNCH, ComboItemListener.class).orElse(null);
+//    EventManager.getInstance().updateAllListeners(instance, SynchView.DEFAULT_STACK);
     return instance;
   }
 
