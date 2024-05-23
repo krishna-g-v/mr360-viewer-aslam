@@ -9,6 +9,7 @@
  */
 package org.weasis.dicom.viewer2d;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -24,9 +25,12 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.Component;
 import java.beans.PropertyChangeEvent;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
@@ -41,12 +45,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import java.util.Objects;
 import java.util.Optional;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
+import javax.swing.JEditorPane;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -656,11 +662,6 @@ public class View2d extends DefaultView2d<DicomImageElement> {
           }
         }
       }
-      
-      // set the accesion no for loaded view2d image to get the ui report
-//      DicomModel tagValue = (DicomModel) eventManager.getSelectedViewPane().getSeries().getTagValue(TagW.ExplorerModel);
-//      MediaSeriesGroup study = tagValue.getParent(series, DicomModel.study);
-//      MeasureTool.studyAccession = TagD.getTagValue(study, Tag.AccessionNumber, String.class);
     }
 
     koStarButton.setState(newSelectionState);

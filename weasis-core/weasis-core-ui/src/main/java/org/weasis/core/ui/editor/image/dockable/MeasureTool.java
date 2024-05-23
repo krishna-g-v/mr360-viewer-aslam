@@ -124,6 +124,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
   public static List<Object[][]> allTabData = new ArrayList<>();
   public static int pathCount = 0;
   public static String studyAccession;
+  public static JPanel reportRendererPanel;
 
   private List<DragGraphic> selectedGraphic;
 
@@ -901,29 +902,14 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 
 	    
 	    transform.add(Box.createVerticalStrut(5));
-	    
-
-	    JPanel reportRendererPanel = new JPanel();
+	    reportRendererPanel = new JPanel();
 	    reportRendererPanel.setBorder(BorderFactory.createEtchedBorder());
 	    
-	    String rptTxt;
-	    try {
-	    	String studyUrl = "http://ai-viewer-updater.medreport360.com/ko_objects/reports/"+studyAccession+".txt";
-			URL url = new URL(studyUrl);
-		  	InputStream input = url.openStream();
-		  	rptTxt = new BufferedReader(new InputStreamReader(input)).lines().parallel().collect(Collectors.joining("\n"));
-	        input.close();
-	        JEditorPane editorPane = new JEditorPane();
-	        if(rptTxt != null) {
-	        	editorPane.setText(rptTxt);
-	        }
-	        reportRendererPanel.setPreferredSize(editorPane.getPreferredScrollableViewportSize());
-		    reportRendererPanel.setLayout(new BorderLayout());
-	        reportRendererPanel.add(editorPane);
-		} catch(Exception exc) {
-			// Swallow
-		}
-	    
+	    JEditorPane editorPane = new JEditorPane();
+	    reportRendererPanel.setPreferredSize(editorPane.getPreferredScrollableViewportSize());
+		reportRendererPanel.setLayout(new BorderLayout());
+	    reportRendererPanel.add(editorPane);
+		
 	    transform.add(reportRendererPanel);
 
 	    return transform;

@@ -293,9 +293,6 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
     		}
     	}
 	    dicomSeries = (Series) dicomModel.getHierarchyNode(study, thisStudySeriesForXray);
-	    
-	    MediaSeriesGroup studyNode = dicomModel.getStudyNode(studyUID);
-	    MeasureTool.studyAccession = TagD.getTagValue(studyNode, Tag.AccessionNumber, String.class);
     } else
     	dicomSeries = (Series) dicomModel.getHierarchyNode(study, seriesUID);
     

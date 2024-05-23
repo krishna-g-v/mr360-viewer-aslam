@@ -9,21 +9,29 @@
  */
 package org.weasis.dicom.viewer2d;
 
+import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
@@ -54,6 +62,7 @@ import org.weasis.core.api.media.data.MediaSeries;
 import org.weasis.core.api.media.data.MediaSeriesGroup;
 import org.weasis.core.api.media.data.Series;
 import org.weasis.core.api.media.data.SeriesEvent;
+import org.weasis.core.api.media.data.TagW;
 import org.weasis.core.api.service.BundlePreferences;
 import org.weasis.core.api.service.BundleTools;
 import org.weasis.core.ui.docking.DockableTool;
@@ -477,7 +486,30 @@ public class View2dContainer extends ImageViewerPlugin<DicomImageElement>
             .firePropertyChange(
                 new ObservableEvent(ObservableEvent.BasicAction.SELECT, this, null, getGroupID()));
       }
-
+   // set the accesion no for loaded view2d image to get the ui report
+	    try {
+	    	DicomModel tagValue = (DicomModel) eventManager.getSelectedViewPane().getSeries().getTagValue(TagW.ExplorerModel);
+	        MediaSeriesGroup study = tagValue.getParent(eventManager.getSelectedViewPane().getSeries(), DicomModel.study);
+	        String studyAccession = TagD.getTagValue(study, Tag.AccessionNumber, String.class);
+	        
+	        String rptTxt;
+	    	String studyUrl = "http://ai-viewer-updater.medreport360.com/ko_objects/reports/"+studyAccession+".txt";
+			URL url = new URL(studyUrl);
+		  	InputStream input = url.openStream();
+		  	rptTxt = new BufferedReader(new InputStreamReader(input)).lines().parallel().collect(Collectors.joining("\n"));
+	        input.close();
+	
+	        if(rptTxt != null) {
+	        	for(Component c: MeasureTool.reportRendererPanel.getComponents()) {
+	        		if(c instanceof JEditorPane) {
+	        			((JEditorPane) c).setText(rptTxt);
+	        			MeasureTool.reportRendererPanel.setPreferredSize(((JEditorPane) c).getPreferredScrollableViewportSize());
+	        		}
+	        	}
+	        }
+		} catch(Exception exc) {
+			// Swallow
+		}
     } else {
       eventManager.setSelectedView2dContainer(null);
     }
