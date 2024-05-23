@@ -27,12 +27,18 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
 import java.util.HashMap;
 
 import javax.swing.AbstractAction;
@@ -45,6 +51,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -116,6 +123,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
   public static Object[][] labelsArray = new Object[8][];
   public static List<Object[][]> allTabData = new ArrayList<>();
   public static int pathCount = 0;
+  public static String studyAccession;
 
   private List<DragGraphic> selectedGraphic;
 
@@ -157,7 +165,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 	String profileName = Paths.get(prefPath).getFileName().toString();
 	if(profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || profileName.equalsIgnoreCase("update201@mail.com"))
 		add(getPathologyPanel());
-
+	add(getStudyReportPanel());
   }
 
   public final JPanel getIconsPanel() {
@@ -872,6 +880,54 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 	    }
 	    return transform;
 	  }
+  
+  
+  // Adding report panel
+  public JPanel getStudyReportPanel() {
+	    final JPanel transform = new JPanel();
+	    transform.setAlignmentY(Component.TOP_ALIGNMENT);
+	    transform.setAlignmentX(Component.LEFT_ALIGNMENT);
+	    transform.setLayout(new BoxLayout(transform, BoxLayout.Y_AXIS));
+	    transform.setBorder(
+	        BorderFactory.createCompoundBorder(
+	            BorderFactory.createEmptyBorder(10, 3, 0, 3),
+	            new TitledBorder(
+	                null,
+	                "Report",
+	                TitledBorder.DEFAULT_JUSTIFICATION,
+	                TitledBorder.DEFAULT_POSITION,
+	                FontTools.getFont12Bold(),
+	                Color.GRAY)));
+
+	    
+	    transform.add(Box.createVerticalStrut(5));
+	    
+
+	    JPanel reportRendererPanel = new JPanel();
+	    reportRendererPanel.setBorder(BorderFactory.createEtchedBorder());
+	    
+	    String rptTxt;
+	    try {
+	    	String studyUrl = "http://ai-viewer-updater.medreport360.com/ko_objects/reports/"+studyAccession+".txt";
+			URL url = new URL(studyUrl);
+		  	InputStream input = url.openStream();
+		  	rptTxt = new BufferedReader(new InputStreamReader(input)).lines().parallel().collect(Collectors.joining("\n"));
+	        input.close();
+	        JEditorPane editorPane = new JEditorPane();
+	        if(rptTxt != null) {
+	        	editorPane.setText(rptTxt);
+	        }
+	        reportRendererPanel.setPreferredSize(editorPane.getPreferredScrollableViewportSize());
+		    reportRendererPanel.setLayout(new BorderLayout());
+	        reportRendererPanel.add(editorPane);
+		} catch(Exception exc) {
+			// Swallow
+		}
+	    
+	    transform.add(reportRendererPanel);
+
+	    return transform;
+  }
   
   	  
   class ToggleButtonArrayRenderer extends JPanel implements TableCellRenderer {

@@ -43,6 +43,7 @@ import org.weasis.core.ui.editor.ViewerPluginBuilder;
 import org.weasis.core.ui.editor.image.DefaultView2d;
 import org.weasis.core.ui.editor.image.ImageViewerPlugin;
 import org.weasis.core.ui.editor.image.SynchData;
+import org.weasis.core.ui.editor.image.dockable.MeasureTool;
 import org.weasis.core.ui.model.GraphicModel;
 import org.weasis.core.ui.model.graphic.Graphic;
 import org.weasis.core.ui.serialize.XmlSerializer;
@@ -292,6 +293,9 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
     		}
     	}
 	    dicomSeries = (Series) dicomModel.getHierarchyNode(study, thisStudySeriesForXray);
+	    
+	    MediaSeriesGroup studyNode = dicomModel.getStudyNode(studyUID);
+	    MeasureTool.studyAccession = TagD.getTagValue(studyNode, Tag.AccessionNumber, String.class);
     } else
     	dicomSeries = (Series) dicomModel.getHierarchyNode(study, seriesUID);
     

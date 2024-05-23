@@ -99,6 +99,7 @@ import org.weasis.core.ui.editor.image.PannerListener;
 import org.weasis.core.ui.editor.image.PixelInfo;
 import org.weasis.core.ui.editor.image.SynchData;
 import org.weasis.core.ui.editor.image.SynchData.Mode;
+import org.weasis.core.ui.editor.image.dockable.MeasureTool;
 import org.weasis.core.ui.editor.image.SynchEvent;
 import org.weasis.core.ui.editor.image.ViewButton;
 import org.weasis.core.ui.editor.image.ViewCanvas;
@@ -655,6 +656,11 @@ public class View2d extends DefaultView2d<DicomImageElement> {
           }
         }
       }
+      
+      // set the accesion no for loaded view2d image to get the ui report
+//      DicomModel tagValue = (DicomModel) eventManager.getSelectedViewPane().getSeries().getTagValue(TagW.ExplorerModel);
+//      MediaSeriesGroup study = tagValue.getParent(series, DicomModel.study);
+//      MeasureTool.studyAccession = TagD.getTagValue(study, Tag.AccessionNumber, String.class);
     }
 
     koStarButton.setState(newSelectionState);
