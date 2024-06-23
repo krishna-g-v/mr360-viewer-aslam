@@ -39,6 +39,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -591,7 +592,14 @@ public class View2d extends DefaultView2d<DicomImageElement> {
   }
   
   private void sendKOselectionLog(DicomImageElement img, boolean koObjSelected) {
-	  
+	  String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
+	  String profileName = Paths.get(prefPath).getFileName().toString();
+	  String seriesModality = EventManager.getInstance().getSelectedSeries().getToolTips().toUpperCase();
+	  if(!((seriesModality.contains("Modality: CR".toUpperCase()) || seriesModality.toUpperCase().contains("Modality: DX".toUpperCase()) 
+			  && (profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || 
+	    		profileName.equalsIgnoreCase("update201@mail.com"))))) {
+		  return;
+	  }
 	  try {
 		  String patientId = TagD.getTagValue(img, Tag.PatientID, String.class);
 		  String patientName = TagD.getTagValue(img, Tag.PatientName, String.class);

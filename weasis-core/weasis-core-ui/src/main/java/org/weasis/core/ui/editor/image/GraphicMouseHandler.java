@@ -17,11 +17,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.prefs.Preferences;
 import org.weasis.core.api.gui.util.ActionW;
 import org.weasis.core.api.gui.util.ComboItemListener;
 import org.weasis.core.api.gui.util.MouseActionAdapter;
 import org.weasis.core.api.gui.util.ToggleButtonListener;
 import org.weasis.core.api.media.data.ImageElement;
+import org.weasis.core.api.service.BundlePreferences;
 import org.weasis.core.ui.editor.image.DefaultView2d.BulkDragSequence;
 import org.weasis.core.ui.model.AbstractGraphicModel;
 import org.weasis.core.ui.model.GraphicModel;
@@ -297,7 +301,12 @@ public class GraphicMouseHandler<E extends ImageElement> extends MouseActionAdap
           newCursor = cursorSet.getMoveCursor();
         }
       }
-    }
+    } 
+    
+//    else {
+//    	Preferences bundlePrefs = BundlePreferences.getDefaultPreferences(FrameworkUtil.getBundle(vImg.getEventManager().getSelectedView2dContainer().getClass()).getBundleContext());
+//        vImg.getEventManager().changeLeftMouseAction(bundlePrefs.get(MouseActions.T_LEFT, ActionW.PAN.cmd()));
+//    }
 
     vImg.getJComponent()
         .setCursor(Optional.ofNullable(newCursor).orElse(cursorSet.getDrawingCursor()));

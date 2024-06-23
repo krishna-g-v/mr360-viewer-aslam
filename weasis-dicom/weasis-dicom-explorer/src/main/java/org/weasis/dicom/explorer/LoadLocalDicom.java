@@ -123,8 +123,9 @@ public class LoadLocalDicom extends ExplorerTask<Boolean, String> {
           	  boolean loadAnnotationsFromServer = false;
               String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
           	  String profileName = Paths.get(prefPath).getFileName().toString();
+          	  String seriesModality = (String) loader.getTagValue(TagD.get(Tag.Modality));
           	  try {
-          	    if(profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || profileName.equalsIgnoreCase("update201@mail.com")) {
+          	    if((seriesModality.equalsIgnoreCase("CR") || seriesModality.equalsIgnoreCase("DX")) && (profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || profileName.equalsIgnoreCase("update201@mail.com"))) {
           		  URL predictionXmlFileOnServer = new URL("http://ai-viewer-updater.medreport360.com/ko_objects/predictions/" + value.getName() + ".xml");
           		  HttpURLConnection httpConn = (HttpURLConnection) predictionXmlFileOnServer.openConnection();
           		  int responseCode = httpConn.getResponseCode();

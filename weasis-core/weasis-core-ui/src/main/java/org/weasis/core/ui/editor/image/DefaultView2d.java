@@ -113,6 +113,7 @@ import org.weasis.core.ui.docking.UIManager;
 import org.weasis.core.ui.editor.SeriesViewerEvent;
 import org.weasis.core.ui.editor.SeriesViewerEvent.EVENT;
 import org.weasis.core.ui.editor.image.SynchData.Mode;
+import org.weasis.core.ui.editor.image.dockable.AnnotationsTool;
 import org.weasis.core.ui.editor.image.dockable.MeasureTool;
 import org.weasis.core.ui.model.AbstractGraphicModel;
 import org.weasis.core.ui.model.GraphicModel;
@@ -510,7 +511,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
         setImage(media);
         
      // Enable/disable study tables based on selection series type
-    	List<JPanel> iconsTabPanels = MeasureTool.iconsTables;
+    	List<JPanel> iconsTabPanels = AnnotationsTool.iconsTables;
     	String studyDesciption = newSeries.getToolTips().toLowerCase().split("study: ")[1].split("<br>")[0];
     	if(iconsTabPanels != null && iconsTabPanels.size() > 0) {
     		for(JPanel iconsTabPanel : iconsTabPanels) {
@@ -522,7 +523,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
     		}
     	}
     	
-    	if(DefaultView2d.studyModality.equals("CR")) {
+    	if(DefaultView2d.studyModality != null && DefaultView2d.studyModality.equals("CR")) {
     		List<ViewCanvas<E>> view2ds = eventManager.getSelectedView2dContainer().getImagePanels();
 				for(int n = 0; n < view2ds.size();n++) {
 					if(n == 0) continue;
@@ -683,15 +684,23 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
 //      		  gModel.getLayer().setSerializable(true);
       		  if(gModel.getGraphicLabel() == null) continue;
       		  String[] readLabels = gModel.getGraphicLabel().getLabels();
+      		
       		  if(view2ds.size() == 2 && this == view2ds.get(1)) {
   	    		  for (String str : readLabels) {
-  	    		  		if(str.toLowerCase().contains("value")) {
-  	    		  			pathView = str.split(":")[1].trim();
-  	    		  		} 
+  	    			if(str.toLowerCase().contains("key")) {
+  	    				if(str.split(":")[1].trim().equalsIgnoreCase("view")) {
+  	    					continue;
+  	    				} else {
+  	    					break;
+  	    				} 
+  	    			}
+  	    		  	if(str.toLowerCase().contains("value")) {
+  	    		  		pathView = str.split(":")[1].trim();
+  	    		  	} 
   	    		  }
       		  }
       		  if(pathView != "") {
-  	    		  List<JPanel> iconsTabPanels = MeasureTool.iconsTables;
+  	    		  List<JPanel> iconsTabPanels = AnnotationsTool.iconsTables;
   	    		  if(iconsTabPanels != null && iconsTabPanels.size() > 0) {
   	    			  for(int i=0; i<iconsTabPanels.size(); i++) {
   	    				  if(iconsTabPanels.get(i).isVisible()) {
@@ -699,7 +708,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   	    						  if (component instanceof JTable) {
   	    							  JTable table = (JTable) component;
   	    							  String[] tabHeaders = {"", "Right", "Left"};
-  	    							  ((DefaultTableModel) table.getModel()).setDataVector(MeasureTool.allTabData.get(i), tabHeaders);
+  	    							  ((DefaultTableModel) table.getModel()).setDataVector(AnnotationsTool.allTabData.get(i), tabHeaders);
   	    				              for (int k = 0; k < table.getModel().getRowCount(); k++) {
   	    				            	  String value = (String) table.getValueAt(k, 0);
   	    				            	  if(value.startsWith(":")) continue;
@@ -783,6 +792,12 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
       if (lens != null) {
         lens.updateImage();
         lens.updateZoom();
+      }
+      
+      if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) {
+      	imageLayer.fireOpEvent(
+              new ImageOpEvent(ImageOpEvent.OpEvent.ResetDisplay, series, img, null));
+      	imageLayer.setEnableDispOperations(true);
       }
     }
   }
@@ -1226,7 +1241,8 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
             // }
             
             // for manual link and scroll 
-            if((series.getToolTips().toUpperCase().contains("Modality: CT".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase())) && (manualLinkBtnPressed || aiViewEnabled) && !synchViewByDefault) {
+            if((series.getToolTips().toUpperCase().contains("Modality: CT".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) 
+            		&& (manualLinkBtnPressed || aiViewEnabled) && !synchViewByDefault) {
 //           	 int y = ((SliderChangeListener) this.getEventManager().getAction(ActionW.SCROLL_SERIES, SliderChangeListener.class).get()).getSliderValue() - 1;
            	 	int synchSeriesIndex = ((SynchEvent) evt.getNewValue()).getView().getFrameIndex();
                 int SelectedSeriesIndex = this.getFrameIndex();

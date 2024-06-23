@@ -531,7 +531,12 @@ public class DicomModel implements TreeModel, DataExplorerModel {
   }
   
   public void exportAnnotatedImg() {
-
+	    String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
+	    String profileName = Paths.get(prefPath).getFileName().toString();
+	    if(!(profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || 
+	    		profileName.equalsIgnoreCase("update201@mail.com"))) {
+	    	return;
+	    }
 	    try {      
 	        ArrayList<String> seriesGph = new ArrayList<>();
 	        CheckTreeModel model = new CheckTreeModel(DicomModel.this);
@@ -570,11 +575,15 @@ public class DicomModel implements TreeModel, DataExplorerModel {
 	                String patientId = TagD.getTagValue(img, Tag.PatientID, String.class);
 	      		  	String patientName = TagD.getTagValue(img, Tag.PatientName, String.class);
 	      		  	String sopInstanceUID = TagD.getTagValue(img, Tag.SOPInstanceUID, String.class);
-	      		  	String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
-	      		  	String profileName = Paths.get(prefPath).getFileName().toString();
-	                
-	      		  	sendXMLcontent(annotationsContent, accessionNo, patientId, patientName, sopInstanceUID, profileName);
-	                
+//	      		  	String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
+//	      		  	String profileName = Paths.get(prefPath).getFileName().toString();
+	      		    String seriesUID = TagD.getTagValue(img, Tag.SeriesInstanceUID, String.class);
+	      		    MediaSeriesGroup series = getSeriesNode(seriesUID);
+	      		    String seriesModality = (String) series.getTagValue(TagD.get(Tag.Modality));
+	      		    
+	      		    if(seriesModality.equalsIgnoreCase("CR") || seriesModality.equalsIgnoreCase("DX")) {
+	      		    	sendXMLcontent(annotationsContent, accessionNo, patientId, patientName, sopInstanceUID, profileName);
+	      		    }
 	              }
 	            } else {
 	              LOGGER.error(

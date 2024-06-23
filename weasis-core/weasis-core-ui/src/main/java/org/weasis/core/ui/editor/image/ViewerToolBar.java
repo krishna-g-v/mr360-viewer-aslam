@@ -246,7 +246,8 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
 	            
 	            ImageViewerPlugin viewerContainer = eventManager.getSelectedView2dContainer();
 	            MediaSeries<E> viewerDicomSeries = viewerContainer.getSelectedImagePane().getSeries();
-	            if(viewerDicomSeries.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase())) {
+	            if(viewerDicomSeries.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) 
+	            		|| viewerDicomSeries.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) {
 	            	ComboItemListener synchAction = eventManager.getAction(ActionW.SYNCH, ComboItemListener.class).orElse(null);
 	                eventManager.updateAllListeners(viewerContainer,
 	                		synchAction == null ? SynchView.NONE : (SynchView) synchAction.getSelectedItem());

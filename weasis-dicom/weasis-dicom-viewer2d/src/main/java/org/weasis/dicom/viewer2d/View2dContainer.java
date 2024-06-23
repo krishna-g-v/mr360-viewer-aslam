@@ -9,6 +9,7 @@
  */
 package org.weasis.dicom.viewer2d;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -19,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,6 +80,7 @@ import org.weasis.core.ui.editor.image.SynchView;
 import org.weasis.core.ui.editor.image.ViewCanvas;
 import org.weasis.core.ui.editor.image.ViewerToolBar;
 import org.weasis.core.ui.editor.image.ZoomToolBar;
+import org.weasis.core.ui.editor.image.dockable.AnnotationsTool;
 import org.weasis.core.ui.editor.image.dockable.MeasureTool;
 import org.weasis.core.ui.editor.image.dockable.MiniTool;
 import org.weasis.core.ui.util.ColorLayerUI;
@@ -398,6 +401,17 @@ public class View2dContainer extends ImageViewerPlugin<DicomImageElement>
         tool = new MeasureTool(eventManager);
         TOOLS.add(tool);
       }
+      
+      if (InsertableUtil.getBooleanProperty(
+          BundleTools.SYSTEM_PREFERENCES,
+          bundleName,
+          componentName,
+          InsertableUtil.getCName(AnnotationsTool.class),
+          key,
+          true)) {
+        tool = new AnnotationsTool(eventManager);
+        TOOLS.add(tool);
+      }
 
       InsertableUtil.sortInsertable(TOOLS);
 
@@ -486,30 +500,53 @@ public class View2dContainer extends ImageViewerPlugin<DicomImageElement>
             .firePropertyChange(
                 new ObservableEvent(ObservableEvent.BasicAction.SELECT, this, null, getGroupID()));
       }
-   // set the accesion no for loaded view2d image to get the ui report
-	    try {
-	    	DicomModel tagValue = (DicomModel) eventManager.getSelectedViewPane().getSeries().getTagValue(TagW.ExplorerModel);
-	        MediaSeriesGroup study = tagValue.getParent(eventManager.getSelectedViewPane().getSeries(), DicomModel.study);
-	        String studyAccession = TagD.getTagValue(study, Tag.AccessionNumber, String.class);
-	        
-	        String rptTxt;
-	    	String studyUrl = "http://ai-viewer-updater.medreport360.com/ko_objects/reports/"+studyAccession+".txt";
-			URL url = new URL(studyUrl);
-		  	InputStream input = url.openStream();
-		  	rptTxt = new BufferedReader(new InputStreamReader(input)).lines().parallel().collect(Collectors.joining("\n"));
-	        input.close();
-	
-	        if(rptTxt != null) {
-	        	for(Component c: MeasureTool.reportRendererPanel.getComponents()) {
-	        		if(c instanceof JEditorPane) {
-	        			((JEditorPane) c).setText(rptTxt);
-	        			MeasureTool.reportRendererPanel.setPreferredSize(((JEditorPane) c).getPreferredScrollableViewportSize());
-	        		}
-	        	}
-	        }
-		} catch(Exception exc) {
-			// Swallow
-		}
+      // set the accesion no for loaded view2d image to get the ui report
+      String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
+	  String profileName = Paths.get(prefPath).getFileName().toString();
+	  
+	    if(profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || 
+	    		profileName.equalsIgnoreCase("update201@mail.com")) {
+	    	   
+		    try {
+		    	MediaSeries series = eventManager.getSelectedViewPane().getSeries();
+		    	String seriesToolTip = series.getToolTips().toUpperCase();
+		    	if(seriesToolTip.contains("Modality: CR".toUpperCase()) || seriesToolTip.toUpperCase().contains("Modality: DX".toUpperCase())) {
+			    	DicomModel tagValue = (DicomModel) series.getTagValue(TagW.ExplorerModel);
+			        MediaSeriesGroup study = tagValue.getParent(series, DicomModel.study);
+			        String studyAccession = TagD.getTagValue(study, Tag.AccessionNumber, String.class);
+			        
+			        String rptTxt;
+			    	String studyUrl = "http://ai-viewer-updater.medreport360.com/ko_objects/reports/"+studyAccession+".txt";
+					URL url = new URL(studyUrl);
+				  	InputStream input = url.openStream();
+				  	rptTxt = new BufferedReader(new InputStreamReader(input)).lines().parallel().collect(Collectors.joining("\n"));
+			        input.close();
+			
+			        if(rptTxt != null) {
+			        	for(Component c: MeasureTool.reportRendererPanel.getComponents()) {
+			        		if(c instanceof JEditorPane) {
+			        			((JEditorPane) c).setText(rptTxt);
+			        			MeasureTool.reportRendererPanel.setPreferredSize(((JEditorPane) c).getPreferredScrollableViewportSize());
+			        		}
+			        	}
+			        	
+			        	for(Component c: AnnotationsTool.reportRendererPanel.getComponents()) {
+			        		if(c instanceof JEditorPane) {
+			        			((JEditorPane) c).setText(rptTxt);
+			        			AnnotationsTool.reportRendererPanel.setPreferredSize(((JEditorPane) c).getPreferredScrollableViewportSize());
+			        		}
+			        	}
+			        }
+			        ((DockableTool) getToolPanel().get(3)).showDockable();
+	            	((DockableTool) getToolPanel().get(3)).setComponentEnabled(true);
+		    	} else {
+		    		((DockableTool) getToolPanel().get(3)).closeDockable();
+	            	((DockableTool) getToolPanel().get(3)).setComponentEnabled(false);
+		    	}
+			} catch(Exception exc) {
+				// Swallow
+			}
+	    }
     } else {
       eventManager.setSelectedView2dContainer(null);
     }

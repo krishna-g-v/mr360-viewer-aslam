@@ -230,7 +230,12 @@ public class RectangleGraphic extends AbstractDragGraphicArea {
 	    		break;
 
 	    	
-	    	default : break;
+	    	default :
+	    		x = 100;
+	    		y = 100;
+	    		w = 100;
+	    		h = 100;
+	    		break;
     	}
     	
     	

@@ -120,7 +120,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
   public static JPanel iconsTableContainer;
   public static JTable iconsTable;
   public static List<JPanel> iconsTables = new ArrayList<>();
-  public static Object[][] labelsArray = new Object[8][];
+  public static Object[][] labelsArray = new Object[MeasureToolBar.structureFileTotalRows.get("knee")][];
   public static List<Object[][]> allTabData = new ArrayList<>();
   public static int pathCount = 0;
   public static String studyAccession;
@@ -749,31 +749,33 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 	                Color.GRAY)));
 //	    iconsTable = createMultipleRenderingTable(new SimpleTableModel(new String[] {}, new Object[][] {}));
 //	    iconsTable.setFont(FontTools.getFont10());
-	    String[] studyType = {"shoulder", "knee"};
+//	    String[] studyType = {"shoulder", "knee"};
+	    String[] studyType = {"knee"};
 	    for(int h=0; h<studyType.length; h++) {
+	    	labelsArray = new Object[MeasureToolBar.structureFileTotalRows.get(studyType[h])][];
 		    String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
 			String profileName = Paths.get(prefPath).getFileName().toString();
 		    if(profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || profileName.equalsIgnoreCase("update201@mail.com")) {
 			    // AI annotation sections
-		    	if(studyType[h].equalsIgnoreCase("knee")) {
-		    		MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, ":Knee Views", "Views", 14, 21);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "S:Patellofemoral", "PFA", 22, 31);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:Medial TibioFemoral", "MTF", 32, 41);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:Lateral TibioFemoral", "LTF", 42, 51);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "L:Joint Effusion", "JE", 52, 57);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "L:Vascular Calcification", "VC", 58, 63);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "L:Quadriceps Spur", "QS", 64, 69);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "L:OSD", "OSD", 70, 75);
-		    	} else {
-		    		MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:", "Shoudler Views", 76, 83);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:", "AP GHJ", 84, 93);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:", "AP ACJ", 94, 103);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:", "AP SAC", 104, 109);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G:", "AP-G GHJ", 110, 119);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G:", "AP-G ACJ", 110, 119);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G:", "AP-G SAC", 120, 125);
-				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AS:", "AS", 126, 135);
-		    	}
+//		    	if(studyType[h].equalsIgnoreCase("knee")) {
+//		    		MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, ":Knee Views", "Views", 14, 21);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "S:Patellofemoral", "PFA", 22, 31);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:Medial TibioFemoral", "MTF", 32, 41);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:Lateral TibioFemoral", "LTF", 42, 51);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "L:Joint Effusion", "JE", 52, 57);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "L:Vascular Calcification", "VC", 58, 63);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "L:Quadriceps Spur", "QS", 64, 69);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "L:OSD", "OSD", 70, 75);
+//		    	} else {
+//		    		MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:", "Shoudler Views", 76, 83);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:", "AP GHJ", 84, 93);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:", "AP ACJ", 94, 103);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP:", "AP SAC", 104, 109);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G:", "AP-G GHJ", 110, 119);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G:", "AP-G ACJ", 110, 119);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AP-G:", "AP-G SAC", 120, 125);
+//				    MeasureTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, "AS:", "AS", 126, 135);
+//		    	}
 			}
 	
 		    JPanel panel1 = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -876,7 +878,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 	//	          TableColumnAdjuster.pack(iconsTable);
 	//	          iconsTableContainer.revalidate();
 	//	          iconsTableContainer.repaint();
-		    labelsArray = new Object[8][];
+//		    labelsArray = new Object[MeasureToolBar.structureFileTotalRows.get(studyType[h])][];
 		    pathCount = 0;
 	    }
 	    return transform;

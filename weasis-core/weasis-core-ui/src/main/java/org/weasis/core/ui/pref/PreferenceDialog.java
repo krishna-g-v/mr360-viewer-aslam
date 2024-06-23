@@ -14,6 +14,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Window;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import javax.swing.Box;
@@ -28,7 +29,9 @@ import org.weasis.core.api.gui.InsertableUtil;
 import org.weasis.core.api.gui.PreferencesPageFactory;
 import org.weasis.core.api.gui.util.AbstractItemDialogPage;
 import org.weasis.core.api.gui.util.AbstractWizardDialog;
+import org.weasis.core.api.service.BundleTools;
 import org.weasis.core.ui.Messages;
+import org.weasis.core.ui.editor.image.DefaultView2d;
 
 @SuppressWarnings("serial")
 public class PreferenceDialog extends AbstractWizardDialog {
@@ -81,6 +84,12 @@ public class PreferenceDialog extends AbstractWizardDialog {
     }
     
     list.add(new ModalityPrefView());
+    
+    String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
+	String profileName = Paths.get(prefPath).getFileName().toString();
+    if(profileName.equalsIgnoreCase("v.sarode@primeradiology.com.au") || profileName.equalsIgnoreCase("update201@mail.com")) {
+    	list.add(new AnnotationsPrefView());
+    }
     
     InsertableUtil.sortInsertable(list);
     for (AbstractItemDialogPage page : list) {
