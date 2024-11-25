@@ -133,64 +133,66 @@ public class MeasureToolBar extends WtoolBar {
     
     if (p.getBooleanProperty("weasis.measure.rectangle", true)) {
     	try {
-
-    		String studyPathologiesUrl = "http://ai-viewer-updater.medreport360.com/ko_objects/pathologies/xray_knee.txt";
-    		URL url = new URL(studyPathologiesUrl);
-    		InputStream input = url.openStream();
-    		BufferedReader br = new BufferedReader(new InputStreamReader(input));
-
-//    		BufferedReader br = new BufferedReader(new FileReader("D:/work/javawork/medreport360-viewer/xray_knee_bi.txt"));
-    		String line;
-    		int lineCtr = 0;
-    		while ((line = br.readLine()) != null) {
-    			lineCtr += 1;
-    			if(lineCtr == 1) { // views
-    				structureStartIndices.put("knee", measureGraphicList.size());
-    				String[] views = line.split("\\|");
-    				for (String view : views) { // right side
-    					measureGraphicList.add(new RectangleGraphic(true, "Right", "View", view));
-					}
-    				for (String view : views) { // left side
-    					measureGraphicList.add(new RectangleGraphic(true, "Left", "View", view));
-					}
-    			} else { // pathologies - S:Patellofemoral|PFA|Pattern1
-    				String[] pathologyDetails = line.split("\\|");
-    				String[] pathologyNameAndView = pathologyDetails[0].split(":");
-    				switch (pathologyDetails[2].toLowerCase()) {
-						case "pattern1":
-							measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Normal"));
-							measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Mild"));
-							measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Moderate"));
-							measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Severe"));
-							measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Others"));
-							
-							measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Normal"));
-							measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Mild"));
-							measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Moderate"));
-							measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Severe"));
-							measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Others"));
-
-							break;
-							
-						case "pattern2":
-							measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Normal"));
-							measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Mild"));
-							measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Others"));
-							
-							measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Normal"));
-							measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Mild"));
-							measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Others"));
-
-							break;
-
-						default:
-							break;
-					}
-    				
-    			}
-    		}
-    		structureFileTotalRows.put("knee", lineCtr);
-    		structureFileTotalRows.put("shoulder", lineCtr);
+    		String[] studyType = {"knee", "shoulder", "elbow"};
+    	    for(int h=0; h<studyType.length; h++) {
+	    		String studyPathologiesUrl = "http://ai-viewer-updater.medreport360.com/ko_objects/pathologies/xray_"+studyType[h]+".txt";
+	    		URL url = new URL(studyPathologiesUrl);
+	    		InputStream input = url.openStream();
+	    		BufferedReader br = new BufferedReader(new InputStreamReader(input));
+	
+	//    		BufferedReader br = new BufferedReader(new FileReader("D:/work/javawork/medreport360-viewer/xray_knee_bi.txt"));
+	    		String line;
+	    		int lineCtr = 0;
+	    		while ((line = br.readLine()) != null) {
+	    			lineCtr += 1;
+	    			if(lineCtr == 1) { // views
+	    				structureStartIndices.put(studyType[h], measureGraphicList.size());
+	    				String[] views = line.split("\\|");
+	    				for (String view : views) { // right side
+	    					measureGraphicList.add(new RectangleGraphic(true, "Right", "View", view));
+						}
+	    				for (String view : views) { // left side
+	    					measureGraphicList.add(new RectangleGraphic(true, "Left", "View", view));
+						}
+	    			} else { // pathologies - S:Patellofemoral|PFA|Pattern1
+	    				String[] pathologyDetails = line.split("\\|");
+	    				String[] pathologyNameAndView = pathologyDetails[0].split(":");
+	    				switch (pathologyDetails[2].toLowerCase()) {
+							case "pattern1":
+								measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Normal"));
+								measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Mild"));
+								measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Moderate"));
+								measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Severe"));
+								measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Others"));
+								
+								measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Normal"));
+								measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Mild"));
+								measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Moderate"));
+								measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Severe"));
+								measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Others"));
+	
+								break;
+								
+							case "pattern2":
+								measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Normal"));
+								measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Mild"));
+								measureGraphicList.add(new RectangleGraphic(true, "Right", pathologyNameAndView[1], "Others"));
+								
+								measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Normal"));
+								measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Mild"));
+								measureGraphicList.add(new RectangleGraphic(true, "Left", pathologyNameAndView[1], "Others"));
+	
+								break;
+	
+							default:
+								break;
+						}
+	    				
+	    			}
+	    		}
+	    		structureFileTotalRows.put(studyType[h], lineCtr);
+//	    		structureFileTotalRows.put("shoulder", lineCtr);
+    	    }
     	} catch (Exception e) {
 			// TODO: handle exception
 		}

@@ -120,7 +120,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
   public static JPanel iconsTableContainer;
   public static JTable iconsTable;
   public static List<JPanel> iconsTables = new ArrayList<>();
-  public static Object[][] labelsArray = new Object[MeasureToolBar.structureFileTotalRows.get("knee")][];
+  public static Object[][] labelsArray;
   public static List<Object[][]> allTabData = new ArrayList<>();
   public static int pathCount = 0;
   public static String studyAccession;
@@ -554,6 +554,8 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
                 }
               }
             }
+            viewSetting.setLineColor(Color.yellow);
+            updateMeasureProperties(viewSetting);
           });
       GridBagConstraints constraints = new GridBagConstraints();
       constraints.insets = new Insets(0, 0, 5, 5);
@@ -750,7 +752,7 @@ public class MeasureTool extends PluginTool implements GraphicSelectionListener 
 //	    iconsTable = createMultipleRenderingTable(new SimpleTableModel(new String[] {}, new Object[][] {}));
 //	    iconsTable.setFont(FontTools.getFont10());
 //	    String[] studyType = {"shoulder", "knee"};
-	    String[] studyType = {"knee"};
+	    String[] studyType = {"shoulder"};
 	    for(int h=0; h<studyType.length; h++) {
 	    	labelsArray = new Object[MeasureToolBar.structureFileTotalRows.get(studyType[h])][];
 		    String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");

@@ -47,6 +47,7 @@ import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
@@ -68,11 +69,14 @@ import javax.swing.TransferHandler;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EtchedBorder;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.JLabel;
 
 import org.opencv.core.CvType;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.service.prefs.Preferences;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.weasis.core.api.gui.Image2DViewer;
@@ -105,6 +109,7 @@ import org.weasis.core.api.media.data.Series;
 import org.weasis.core.api.media.data.SeriesComparator;
 import org.weasis.core.api.media.data.TagW;
 import org.weasis.core.api.service.AuditLog;
+import org.weasis.core.api.service.BundlePreferences;
 import org.weasis.core.api.util.FontTools;
 import org.weasis.core.api.gui.util.RadioMenuItem;
 import org.weasis.core.ui.Messages;
@@ -121,6 +126,7 @@ import org.weasis.core.ui.model.graphic.DragGraphic;
 import org.weasis.core.ui.model.graphic.Graphic;
 import org.weasis.core.ui.model.graphic.GraphicLabel;
 import org.weasis.core.ui.model.graphic.GraphicSelectionListener;
+import org.weasis.core.ui.model.graphic.imp.area.RectangleGraphic;
 import org.weasis.core.ui.model.imp.XmlGraphicModel;
 import org.weasis.core.ui.model.layer.LayerAnnotation;
 import org.weasis.core.ui.model.layer.LayerType;
@@ -678,28 +684,32 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
         
      // to update pathologies based on graphic models
         GraphicModel gModelList = (GraphicModel) img.getTagValue(TagW.PresentationModel);
+        RectangleGraphic.gModelList = gModelList;
         String pathView = "";
         if (gModelList != null && aiViewEnabled) {
       	  for(Graphic gModel: gModelList.getModels()) {
 //      		  gModel.getLayer().setSerializable(true);
-      		  if(gModel.getGraphicLabel() == null) continue;
+      		  if(gModel.getGraphicLabel() == null || !(gModel instanceof RectangleGraphic)) continue;
       		  String[] readLabels = gModel.getGraphicLabel().getLabels();
-      		
-      		  if(view2ds.size() == 2 && this == view2ds.get(1)) {
+      		  Map<String, String> labels = new HashMap();
+//      		  if(view2ds.size() == 2 && this == view2ds.get(1)) {
   	    		  for (String str : readLabels) {
-  	    			if(str.toLowerCase().contains("key")) {
-  	    				if(str.split(":")[1].trim().equalsIgnoreCase("view")) {
-  	    					continue;
-  	    				} else {
-  	    					break;
-  	    				} 
-  	    			}
-  	    		  	if(str.toLowerCase().contains("value")) {
-  	    		  		pathView = str.split(":")[1].trim();
-  	    		  	} 
+  	    			labels.put(str.split(":")[0].trim(), str.split(":")[1].trim());
+//  	    			if(str.toLowerCase().contains("key")) {
+//  	    				if(str.split(":")[1].trim().equalsIgnoreCase("view")) {
+//  	    					continue;
+//  	    				} else {
+//  	    					break;
+//  	    				} 
+//  	    			}
+//  	    		  	if(str.toLowerCase().contains("value")) {
+//  	    		  		pathView = str.split(":")[1].trim();
+//  	    		  	} 
   	    		  }
-      		  }
-      		  if(pathView != "") {
+//      		  }
+//      		  if(pathView != "") {
+      		  if(labels.get("Key").equalsIgnoreCase("view")) {
+      			  pathView = labels.get("Value"); 
   	    		  List<JPanel> iconsTabPanels = AnnotationsTool.iconsTables;
   	    		  if(iconsTabPanels != null && iconsTabPanels.size() > 0) {
   	    			  for(int i=0; i<iconsTabPanels.size(); i++) {
@@ -711,21 +721,80 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   	    							  ((DefaultTableModel) table.getModel()).setDataVector(AnnotationsTool.allTabData.get(i), tabHeaders);
   	    				              for (int k = 0; k < table.getModel().getRowCount(); k++) {
   	    				            	  String value = (String) table.getValueAt(k, 0);
-  	    				            	  if(value.startsWith(":")) continue;
+  	    				            	  if(value.startsWith(":")) {
+  	    				            		JToggleButton[] components = null;
+	  	  	    				              if(labels.get("Side").equalsIgnoreCase("left")) {
+	  	  	    				            	  components = (JToggleButton[]) table.getValueAt(k, 2);
+	  	  	    				              } else {
+	  	  	    				            	  components = (JToggleButton[]) table.getValueAt(k, 1);
+	  	  	    				              }
+	  	  	    				              for(JToggleButton j: components) {
+	  	  	    				            	  if(j == null) continue;
+	  	  	    				            	  j.setBorder(null);
+	  	  	    				            	  String path = j.getIcon().toString();
+	  	  	    				            	  path = path.substring(path.lastIndexOf('/') + 1).replaceFirst("[.][^.]+$", "").trim();
+	  	  	    				            	  if(path.equalsIgnoreCase(labels.get("Value").toLowerCase())) {
+	  	  	    				            		  j.setBorder(new LineBorder(Color.YELLOW, 1));
+	  	  	    				            	  }
+	  	  	    				              }
+	  	  	    				              continue;
+  	    				            	  }
   	    				            	  String ViewToolTip = value.substring(0, value.indexOf(':'));
   	    				                  if(value != null && !pathView.equalsIgnoreCase(ViewToolTip)) {
   	    				                	  ((DefaultTableModel) table.getModel()).removeRow(k);
   	    				                	  k--;   	  
+  	    				                  } else {
+  	    				                	 for (int c=table.getModel().getColumnCount()-1; c>0; c--) {
+  	    				                		JToggleButton[] components = (JToggleButton[]) table.getValueAt(k, c);
+  	  	    				                	for(JToggleButton j: components) {
+  	  	    				                		if(j == null) continue;
+  	  	    				                		j.setBorder(null);
+  	  	    				                	} 
+  	    				                	 }
   	    				                  }
   	    				              }
   	    				           } 
   	    				       }
-  	    				   }
+  	    				   } 
   	    			  }
   	    		  }
+      		  } else {
+      			String side = labels.get("Side").toLowerCase();
+      			String val = labels.get("Value").toLowerCase();
+      			String key = labels.get("Key").toLowerCase();
+      			List<JPanel> iconsTabPanels = AnnotationsTool.iconsTables;
+	    		  if(iconsTabPanels != null && iconsTabPanels.size() > 0) {
+	    			  for(int i=0; i<iconsTabPanels.size(); i++) {
+	    				  if(iconsTabPanels.get(i).isVisible()) {
+	    					  for (Component component : iconsTabPanels.get(i).getComponents()) {
+	    						  if (component instanceof JTable) {
+	    							  JTable table = (JTable) component;
+	    				              for (int k = 0; k < table.getModel().getRowCount(); k++) {
+	    				            	  String value = (String) table.getValueAt(k, 0);
+	    				            	  if(value.startsWith(":")) continue;
+	    				            	  JToggleButton[] components = null;
+	  	    				              if(side.contains("left")) {
+	  	    				            	  components = (JToggleButton[]) table.getValueAt(k, 2);
+	  	    				              } else {
+	  	    				            	  components = (JToggleButton[]) table.getValueAt(k, 1);
+	  	    				              }
+	  	    				              for(JToggleButton j: components) {
+	  	    				            	  if(j == null) continue;
+	  	    				            	  String path = j.getIcon().toString().replace("nad", "normal");
+	  	    				            	  if(path.contains(val) && key.equalsIgnoreCase(value.split("\\|")[0].split(":")[1])) {
+	  	    				            		  j.setBorder(new LineBorder((Color) gModel.getColorPaint(), 1));
+	  	    				            	  }
+	  	    				              }	 
+	    				              }
+	    						  }
+	    					  }
+	    				  }
+	    			  }
+	    		  }
       		  }
       	  }
         }
+//        }
         
         if (view2ds.size() == 2 && this == view2ds.get(0) && aiViewEnabled) {
         	view2ds.get(0).setGraphicManager(new XmlGraphicModel(img));
@@ -798,6 +867,8 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
       	imageLayer.fireOpEvent(
               new ImageOpEvent(ImageOpEvent.OpEvent.ResetDisplay, series, img, null));
       	imageLayer.setEnableDispOperations(true);
+      	Preferences bundlePrefs = BundlePreferences.getDefaultPreferences(FrameworkUtil.getBundle(eventManager.getSelectedView2dContainer().getClass()).getBundleContext());
+      	eventManager.changeLeftMouseAction(bundlePrefs.get(MouseActions.T_LEFT, ActionW.PAN.cmd()));
       }
     }
   }

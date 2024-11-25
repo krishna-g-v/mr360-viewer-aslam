@@ -61,6 +61,7 @@ import javax.swing.JToggleButton;
 import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
@@ -121,8 +122,9 @@ public class AnnotationsTool extends PluginTool implements GraphicSelectionListe
   public static JPanel iconsTableContainer;
   public static JTable iconsTable;
   public static List<JPanel> iconsTables = new ArrayList<>();
-  public static Object[][] labelsArray = new Object[8][];
+  public static Object[][] labelsArray;
   public static List<Object[][]> allTabData = new ArrayList<>();
+  public static Object editorCellComponents;
   public static int pathCount = 0;
   public static String studyAccession;
   public static JPanel reportRendererPanel;
@@ -688,6 +690,35 @@ public class AnnotationsTool extends PluginTool implements GraphicSelectionListe
 	                  toolBar.changeButtonState(MouseActions.T_LEFT, cmd);
 	                }
 	              }
+	              
+	              // set color coding 
+	              String btnType = ((JToggleButton) e.getSource()).getIcon().toString();
+		          if(btnType.contains("nad")) {
+		            	viewSetting.setLineColor(Color.green); 
+		          } else if(btnType.contains("mild")) {
+		            	viewSetting.setLineColor(Color.orange);
+		          } else if(btnType.contains("moderate")) {
+		            	viewSetting.setLineColor(Color.pink);
+		          } else if(btnType.contains("severe")) {
+		            	viewSetting.setLineColor(Color.red);
+		          } else {
+		            	viewSetting.setLineColor(Color.yellow);
+		          }
+		          viewSetting.setLineWidth(1);
+		          updateMeasureProperties(viewSetting);
+		          ((JToggleButton) e.getSource()).setBorder(new LineBorder(viewSetting.getLineColor(), 1));
+		          
+		          if(editorCellComponents != null) {
+			          JToggleButton[] toggleButtons = (JToggleButton[]) editorCellComponents;
+			          for (int b = 0; b < toggleButtons.length; b++) {
+			        	  if(toggleButtons[b] != null) {
+			        		  boolean b1 = toggleButtons[b].getBorder() == null ? false : true; 
+			        		  if(b1 && (JToggleButton) e.getSource() != toggleButtons[b]) {
+			        			  toggleButtons[b].setBorder(null); 
+			        		  }
+			        	  }
+			          }
+		          }
 	            }
 	          });
 	      GridBagConstraints constraints = new GridBagConstraints();
@@ -730,7 +761,7 @@ public class AnnotationsTool extends PluginTool implements GraphicSelectionListe
 	                Color.GRAY)));
 //	    iconsTable = createMultipleRenderingTable(new SimpleTableModel(new String[] {}, new Object[][] {}));
 //	    iconsTable.setFont(FontTools.getFont10());
-	    String[] studyType = {"knee"};
+	    String[] studyType = {"knee", "shoulder", "elbow"};
 	    for(int h=0; h<studyType.length; h++) {
 	    	labelsArray = new Object[MeasureToolBar.structureFileTotalRows.get(studyType[h])][];
 		    String prefPath = BundleTools.SYSTEM_PREFERENCES.getProperty("weasis.pref.dir");
@@ -740,15 +771,15 @@ public class AnnotationsTool extends PluginTool implements GraphicSelectionListe
 		    	try {
 				    // AI annotation sections
 		    		int lineCtr = 0;
-					int startIndx = MeasureToolBar.structureStartIndices.get("knee"), endIndx = 0;
+					int startIndx = MeasureToolBar.structureStartIndices.get(studyType[h]), endIndx = 0;
 					Map<String, Integer> pathologyPatternBtnsCount = new HashMap<String, Integer>();
 					pathologyPatternBtnsCount.put("pattern1", 5);
 					pathologyPatternBtnsCount.put("pattern2", 3);
 					
-					if(studyType[h].equalsIgnoreCase("knee")) {
+//					if(studyType[h].equalsIgnoreCase("knee")) {
 //			    		BufferedReader br = new BufferedReader(new FileReader("D:/work/javawork/medreport360-viewer/xray_knee_bi.txt"));
 			    		
-			    		String studyPathologiesUrl = "http://ai-viewer-updater.medreport360.com/ko_objects/pathologies/xray_knee.txt";
+			    		String studyPathologiesUrl = "http://ai-viewer-updater.medreport360.com/ko_objects/pathologies/xray_"+studyType[h]+".txt";
 			    		URL url = new URL(studyPathologiesUrl);
 			    		InputStream input = url.openStream();
 			    		BufferedReader br = new BufferedReader(new InputStreamReader(input));
@@ -758,8 +789,9 @@ public class AnnotationsTool extends PluginTool implements GraphicSelectionListe
 			    			lineCtr += 1;
 			    			if(lineCtr == 1) { // views
 			    				String[] views = line.split("\\|");
-			    				endIndx = startIndx + (2 * views.length) - 1; // startIndx is also included and hence -1	    				
-			    				AnnotationsTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, ":Knee Views", "Views", startIndx, endIndx);
+			    				endIndx = startIndx + (2 * views.length) - 1; // startIndx is also included and hence -1
+			    				String studyTypeCamelCase = Character.toUpperCase(studyType[h].charAt(0)) + studyType[h].substring(1).toLowerCase();
+			    				AnnotationsTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, ":"+studyTypeCamelCase+" Views", "Views", startIndx, endIndx);
 			    			} else {
 			    				String[] pathologyDetails = line.split("\\|");
 			    				endIndx = startIndx + (2 * pathologyPatternBtnsCount.get(pathologyDetails[2].toLowerCase())) - 1;
@@ -767,7 +799,7 @@ public class AnnotationsTool extends PluginTool implements GraphicSelectionListe
 			    			}
 			    			startIndx = endIndx + 1;
 			    		}
-					}
+//					}
 		    	} catch (Exception e) {}
 //		    	if(studyType[h].equalsIgnoreCase("knee")) {
 //		    		AnnotationsTool.buildAnnotationIconPanelTable(transform, eventManager, ActionW.MEASURE, ActionW.DRAW_MEASURE, 4, ":Knee Views", "Views", 14, 21);
@@ -870,7 +902,7 @@ public class AnnotationsTool extends PluginTool implements GraphicSelectionListe
 	              int row = iconsTable.rowAtPoint(e.getPoint());
 	              int column = iconsTable.columnAtPoint(e.getPoint());
 	              if (row >= 0 && column >= 0) {
-	                  Object tabElem = iconsTable.getValueAt(row, column);
+	            	  editorCellComponents = iconsTable.getValueAt(row, column);
 	              }
 	          }
 	      });
@@ -880,7 +912,6 @@ public class AnnotationsTool extends PluginTool implements GraphicSelectionListe
 	//	    iconsTable.getColumnModel().getColumn(2).setCellRenderer(new ToggleButtonArrayRenderer());
 	//	    iconsTable.getColumnModel().getColumn(2).setCellEditor(new ToggleButtonArrayEditor());
 		    iconsTable.setRowHeight(28);
-		          
 		    int height =
 		              (iconsTable.getRowHeight() + iconsTable.getRowMargin()) * iconsTable.getRowCount()
 		                  + iconsTable.getTableHeader().getHeight()
@@ -982,6 +1013,7 @@ public class AnnotationsTool extends PluginTool implements GraphicSelectionListe
         		  panel.add(toggleButtons[i]);
         	  }
           }
+          editorCellComponents = (JToggleButton[]) value;
           return panel;
       }
 

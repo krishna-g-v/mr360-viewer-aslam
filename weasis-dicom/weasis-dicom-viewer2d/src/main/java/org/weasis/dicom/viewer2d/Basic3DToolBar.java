@@ -11,8 +11,13 @@ package org.weasis.dicom.viewer2d;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Optional;
+
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.AbstractButton;
+import javax.swing.JToggleButton;
 
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.prefs.Preferences;
@@ -21,18 +26,25 @@ import org.weasis.core.api.gui.util.ActionState;
 import org.weasis.core.api.gui.util.ActionW;
 import org.weasis.core.api.gui.util.JMVUtils;
 import org.weasis.core.api.gui.util.RadioMenuItem;
+import org.weasis.core.api.gui.util.SliderChangeListener;
 import org.weasis.core.api.media.data.MediaSeries;
 import org.weasis.core.api.media.data.TagW;
 import org.weasis.core.api.service.BundlePreferences;
+import org.weasis.core.api.media.data.ImageElement;
+import org.weasis.core.ui.docking.DockableTool;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
 import org.weasis.core.ui.editor.image.ImageViewerPlugin;
 import org.weasis.core.ui.editor.image.ViewCanvas;
+import org.weasis.core.ui.model.graphic.Graphic;
+import org.weasis.core.ui.model.layer.LayerType;
 import org.weasis.core.ui.util.WtoolBar;
+import org.weasis.core.ui.model.GraphicModel;
 import org.weasis.dicom.explorer.DicomModel;
 import org.weasis.dicom.viewer2d.mip.MipPopup;
 import org.weasis.dicom.viewer2d.mip.MipPopup.MipDialog;
 import org.weasis.dicom.viewer2d.mip.MipView;
 import org.weasis.dicom.viewer2d.mpr.MPRFactory;
+import org.weasis.dicom.viewer2d.View2dContainer;
 
 public class Basic3DToolBar<DicomImageElement> extends WtoolBar {
 //  public static boolean mouseActionsSaved = false;
@@ -63,6 +75,34 @@ public class Basic3DToolBar<DicomImageElement> extends WtoolBar {
 //        }
 //    });
 //    add(saveButton);
+    
+    
+    final JToggleButton showHideDrawingBtn = new JToggleButton();
+	showHideDrawingBtn.setToolTipText("Show / Hide Drawings");
+	showHideDrawingBtn.setText("Drawings");
+	showHideDrawingBtn.addActionListener(e -> {
+        	List<ViewCanvas<org.weasis.dicom.codec.DicomImageElement>> views = 
+        			EventManager.getInstance().getSelectedView2dContainer().getImagePanels();      	
+        	for (ViewCanvas<?> v : views) {
+        		Iterable<?> list = v.getSeries().getMedias(null, null);
+        		for (Object dcm : list) {
+        			org.weasis.dicom.codec.DicomImageElement r = (org.weasis.dicom.codec.DicomImageElement) dcm;
+        			GraphicModel gModelList = (GraphicModel) r.getTagValue(TagW.PresentationModel);
+        			if(gModelList != null) {
+	        			List<Graphic> gModels = gModelList.getModels();
+		        		for (Graphic gModel : gModels) {
+		        			if(!gModel.getLayerType().name().equalsIgnoreCase(LayerType.CROSSLINES.toString())) {
+		        				v.setDrawingsVisibility(showHideDrawingBtn.isSelected());
+		        			}
+		        		}
+        			}
+        		}
+        		
+            }
+        	
+        
+    });
+  add(showHideDrawingBtn);
 
     // Attach 3D functions to the SCROLL_SERIES actions
     ActionState scrollAction = EventManager.getInstance().getAction(ActionW.SCROLL_SERIES);

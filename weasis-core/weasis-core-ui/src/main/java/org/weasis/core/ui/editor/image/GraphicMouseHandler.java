@@ -15,7 +15,9 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.osgi.framework.FrameworkUtil;
@@ -25,6 +27,7 @@ import org.weasis.core.api.gui.util.ComboItemListener;
 import org.weasis.core.api.gui.util.MouseActionAdapter;
 import org.weasis.core.api.gui.util.ToggleButtonListener;
 import org.weasis.core.api.media.data.ImageElement;
+import org.weasis.core.api.media.data.TagW;
 import org.weasis.core.api.service.BundlePreferences;
 import org.weasis.core.ui.editor.image.DefaultView2d.BulkDragSequence;
 import org.weasis.core.ui.model.AbstractGraphicModel;
@@ -35,6 +38,8 @@ import org.weasis.core.ui.model.graphic.imp.area.SelectGraphic;
 import org.weasis.core.ui.model.utils.Draggable;
 import org.weasis.core.ui.model.utils.imp.DefaultDragSequence;
 import org.weasis.core.ui.util.MouseEventDouble;
+import org.weasis.core.ui.model.graphic.imp.area.RectangleGraphic;
+import org.weasis.core.ui.editor.image.GraphicsPane;
 
 public class GraphicMouseHandler<E extends ImageElement> extends MouseActionAdapter {
   private final ViewCanvas<E> vImg;
@@ -155,14 +160,24 @@ public class GraphicMouseHandler<E extends ImageElement> extends MouseActionAdap
                 ActionW.DRAW_CMD_PREFIX + action.get().cmd(), ComboItemListener.class);
         if (items.isPresent()) {
           Object item = items.get().getSelectedItem();
-          Graphic graph =
-              AbstractGraphicModel.drawFromCurrentGraphic(
-                  vImg, (Graphic) (item instanceof Graphic ? item : null));
-          if (graph instanceof DragGraphic) {
-            ds = ((DragGraphic) graph).createResizeDrag();
-            if (!(graph instanceof SelectGraphic)) {
-              vImg.getGraphicManager().setSelectedGraphic(Collections.singletonList(graph));
-            }
+          Graphic sameGraphicPathExists = removeLatest(item);
+          if(sameGraphicPathExists == null) {
+	          Graphic graph =
+	              AbstractGraphicModel.drawFromCurrentGraphic(
+	                  vImg, (Graphic) (item instanceof Graphic ? item : null));
+	          if (graph instanceof DragGraphic) {
+	            ds = ((DragGraphic) graph).createResizeDrag();
+	            if (!(graph instanceof SelectGraphic)) {
+	              vImg.getGraphicManager().setSelectedGraphic(Collections.singletonList(graph));
+	            }
+	          }
+          } else {
+        	  if (sameGraphicPathExists instanceof DragGraphic) {
+  	            ds = ((DragGraphic) sameGraphicPathExists).createResizeDrag();
+  	            if (!(sameGraphicPathExists instanceof SelectGraphic)) {
+  	              vImg.getGraphicManager().setSelectedGraphic(Collections.singletonList(sameGraphicPathExists));
+  	            }
+  	          }
           }
         }
       }
@@ -307,6 +322,41 @@ public class GraphicMouseHandler<E extends ImageElement> extends MouseActionAdap
 //    	Preferences bundlePrefs = BundlePreferences.getDefaultPreferences(FrameworkUtil.getBundle(vImg.getEventManager().getSelectedView2dContainer().getClass()).getBundleContext());
 //        vImg.getEventManager().changeLeftMouseAction(bundlePrefs.get(MouseActions.T_LEFT, ActionW.PAN.cmd()));
 //    }
+//    List<Graphic> gModelList = ((GraphicModel) vImg.getImage().getTagValue(TagW.PresentationModel)).getModels();
+//    if(gModelList.size() > 0 && selectedDragGraphList.size() > 0) {
+//	    Map<String, String> thisSelectedlabelsMap = new HashMap();
+//	    String[] thisSelectedLabels = selectedDragGraphList.get(0).getGraphicLabel().getLabels();
+//	    for(String gLabel: thisSelectedLabels) {
+//	    	thisSelectedlabelsMap.put(gLabel.split(":")[0].trim(), gLabel.split(":")[1].trim());
+//	    }
+//	    
+//	    boolean updateExistingModel = false;
+//	    for(int k=0; k<gModelList.size()-1; k++) {
+//	    	String[] labelss = gModelList.get(k).getGraphicLabel().getLabels();
+//	    	Map<String, String> labels = new HashMap();
+//	    	for(String str: labelss) {
+//	    		labels.put(str.split(":")[0].trim(), str.split(":")[1].trim());
+//	        }
+//	    	if(labels.get("Key").equalsIgnoreCase("view")) continue;
+//	    	
+//	    	if(labels.get("Key").equalsIgnoreCase(thisSelectedlabelsMap.get("Key"))) {
+//	    		labels.put("Value", thisSelectedlabelsMap.get("Value"));
+//	    		String[] mm = labels.entrySet().stream()
+//	                    .map(entry -> entry.getKey() + " : " + entry.getValue())
+//	                    .toArray(String[]::new);
+//	    		gModelList.get(k).setLabel(mm, vImg);
+//	    		updateExistingModel = true;
+//	    	}
+//	    }
+//	    if(updateExistingModel) {
+//	    	vImg.getImageLayer().getSourceImage().getMediaReader().getMediaElement();
+//	    	gModelList.remove(selectedDragGraphList.get(0));
+//	    }
+//	    
+//    }
+    
+   
+    
 
     vImg.getJComponent()
         .setCursor(Optional.ofNullable(newCursor).orElse(cursorSet.getDrawingCursor()));
@@ -394,7 +444,45 @@ public class GraphicMouseHandler<E extends ImageElement> extends MouseActionAdap
           .setCursor(Optional.ofNullable(newCursor).orElse(cursorSet.getDrawingCursor()));
     }
   }
-
+  
+  
+  public Graphic removeLatest(Object graphic) {
+	  boolean graphicExists = false;
+	  Graphic foundGraph = null;
+	  if(!(graphic instanceof RectangleGraphic)) return foundGraph;
+	  RectangleGraphic currentGraphic = (RectangleGraphic) graphic;
+	  List<Graphic> gModelList = ((GraphicModel) vImg.getImage().getTagValue(TagW.PresentationModel)).getModels();
+	    if(gModelList.size() > 0 && currentGraphic != null) {
+		    String currentVal = currentGraphic.annotationVal;
+		    String currentKey = currentGraphic.annotationKey;
+		    String currentSide = currentGraphic.annotationSide;
+		    
+		    for(int k=0; k<gModelList.size(); k++) {
+		    	if(!(gModelList.get(k) instanceof RectangleGraphic)) continue; 
+		    	String[] labelsList = gModelList.get(k).getGraphicLabel().getLabels();
+		    	Map<String, String> labels = new HashMap();
+		    	for(String str: labelsList) {
+		    		labels.put(str.split(":")[0].trim(), str.split(":")[1].trim());
+		        }
+		    	if(labels.get("Key").equalsIgnoreCase("view")) continue;
+		    	
+		    	if(labels.get("Side").equalsIgnoreCase(currentSide) && labels.get("Key").equalsIgnoreCase(currentKey)) {
+		    		labels.put("Value", currentVal);
+		    		((RectangleGraphic) gModelList.get(k)).annotationVal = currentVal;
+		    		((RectangleGraphic) gModelList.get(k)).setColorPaint(currentGraphic.getColorPaint());
+		    		String[] updatedLabelsList = labels.entrySet().stream()
+		                    .map(entry -> entry.getKey() + " : " + entry.getValue())
+		                    .toArray(String[]::new);
+		    		gModelList.get(k).setLabel(updatedLabelsList, vImg);
+		    		foundGraph = gModelList.get(k);
+		    		graphicExists = true;
+		    	}
+		    }
+		    
+	    }
+	    return foundGraph;
+  }
+  
   public static class CursorSet {
     private final Cursor drawingCursor;
     private final Cursor moveCursor;
