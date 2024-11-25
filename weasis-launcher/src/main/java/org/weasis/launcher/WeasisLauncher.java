@@ -438,6 +438,14 @@ public class WeasisLauncher {
 
             // execute the commands from main argv
             for (String command : commandList) {
+              if(command.contains("xml")) {
+            	  try {
+            		  command = command.substring(command.indexOf("//") + 2).replaceAll("$", "").replaceAll("/", "");
+  	            	  command = java.net.URLDecoder.decode(command, StandardCharsets.UTF_8.name());
+  	              } catch (UnsupportedEncodingException e) {
+  	            		LOGGER.log(Level.SEVERE, "Cannot load xml url");
+  	              }
+              }
               commandSessionExecute(commandSession, command);
             }
             commandSessionClose(commandSession);

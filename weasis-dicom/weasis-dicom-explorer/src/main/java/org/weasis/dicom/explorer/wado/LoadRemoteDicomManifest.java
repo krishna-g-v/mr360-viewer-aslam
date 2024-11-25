@@ -47,6 +47,8 @@ public class LoadRemoteDicomManifest extends ExplorerTask<Boolean, String> {
   private final List<String> xmlFiles;
   private final AtomicInteger retryNb = new AtomicInteger(0);
   private final List<LoadSeries> loadSeriesList = new ArrayList<>();
+  public static String studySeriesForXray = null;
+  
   private final PropertyChangeListener propertyChangeListener =
       evt -> {
         if (evt instanceof ObservableEvent) {

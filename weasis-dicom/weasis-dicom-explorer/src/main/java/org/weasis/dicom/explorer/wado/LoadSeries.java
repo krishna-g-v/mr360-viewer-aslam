@@ -11,6 +11,7 @@ package org.weasis.dicom.explorer.wado;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelListener;
@@ -30,6 +31,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -55,6 +57,7 @@ import org.weasis.core.api.explorer.ObservableEvent;
 import org.weasis.core.api.gui.task.SeriesProgressMonitor;
 import org.weasis.core.api.gui.util.AppProperties;
 import org.weasis.core.api.gui.util.GuiExecutor;
+import org.weasis.core.api.media.data.ImageElement;
 import org.weasis.core.api.media.data.MediaElement;
 import org.weasis.core.api.media.data.MediaSeries;
 import org.weasis.core.api.media.data.MediaSeriesGroup;
@@ -76,7 +79,9 @@ import org.weasis.core.api.util.URLParameters;
 import org.weasis.core.ui.docking.UIManager;
 import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
+import org.weasis.core.ui.editor.image.DefaultView2d;
 import org.weasis.core.ui.editor.image.ImageViewerPlugin;
+import org.weasis.core.ui.editor.image.SynchData;
 import org.weasis.core.ui.editor.image.ViewCanvas;
 import org.weasis.core.ui.editor.image.ViewerPlugin;
 import org.weasis.core.ui.model.GraphicModel;
@@ -1128,11 +1133,47 @@ public class LoadSeries extends ExplorerTask<Boolean, String> implements SeriesI
             }
           }
         }
-
-        for (MediaElement media : medias) {
-          applyPresentationModel(media);
-          dicomModel.applySplittingRules(dicomSeries, media);
+        
+        String seriesModality = reader.getTagValue(TagD.get(Tag.Modality)).toString().equals("DX") ? "CR" : reader.getTagValue(TagD.get(Tag.Modality)).toString();
+        String seriesUID = (String) reader.getTagValue(TagD.get(Tag.SeriesInstanceUID));
+        Integer xraySeriesNo = null;
+        Series dicomSeriesUpd;
+        MediaSeriesGroup study = dicomModel.getParent(dicomSeries, DicomModel.study);
+        if(seriesModality != null && seriesModality.equals("CR")) {
+        	DefaultView2d.studyModality = seriesModality;
+        	if(LoadRemoteDicomManifest.studySeriesForXray == null) {
+    			Series dicomSeriesOfFirstFile = reader.buildSeries(seriesUID);
+    			reader.writeMetaData(dicomSeriesOfFirstFile);
+    			Integer thisSeriesNo = TagD.getTagValue(dicomSeriesOfFirstFile, Tag.SeriesNumber, Integer.class);
+    			Integer thisInstanceNo = TagD.getTagValue(reader, Tag.InstanceNumber, Integer.class);
+    			xraySeriesNo = (thisSeriesNo * 1000) + thisInstanceNo;
+    			
+    			LoadRemoteDicomManifest.studySeriesForXray = seriesUID;
+    			DicomModel.xraySeriesStore = LoadRemoteDicomManifest.studySeriesForXray;
+        	} else {
+        		if(seriesUID.equals(LoadRemoteDicomManifest.studySeriesForXray)) {
+        			Series dicomSeriesOfFirstFile = reader.buildSeries(seriesUID);
+        			reader.writeMetaData(dicomSeriesOfFirstFile);
+        			Integer thisSeriesNo = TagD.getTagValue(dicomSeriesOfFirstFile, Tag.SeriesNumber, Integer.class);
+        			Integer thisInstanceNo = TagD.getTagValue(reader, Tag.InstanceNumber, Integer.class);
+        			xraySeriesNo = (thisSeriesNo * 1000) + thisInstanceNo;    			
+        		}
+        	}
+        	dicomSeriesUpd = (Series) dicomModel.getHierarchyNode(study, LoadRemoteDicomManifest.studySeriesForXray);
+        	for (MediaElement media : medias) {
+                applyPresentationModel(media);
+                media.setTag(TagD.get(Tag.SeriesNumber), xraySeriesNo);
+                dicomModel.applySplittingRules(dicomSeriesUpd, media);
+                Integer thisSeriesNo = TagD.getTagValue(media, Tag.SeriesNumber, Integer.class);
+                media.setTag(TagD.get(Tag.SeriesNumber), xraySeriesNo);
+              }
+        } else {
+	        for (MediaElement media : medias) {
+	          applyPresentationModel(media);
+	          dicomModel.applySplittingRules(dicomSeries, media);
+	        }
         }
+        
         if (firstImageToDisplay && dicomSeries.size(null) == 0) {
           firstImageToDisplay = false;
         }

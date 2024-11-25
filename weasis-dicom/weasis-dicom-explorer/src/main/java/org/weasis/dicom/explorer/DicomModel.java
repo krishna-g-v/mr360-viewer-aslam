@@ -1250,6 +1250,10 @@ public class DicomModel implements TreeModel, DataExplorerModel {
 
     // build WADO series list to download
     if (opt.isSet("wado")) { // NON-NLS
+      // Removing all patients
+      for (MediaSeriesGroup patientGroup : model.getSuccessors(MediaSeriesGroupNode.rootNode)) {
+    	  removePatient(patientGroup);
+      }
       LOADING_EXECUTOR.execute(new LoadRemoteDicomManifest(wargs, DicomModel.this));
     }
 
