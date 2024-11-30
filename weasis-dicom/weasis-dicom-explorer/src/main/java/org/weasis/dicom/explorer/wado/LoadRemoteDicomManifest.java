@@ -22,18 +22,36 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import javax.swing.JOptionPane;
+
+import org.dcm4che3.data.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.weasis.core.api.explorer.ObservableEvent;
 import org.weasis.core.api.explorer.ObservableEvent.BasicAction;
 import org.weasis.core.api.explorer.model.DataExplorerModel;
+import org.weasis.core.api.media.data.SeriesThumbnail;
+import org.weasis.core.api.media.data.TagW;
+import org.weasis.core.api.media.data.Thumbnail;
 import org.weasis.core.api.gui.util.GuiExecutor;
+import org.weasis.core.api.media.data.ImageElement;
+import org.weasis.core.api.media.data.MediaElement;
+import org.weasis.core.api.media.data.MediaSeriesGroup;
+import org.weasis.core.api.media.data.MediaSeriesGroupNode;
 import org.weasis.core.api.service.BundleTools;
 import org.weasis.core.api.util.NetworkUtil;
+import org.weasis.core.api.media.data.Series;
 import org.weasis.core.ui.docking.UIManager;
+import org.weasis.core.ui.editor.SeriesViewerFactory;
+import org.weasis.core.ui.editor.ViewerPluginBuilder;
+import org.weasis.core.ui.editor.image.DefaultView2d;
+import org.weasis.core.ui.editor.image.ImageViewerPlugin;
+import org.weasis.core.ui.editor.image.SynchData;
+import org.weasis.core.ui.editor.image.ViewCanvas;
 import org.weasis.core.util.StreamIOException;
 import org.weasis.core.util.StringUtil;
 import org.weasis.core.util.StringUtil.Suffix;
+import org.weasis.dicom.codec.TagD;
+import org.weasis.dicom.explorer.DicomExplorer;
 import org.weasis.dicom.explorer.DicomModel;
 import org.weasis.dicom.explorer.ExplorerTask;
 import org.weasis.dicom.explorer.Messages;
@@ -98,6 +116,9 @@ public class LoadRemoteDicomManifest extends ExplorerTask<Boolean, String> {
         dicomModel.addPropertyChangeListener(propertyChangeListener);
       } else {
         dicomModel.removePropertyChangeListener(propertyChangeListener);
+        
+        // Call to all view2ds with thumnail series in sequence 
+        loadStackViewSeries();
       }
     }
   }
@@ -197,5 +218,47 @@ public class LoadRemoteDicomManifest extends ExplorerTask<Boolean, String> {
     // Sort tasks from the download priority order (low number has a higher priority), TASKS
     // is sorted from low to high priority.
     DownloadManager.TASKS.sort(Collections.reverseOrder(new PriorityTaskComparator()));
+  }
+
+  // Load respective series only when synch view mode set to stack
+  private void loadStackViewSeries() {
+    if (UIManager.VIEWER_PLUGINS.size() > 0 && ((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)) != null) {
+      if(SynchData.Mode.STACK.equals(((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getSynchView().getSynchData().getMode())) {
+        DicomExplorer dcmExplorer = (DicomExplorer) UIManager.EXPLORER_PLUGINS.get(0);
+	    DicomModel dcmModel = (DicomModel) dcmExplorer.getDataExplorerModel();
+	    List<ImageViewerPlugin> panes = ((ImageViewerPlugin) UIManager.VIEWER_PLUGINS.get(0)).getImagePanels();
+	    for (MediaSeriesGroup pt : dcmModel.getChildren(MediaSeriesGroupNode.rootNode)) {
+	      for (MediaSeriesGroup st : dcmModel.getChildren(pt)) {
+	        int k = 0;
+	        List<MediaSeriesGroup> list = (List) dcmModel.getChildren(st);
+	        Collections.sort(list, (l1, l2) -> TagD.getTagValue(l1, Tag.SeriesNumber, Integer.class) - TagD.getTagValue(l2, Tag.SeriesNumber, Integer.class));
+	        for( MediaSeriesGroup stm: list) {
+	          SeriesThumbnail t = (SeriesThumbnail) stm.getTagValue(TagW.Thumbnail);
+	    	  if(k < panes.size()) {
+	    	    ((ViewCanvas) panes.get(k)).setSeries(t.getSeries());
+	    	    k++;
+	    	  }	    	    		  
+	        }      
+	      }
+	    }
+      } else if(SynchData.Mode.TILE.equals(((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getSynchView().getSynchData().getMode())) {
+    	//Open plugin with merged Xray series of unique instances 
+    	  DicomExplorer dcmExplorer = (DicomExplorer) UIManager.EXPLORER_PLUGINS.get(0);
+  	      DicomModel dcmModel = (DicomModel) dcmExplorer.getDataExplorerModel();
+    	  if(DefaultView2d.studyModality == "CR") {
+    		  for (MediaSeriesGroup pt : dcmModel.getChildren(MediaSeriesGroupNode.rootNode)) {
+    		      for (MediaSeriesGroup st : dcmModel.getChildren(pt)) {
+    		    	  for (MediaSeriesGroup sr : dcmModel.getChildren(st)) {
+    		    		  if (((Series) sr).getSortedMedias(null).size() > 0) {
+    		    	        SeriesViewerFactory plugin = UIManager.getViewerFactory(((Series) sr).getMimeType());
+        	        	    ViewerPluginBuilder.openSequenceInPlugin(plugin, (Series) sr, dcmModel, true, true);
+    		    		  }
+    		    	  }
+    		    	  
+    		      }
+    	  	  }
+    	  }
+       }
+    }
   }
 }

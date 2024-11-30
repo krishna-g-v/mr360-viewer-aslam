@@ -81,7 +81,6 @@ import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
 import org.weasis.core.ui.editor.image.DefaultView2d;
 import org.weasis.core.ui.editor.image.ImageViewerPlugin;
-import org.weasis.core.ui.editor.image.SynchData;
 import org.weasis.core.ui.editor.image.ViewCanvas;
 import org.weasis.core.ui.editor.image.ViewerPlugin;
 import org.weasis.core.ui.model.GraphicModel;
@@ -1111,6 +1110,7 @@ public class LoadSeries extends ExplorerTask<Boolean, String> implements SeriesI
     private void updateUI(final DicomMediaIO reader) {
       boolean firstImageToDisplay = false;
       MediaElement[] medias = reader.getMediaElement();
+      Series dicomSeriesMerge = null;
       if (medias != null) {
         firstImageToDisplay = dicomSeries.size(null) == 0;
         if (firstImageToDisplay) {
@@ -1134,10 +1134,11 @@ public class LoadSeries extends ExplorerTask<Boolean, String> implements SeriesI
           }
         }
         
+        // Combine Xray series under a single thumbail even if with unique SOP
         String seriesModality = reader.getTagValue(TagD.get(Tag.Modality)).toString().equals("DX") ? "CR" : reader.getTagValue(TagD.get(Tag.Modality)).toString();
         String seriesUID = (String) reader.getTagValue(TagD.get(Tag.SeriesInstanceUID));
         Integer xraySeriesNo = null;
-        Series dicomSeriesUpd;
+        
         MediaSeriesGroup study = dicomModel.getParent(dicomSeries, DicomModel.study);
         if(seriesModality != null && seriesModality.equals("CR")) {
         	DefaultView2d.studyModality = seriesModality;
@@ -1159,11 +1160,13 @@ public class LoadSeries extends ExplorerTask<Boolean, String> implements SeriesI
         			xraySeriesNo = (thisSeriesNo * 1000) + thisInstanceNo;    			
         		}
         	}
-        	dicomSeriesUpd = (Series) dicomModel.getHierarchyNode(study, LoadRemoteDicomManifest.studySeriesForXray);
+        	dicomSeriesMerge = (Series) dicomModel.getHierarchyNode(study, LoadRemoteDicomManifest.studySeriesForXray);
+        	reader.writeMetaData(dicomSeriesMerge);
         	for (MediaElement media : medias) {
                 applyPresentationModel(media);
+                
                 media.setTag(TagD.get(Tag.SeriesNumber), xraySeriesNo);
-                dicomModel.applySplittingRules(dicomSeriesUpd, media);
+                dicomModel.applySplittingRules(dicomSeriesMerge, media);
                 Integer thisSeriesNo = TagD.getTagValue(media, Tag.SeriesNumber, Integer.class);
                 media.setTag(TagD.get(Tag.SeriesNumber), xraySeriesNo);
               }
