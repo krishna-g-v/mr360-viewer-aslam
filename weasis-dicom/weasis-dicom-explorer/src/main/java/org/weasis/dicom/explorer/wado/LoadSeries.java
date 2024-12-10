@@ -76,6 +76,7 @@ import org.weasis.core.api.util.HttpResponse;
 import org.weasis.core.api.util.NetworkUtil;
 import org.weasis.core.api.util.ThreadUtil;
 import org.weasis.core.api.util.URLParameters;
+import org.weasis.core.api.media.data.MediaSeriesGroupNode;
 import org.weasis.core.ui.docking.UIManager;
 import org.weasis.core.ui.editor.SeriesViewerFactory;
 import org.weasis.core.ui.editor.ViewerPluginBuilder;
@@ -95,6 +96,7 @@ import org.weasis.dicom.codec.TagD;
 import org.weasis.dicom.codec.TagD.Level;
 import org.weasis.dicom.codec.TransferSyntax;
 import org.weasis.dicom.codec.utils.DicomMediaUtils;
+import org.weasis.dicom.explorer.DicomExplorer;
 import org.weasis.dicom.explorer.DicomModel;
 import org.weasis.dicom.explorer.ExplorerTask;
 import org.weasis.dicom.explorer.Messages;
@@ -1120,7 +1122,7 @@ public class LoadSeries extends ExplorerTask<Boolean, String> implements SeriesI
             String dicomPtUID = (String) reader.getTagValue(TagW.PatientPseudoUID);
             if (!Objects.equals(oldDicomPtUID, dicomPtUID)) {
               // Fix when patientUID in xml have different patient name
-              dicomModel.mergePatientUID(oldDicomPtUID, dicomPtUID);
+//              dicomModel.mergePatientUID(oldDicomPtUID, dicomPtUID);
             }
           }
           MediaSeriesGroup study = dicomModel.getParent(dicomSeries, DicomModel.study);
@@ -1129,7 +1131,7 @@ public class LoadSeries extends ExplorerTask<Boolean, String> implements SeriesI
             String studyUID = TagD.getTagValue(reader, Tag.StudyInstanceUID, String.class);
             if (!Objects.equals(oldStudyUID, studyUID)) {
               // Fix when StudyInstanceUID in xml have different patient name
-              dicomModel.mergeStudyUID(oldStudyUID, studyUID);
+//              dicomModel.mergeStudyUID(oldStudyUID, studyUID);
             }
           }
         }
@@ -1220,6 +1222,24 @@ public class LoadSeries extends ExplorerTask<Boolean, String> implements SeriesI
                     ObservableEvent.BasicAction.SELECT, dicomModel, null, dicomSeries));
           }
         }
+      } else {
+    	  if(UIManager.VIEWER_PLUGINS.size() > 0) {
+	        DicomExplorer dcmExplorer = (DicomExplorer) UIManager.EXPLORER_PLUGINS.get(0);
+		    DicomModel dcmModel = (DicomModel) dcmExplorer.getDataExplorerModel();
+	  	    if(DefaultView2d.studyModality == "CR") {
+	  		  for (MediaSeriesGroup pt : dcmModel.getChildren(MediaSeriesGroupNode.rootNode)) {
+	  		    for (MediaSeriesGroup st : dcmModel.getChildren(pt)) {
+	  		      for (MediaSeriesGroup sr : dcmModel.getChildren(st)) {
+	  		        if (((Series) sr).getSortedMedias(null).size() > 0) {
+	  		    	  SeriesViewerFactory plugin1 = UIManager.getViewerFactory(((Series) sr).getMimeType());
+	      	          ViewerPluginBuilder.openSequenceInPlugin(plugin1, (Series) sr, dcmModel, true, true);
+	  		        }
+	  		      }
+	  		    	  
+	  		    }
+	  	  	  }
+	  	    }
+    	 }
       }
     }
   }

@@ -35,6 +35,7 @@ import org.weasis.core.api.media.data.Thumbnail;
 import org.weasis.core.api.gui.util.GuiExecutor;
 import org.weasis.core.api.media.data.ImageElement;
 import org.weasis.core.api.media.data.MediaElement;
+import org.weasis.core.api.media.data.MediaSeries;
 import org.weasis.core.api.media.data.MediaSeriesGroup;
 import org.weasis.core.api.media.data.MediaSeriesGroupNode;
 import org.weasis.core.api.service.BundleTools;
@@ -234,31 +235,33 @@ public class LoadRemoteDicomManifest extends ExplorerTask<Boolean, String> {
 	        Collections.sort(list, (l1, l2) -> TagD.getTagValue(l1, Tag.SeriesNumber, Integer.class) - TagD.getTagValue(l2, Tag.SeriesNumber, Integer.class));
 	        for( MediaSeriesGroup stm: list) {
 	          SeriesThumbnail t = (SeriesThumbnail) stm.getTagValue(TagW.Thumbnail);
-	    	  if(k < panes.size()) {
+		      List<MediaSeries> m1 = (List) t.getSeries().getMedias(null, null);
+	    	  if(k < panes.size() && m1.size() > 0) {
 	    	    ((ViewCanvas) panes.get(k)).setSeries(t.getSeries());
 	    	    k++;
 	    	  }	    	    		  
 	        }      
 	      }
 	    }
-      } else if(SynchData.Mode.TILE.equals(((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getSynchView().getSynchData().getMode())) {
-    	//Open plugin with merged Xray series of unique instances 
-    	  DicomExplorer dcmExplorer = (DicomExplorer) UIManager.EXPLORER_PLUGINS.get(0);
-  	      DicomModel dcmModel = (DicomModel) dcmExplorer.getDataExplorerModel();
-    	  if(DefaultView2d.studyModality == "CR") {
-    		  for (MediaSeriesGroup pt : dcmModel.getChildren(MediaSeriesGroupNode.rootNode)) {
-    		      for (MediaSeriesGroup st : dcmModel.getChildren(pt)) {
-    		    	  for (MediaSeriesGroup sr : dcmModel.getChildren(st)) {
-    		    		  if (((Series) sr).getSortedMedias(null).size() > 0) {
-    		    	        SeriesViewerFactory plugin = UIManager.getViewerFactory(((Series) sr).getMimeType());
-        	        	    ViewerPluginBuilder.openSequenceInPlugin(plugin, (Series) sr, dcmModel, true, true);
-    		    		  }
-    		    	  }
-    		    	  
-    		      }
-    	  	  }
-    	  }
-       }
+      } 
+//      else if(SynchData.Mode.TILE.equals(((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getSynchView().getSynchData().getMode())) {
+//    	//Open plugin with merged Xray series of unique instances 
+//    	  DicomExplorer dcmExplorer = (DicomExplorer) UIManager.EXPLORER_PLUGINS.get(0);
+//  	      DicomModel dcmModel = (DicomModel) dcmExplorer.getDataExplorerModel();
+//    	  if(DefaultView2d.studyModality == "CR") {
+//    		  for (MediaSeriesGroup pt : dcmModel.getChildren(MediaSeriesGroupNode.rootNode)) {
+//    		      for (MediaSeriesGroup st : dcmModel.getChildren(pt)) {
+//    		    	  for (MediaSeriesGroup sr : dcmModel.getChildren(st)) {
+//    		    		  if (((Series) sr).getSortedMedias(null).size() > 0) {
+//    		    	        SeriesViewerFactory plugin = UIManager.getViewerFactory(((Series) sr).getMimeType());
+//        	        	    ViewerPluginBuilder.openSequenceInPlugin(plugin, (Series) sr, dcmModel, true, true);
+//    		    		  }
+//    		    	  }
+//    		    	  
+//    		      }
+//    	  	  }
+//    	  }
+//       }
     }
   }
 }
