@@ -70,25 +70,25 @@
 
     <DirectoryRef Id="INSTALLDIR">
         <Component Id="URIHandlerRegistry" Guid="D99D1C53-7173-414B-81F8-AFC94641B3C0">
-            <!-- Register MedReport360-Viewer protocol -->
-		        <RegistryKey Key="MedReport360-Viewer" Root="HKCR">
-		          <RegistryValue Type="string" Value="MedReport360-Viewer URI handler"/>
+            <!-- Register SmartMed-Viewer protocol -->
+		        <RegistryKey Key="SmartMed-Viewer" Root="HKCR">
+		          <RegistryValue Type="string" Value="SmartMed-Viewer URI handler"/>
 		          <RegistryValue Name="URL Protocol" Type="string" Value=""/>
-		          <RegistryValue Name="DefaultIcon" Type="string" Value="&quot;[INSTALLDIR]MedReport360-Viewer.ico&quot;,1"/>
+		          <RegistryValue Name="DefaultIcon" Type="string" Value="&quot;[INSTALLDIR]SmartMed-Viewer.ico&quot;,1"/>
 		          <RegistryKey Key="shell\open\command">
-		            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]MedReport360-Viewer.exe&quot; &quot;%1&quot;"/>
+		            <RegistryValue Type="string" Value="&quot;[INSTALLDIR]SmartMed-Viewer.exe&quot; &quot;%1&quot;"/>
 		          </RegistryKey>
 		        </RegistryKey>
-            <!-- Remove popup on Edge and IE for MedReport360-Viewer protocol -->
-            <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Internet Explorer\ProtocolExecute\MedReport360-Viewer">
+            <!-- Remove popup on Edge and IE for SmartMed-Viewer protocol -->
+            <RegistryKey Root="HKLM" Key="SOFTWARE\Microsoft\Internet Explorer\ProtocolExecute\SmartMed-Viewer">
               <RegistryValue Type="integer" Name="WarnOnOpen" Value="0" />
             </RegistryKey>
-            <!-- Remove popup on Chrome for MedReport360-Viewer protocol -->
+            <!-- Remove popup on Chrome for SmartMed-Viewer protocol -->
             <RegistryKey Root="HKLM" Key="SOFTWARE\Policies\Google\Chrome\URLWhitelist">
-               <RegistryValue Name="787" Type="string" Value="MedReport360-Viewer://*"/>
+               <RegistryValue Name="787" Type="string" Value="SmartMed-Viewer://*"/>
             </RegistryKey>
             <RegistryKey Root="HKLM" Key="SOFTWARE\Policies\Chromium\URLWhitelist">
-               <RegistryValue Name="787" Type="string" Value="MedReport360-Viewer://*"/>
+               <RegistryValue Name="787" Type="string" Value="SmartMed-Viewer://*"/>
             </RegistryKey>
        </Component>
   </DirectoryRef>
@@ -117,21 +117,21 @@
           wesbite of wix documentation
                   https://wixtoolset.org/documentation/manual/v3/xsd/wix/installexecutesequence.html
     -->
-    <!-- MR360 task scheduler -->
-    <!-- sample ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;MR360Viewer&quot; /RU SYSTEM /SC minute /MO 5 /TR &quot;\&quot;[INSTALLDIR]app\updater.exe\&quot;&quot;" cmd.exe /C SchTasks /F /Delete /TN MR360Viewer/> -->
+    <!-- smartmed task scheduler -->
+    <!-- sample ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;smartmedViewer&quot; /RU SYSTEM /SC minute /MO 5 /TR &quot;\&quot;[INSTALLDIR]app\updater.exe\&quot;&quot;" cmd.exe /C SchTasks /F /Delete /TN smartmedViewer/> -->
 
-    <!-- MR360Viewer -->
-    <CustomAction Id="RunViewer" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;MR360Viewer&quot; /RU SYSTEM /SC minute /MO 5 /TR &quot;\&quot;[INSTALLDIR]app\updater.exe\&quot;&quot;" Return="check" />
-    <CustomAction Id='CleanViewer' Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /F /Delete /TN &quot;MR360Viewer&quot;" Return='asyncNoWait'  />
+    <!-- smartmedViewer -->
+    <CustomAction Id="RunViewer" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;smartmedViewer&quot; /RU SYSTEM /SC minute /MO 5 /TR &quot;\&quot;[INSTALLDIR]app\updater.exe\&quot;&quot;" Return="check" />
+    <CustomAction Id='CleanViewer' Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /F /Delete /TN &quot;smartmedViewer&quot;" Return='asyncNoWait'  />
 
-    <!-- MR360Updater-->
-    <CustomAction Id="RunUpdater" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;MR360Updater&quot; /RU SYSTEM /SC minute /MO 5 /TR &quot;\&quot;[INSTALLDIR]app\updater.bat\&quot;&quot;" Return="check" />
+    <!-- smartmedUpdater-->
+    <CustomAction Id="RunUpdater" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /CREATE /TN &quot;smartmedUpdater&quot; /RU SYSTEM /SC minute /MO 5 /TR &quot;\&quot;[INSTALLDIR]app\updater.bat\&quot;&quot;" Return="check" />
 
     <!-- to run it every day at specific time 
-    <CustomAction Id="RunUpdater" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand='cmd.exe /C schtasks /create /TN MR360Updater /ru SYSTEM /SC DAILY /ST 10:00 /TR "[INSTALLDIR]app\updater.bat"' Return="check" />
+    <CustomAction Id="RunUpdater" Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand='cmd.exe /C schtasks /create /TN smartmedUpdater /ru SYSTEM /SC DAILY /ST 10:00 /TR "[INSTALLDIR]app\updater.bat"' Return="check" />
     -->
     
-    <CustomAction Id='CleanUpdater' Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /F /Delete /TN &quot;MR360Updater&quot;" Return='asyncNoWait'  />
+    <CustomAction Id='CleanUpdater' Directory="TARGETDIR" Execute="deferred" Impersonate="no" ExeCommand="&quot;[SystemFolder]SCHTASKS.EXE&quot; /F /Delete /TN &quot;smartmedUpdater&quot;" Return='asyncNoWait'  />
 
     <?ifdef JpIcon ?>
     <Property Id="ARPPRODUCTICON" Value="JpARPPRODUCTICON"/>

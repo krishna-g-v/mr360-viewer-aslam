@@ -18,7 +18,7 @@ SUBSTANCE_PKG="4.0.1"
 # jdk.localedata => other locale (en_us) data are included in the jdk.localedata
 # jdk.jdwp.agent => package for debugging agent
 JDK_MODULES="java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.prefs,java.xml,jdk.localedata,jdk.charsets,jdk.crypto.ec,jdk.crypto.cryptoki,jdk.unsupported,jdk.jdwp.agent"
-NAME="MedReport360-Viewer"
+NAME="SmartMed-Viewer"
 IDENTIFIER="org.weasis.launcher"
 
 # Aux functions:
@@ -151,14 +151,14 @@ echo "Found java version $INSTALLED_VERSION"
 echo "Java command path: $JAVACMD"
 
 # Remove double quotes, remove leading "1." if it exists and remove everything apart from the major version number.
-INSTALLED_MAJOR_VERSION=$(echo "$INSTALLED_VERSION" | sed -e 's/"//g' -e 's/^1\.//' -e 's/\..*//' -e 's/-.*//')
-echo "Java major version: $INSTALLED_MAJOR_VERSION"
-if (( INSTALLED_MAJOR_VERSION < REQUIRED_MAJOR_VERSION )) ; then
-  die "Your version of java is too low to run this script.\nPlease update to $REQUIRED_TEXT_VERSION or higher"
-fi
+#INSTALLED_MAJOR_VERSION=$(echo "$INSTALLED_VERSION" | sed -e 's/"//g' -e 's/^1\.//' -e 's/\..*//' -e 's/-.*//')
+#echo "Java major version: $INSTALLED_MAJOR_VERSION"
+#if (( INSTALLED_MAJOR_VERSION < REQUIRED_MAJOR_VERSION )) ; then
+#  die "Your version of java is too low to run this script.\nPlease update to $REQUIRED_TEXT_VERSION or higher"
+#fi
 
 if [ -z "$OUTPUT_PATH" ] ; then
-  OUTPUT_PATH="MedReport360-Viewer-$ARC_OS-jdk$INSTALLED_MAJOR_VERSION-$WEASIS_VERSION"
+  OUTPUT_PATH="SmartMed-Viewer-$ARC_OS-jdk$INSTALLED_MAJOR_VERSION-$WEASIS_VERSION"
   OUTPUT_PATH_UNIX="$OUTPUT_PATH"
 fi
 
@@ -239,20 +239,20 @@ declare -a commonOptions=("--java-options" "-Dgosh.port=17179" \
 # --add-launcher "${DICOMIZER_CONFIG}" --resource-dir "$RES"  --app-version "$WEASIS_CLEAN_VERSION" \
 
 if [ "$PACKAGE" = "YES" ] ; then
-  VENDOR="MedReport360 Team"
-  COPYRIGHT="© 2018-2022 MedReport360 Team"
+  VENDOR="SmartMed Team"
+  COPYRIGHT="© 2018-2022 SmartMed Team"
   if [ "$machine" = "windows" ] ; then
     [ "$ARC_NAME" = "x86" ]  && UPGRADE_UID="3aedc24e-48a8-4623-ab39-0c3c01c7383b" || UPGRADE_UID="3aedc24e-48a8-4623-ab39-0c3c01c7383a"
     "$JPKGCMD" --type "msi" --app-image "$IMAGE_PATH" --dest "$OUTPUT_PATH" --name "$NAME" --resource-dir "$RES/msi/x86-64" \
-    --license-file "$INPUT_PATH\Licence.txt" --description "MedReport360 DICOM viewer" --win-upgrade-uuid "$UPGRADE_UID"  \
+    --license-file "$INPUT_PATH\Licence.txt" --description "SmartMed DICOM viewer" --win-upgrade-uuid "$UPGRADE_UID"  \
     --win-menu --win-menu-group "$NAME" --copyright "$COPYRIGHT" --app-version "$WEASIS_CLEAN_VERSION" \
     --vendor "$VENDOR" --file-associations "${curPath}\file-associations.properties" "${tmpArgs[@]}" --verbose
-    mv "$OUTPUT_PATH_UNIX/$NAME-$WEASIS_CLEAN_VERSION.msi" "$OUTPUT_PATH_UNIX/$NAME-$WEASIS_CLEAN_VERSION-$ARC_NAME.msi"
+    mv "$OUTPUT_PATH_UNIX/$NAME-$WEASIS_CLEAN_VERSION.msi" "$OUTPUT_PATH_UNIX/$NAME-$WEASIS_VERSION.msi"
   elif [ "$machine" = "linux" ] ; then
     declare -a installerTypes=("deb" "rpm")
     for installerType in "${installerTypes[@]}"; do
       $JPKGCMD --type "$installerType" --app-image "$IMAGE_PATH" --dest "$OUTPUT_PATH"  --name "$NAME" --resource-dir "$RES" \
-      --license-file "$INPUT_PATH/Licence.txt" --description "MedReport360 DICOM viewer" --vendor "$VENDOR" \
+      --license-file "$INPUT_PATH/Licence.txt" --description "SmartMed DICOM viewer" --vendor "$VENDOR" \
       --copyright "$COPYRIGHT" --app-version "$WEASIS_CLEAN_VERSION" --file-associations "${curPath}/file-associations.properties" \
       --linux-app-release "$REVISON_INC" --linux-package-name "weasis" --linux-deb-maintainer "Nicolas Roduit" --linux-rpm-license-type "EPL-2.0" \
       --linux-menu-group "Viewer;MedicalSoftware;Graphics;" --linux-app-category "science" --linux-shortcut "${tmpArgs[@]}" --verbose
