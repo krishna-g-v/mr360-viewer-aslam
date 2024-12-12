@@ -1138,6 +1138,7 @@ public class LoadSeries extends ExplorerTask<Boolean, String> implements SeriesI
         
         // Combine Xray series under a single thumbail even if with unique SOP
         String seriesModality = reader.getTagValue(TagD.get(Tag.Modality)).toString().equals("DX") ? "CR" : reader.getTagValue(TagD.get(Tag.Modality)).toString();
+        seriesModality = seriesModality.equals("PX") ? "CR" : seriesModality;
         String seriesUID = (String) reader.getTagValue(TagD.get(Tag.SeriesInstanceUID));
         Integer xraySeriesNo = null;
         
