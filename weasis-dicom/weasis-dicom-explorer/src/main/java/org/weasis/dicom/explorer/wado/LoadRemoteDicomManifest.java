@@ -223,6 +223,7 @@ public class LoadRemoteDicomManifest extends ExplorerTask<Boolean, String> {
 
   // Load respective series only when synch view mode set to stack
   private void loadStackViewSeries() {
+	  LoadRemoteDicomManifest.studySeriesForXray = null;
     if (UIManager.VIEWER_PLUGINS.size() > 0 && ((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)) != null) {
       if(SynchData.Mode.STACK.equals(((ImageViewerPlugin<ImageElement>) UIManager.VIEWER_PLUGINS.get(0)).getSynchView().getSynchData().getMode())) {
         DicomExplorer dcmExplorer = (DicomExplorer) UIManager.EXPLORER_PLUGINS.get(0);

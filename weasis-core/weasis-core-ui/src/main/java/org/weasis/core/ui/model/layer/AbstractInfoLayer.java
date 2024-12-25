@@ -57,7 +57,7 @@ public abstract class AbstractInfoLayer<E extends ImageElement> extends DefaultU
 
   static {
     defaultDisplayPreferences.put(ANNOTATIONS, true);
-    defaultDisplayPreferences.put(MIN_ANNOTATIONS, true);
+    defaultDisplayPreferences.put(MIN_ANNOTATIONS, false);
     defaultDisplayPreferences.put(ANONYM_ANNOTATIONS, false);
     defaultDisplayPreferences.put(SCALE, true);
     defaultDisplayPreferences.put(LUT, false);

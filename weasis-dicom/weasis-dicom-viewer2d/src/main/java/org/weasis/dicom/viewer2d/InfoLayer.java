@@ -123,7 +123,7 @@ public class InfoLayer extends AbstractInfoLayer<DicomImageElement> {
 
     g2.setPaint(Color.BLACK);
 
-    boolean hideMin = !getDisplayPreferences(MIN_ANNOTATIONS);
+    boolean hideMin = getDisplayPreferences(MIN_ANNOTATIONS);
     final float fontHeight = FontTools.getAccurateFontHeight(g2);
     final float midfontHeight = fontHeight * FontTools.getMidFontHeightFactor();
     float drawY = bound.height - border - 1.5f; // -1.5 for outline
