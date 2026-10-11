@@ -828,7 +828,7 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
   public final void moveOrigin(PanPoint point) {
     if (point != null) {
 //    	If Pan feature also should be unlinked then uncomment the below line
-      if((series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) && eventManager.getSelectedViewPane() != this) return;
+//      if((series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) && eventManager.getSelectedViewPane() != this) return;
       if (PanPoint.State.CENTER.equals(point.getState())) {
         highlightedPosition.setHighlightedPosition(point.isHighlightedPosition());
         highlightedPosition.setLocation(point);
@@ -965,9 +965,9 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
 
   @Override
   public void zoom(Double viewScale) {
-	if (zoomEvent) {
-		if((series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) && eventManager.getSelectedViewPane() != this) return;
-	}
+//	if (zoomEvent) {
+//		if((series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) && eventManager.getSelectedViewPane() != this) return;
+//	}
 	
     boolean defSize = MathUtil.isEqualToZero(viewScale);
     ZoomType type = (ZoomType) actionsInView.get(ZOOM_TYPE_CMD);
@@ -983,9 +983,9 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
         ratio = -adjustViewScale(1.0);
       }
       
-      if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) {
-    	  ratio = -getBestFitViewScale();
-      }
+//      if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) {
+//    	  ratio = -getBestFitViewScale();
+//      }
     }
 
     actionsInView.put(ActionW.ZOOM.cmd(), ratio);
@@ -1568,14 +1568,14 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
             pane.maximizedSelectedImagePane(firstPaneWithOffset, evt);
             
             //resetting view panes 
-            ImageViewerPlugin container = eventManager.getSelectedView2dContainer();
-            if (container != null) {
-            	List<ViewCanvas> viewpanels = container.getImagePanels();
-                
-            	for (ViewCanvas v : viewpanels) {
-            		v.reset();
-            	}
-            }
+//            ImageViewerPlugin container = eventManager.getSelectedView2dContainer();
+//            if (container != null) {
+//            	List<ViewCanvas> viewpanels = container.getImagePanels();
+//                
+//            	for (ViewCanvas v : viewpanels) {
+//            		v.reset();
+//            	}
+//            }
           
           } else
             pane.maximizedSelectedImagePane(DefaultView2d.this, evt);
@@ -1695,11 +1695,12 @@ public abstract class DefaultView2d<E extends ImageElement> extends GraphicsPane
     ZoomType type = (ZoomType) actionsInView.get(ZOOM_TYPE_CMD);
     if (!ZoomType.CURRENT.equals(type)) {
       zoom(0.0);
-    } else {
-    	if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) {
-    		zoom(0.0);
-    	}
-    }
+    } 
+//    else {
+//    	if(series.getToolTips().toUpperCase().contains("Modality: CR".toUpperCase()) || series.getToolTips().toUpperCase().contains("Modality: DX".toUpperCase())) {
+//    		zoom(0.0);
+//    	}
+//    }
   }
 
   @Override

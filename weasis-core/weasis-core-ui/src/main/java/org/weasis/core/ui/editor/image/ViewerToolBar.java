@@ -48,6 +48,7 @@ import org.weasis.core.api.media.data.ImageElement;
 import org.weasis.core.api.service.BundlePreferences;
 import org.weasis.core.api.service.WProperties;
 import org.weasis.core.ui.Messages;
+import org.weasis.core.ui.util.Toolbar;
 import org.weasis.core.ui.util.WtoolBar;
 
 
@@ -569,6 +570,13 @@ public class ViewerToolBar<E extends ImageElement> extends WtoolBar implements A
       Icon icon = buildMouseIcon(type, action);
       button.setIcon(icon);
       button.setActionCommand(action);
+      
+      // if Measure/Draw select line(M) by default
+      if(action.equalsIgnoreCase(ActionW.DRAW.cmd()) || action.equalsIgnoreCase(ActionW.MEASURE.cmd())) {
+    	  List<Toolbar> measureToolbar = eventManager.getSelectedView2dContainer().getToolBar();
+    	  DropDownButton measureDropDownBtn = (DropDownButton) measureToolbar.get(2).getComponent().getComponents()[1];
+    	  ((RadioMenuItem) measureDropDownBtn.getMenuModel().createJPopupMenu().getComponent(1)).doClick();
+      }
     }
   }
 

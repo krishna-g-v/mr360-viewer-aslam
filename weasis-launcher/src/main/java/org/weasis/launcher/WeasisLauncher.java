@@ -1433,6 +1433,7 @@ public class WeasisLauncher {
     UIManager.put("swing.boldMetal", Boolean.FALSE);
     // Display slider value is set to false (already in all LAF by the panel title), used by GTK LAF
     UIManager.put("Slider.paintValue", Boolean.FALSE);
+    UIManager.put("ToolTip.font", new Font("SansSerif", Font.PLAIN, 14));
 
     String laf = getAvailableLookAndFeel(look);
     try {

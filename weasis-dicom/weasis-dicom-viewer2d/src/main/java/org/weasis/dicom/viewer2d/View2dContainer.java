@@ -198,7 +198,7 @@ public class View2dContainer extends ImageViewerPlugin<DicomImageElement>
           toolBar.changeButtonState("wheel", eventManager.getMouseActions().getWheel());
       }
     }
-    
+    System.getProperties().getProperty("weasis.profile", "default");
     if (!initComponents) {
       initComponents = true;
 

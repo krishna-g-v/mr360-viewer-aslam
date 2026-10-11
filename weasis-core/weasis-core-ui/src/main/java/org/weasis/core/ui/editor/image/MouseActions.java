@@ -48,6 +48,7 @@ public class MouseActions {
     this.left =
         BundleTools.SYSTEM_PREFERENCES.getProperty(
             "weasis.toolbar.mouse.left", ActionW.PAN.cmd());
+    
     this.middle =
         BundleTools.SYSTEM_PREFERENCES.getProperty(
             "weasis.toolbar.mouse.middle", ActionW.SCROLL_SERIES.cmd());

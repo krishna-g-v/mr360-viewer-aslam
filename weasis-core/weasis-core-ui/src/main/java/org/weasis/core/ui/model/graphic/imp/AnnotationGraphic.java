@@ -235,7 +235,7 @@ public class AnnotationGraphic extends AbstractDragGraphic {
   protected void updateTool() {
     ptAnchor = getHandlePoint(0);
     ptBox = getHandlePoint(1);
-
+    ptBox.clone();
     lineABvalid = ptAnchor != null && !ptAnchor.equals(ptBox);
   }
 
